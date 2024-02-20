@@ -24,7 +24,10 @@ const AddStakingForm = () => {
   )
 
   const onSubmit = (data: any) => {
-    addStake({ validator: "", amount: data.stakeAmount })
+    addStake({
+      validator: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      amount: data.stakeAmount,
+    })
   }
   return (
     <form className="space-y-2 w-full" onSubmit={handleSubmit(onSubmit)}>

@@ -1,5 +1,6 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
+import { usePolkadot } from "@/context"
 import React from "react"
 import { useForm } from "react-hook-form"
 
@@ -12,7 +13,13 @@ const TransferForm = () => {
   } = useForm({
     mode: "all",
   })
-  const onSubmit = () => {}
+  const { transfer } = usePolkadot()
+  const onSubmit = (data: any) => {
+    transfer({
+      amount: String(Number(data.amount) * 10 ** 9),
+      to: String(data.receiverWallet),
+    })
+  }
   return (
     <form className="space-y-2 w-full" onSubmit={handleSubmit(onSubmit)}>
       <Input

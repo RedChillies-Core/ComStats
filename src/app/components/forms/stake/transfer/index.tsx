@@ -22,7 +22,6 @@ const TransferStakingForm = () => {
       validatorFrom: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       validatorTo: String(data.validator),
     })
-    // transferStake({ amount: data.amount })
   }
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
