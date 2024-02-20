@@ -3,7 +3,6 @@ import React, { useState } from "react"
 import Modal from "react-responsive-modal"
 import Button from "../../button"
 import { AiFillCheckCircle } from "react-icons/ai"
-import { toast } from "react-toastify"
 import { infoToast } from "../../toast"
 
 const WalletModal = ({
@@ -37,6 +36,15 @@ const WalletModal = ({
               {item.address}
             </button>
           ))}
+          {!wallets.length && (
+            <div className="text-center text-sm text-gray-500 flex flex-col justify-center items-center h-full gap-4">
+              <div>No wallet found.</div>
+              <div>Please install polkadot extension or check permission settings.</div>
+              <a href="https://polkadot.js.org/extension/" target="_blank" rel="noreferrer" className="text-blue-600">
+                Install Extension
+              </a>
+            </div>)
+          }
         </div>
       </div>
       <div className="mt-5">

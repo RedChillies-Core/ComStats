@@ -88,7 +88,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta>()
 
-  async function addStake({ validator, amount }: IAddStaking) {
+  async function addStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     const amt = Number(amount) * 10 ** 9
@@ -99,12 +99,13 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       })
       .then((response) => {
         successToast("Transaction Done")
+        callback?.()
       })
       .catch((err) => {
         errorToast(err)
       })
   }
-  async function removeStake({ validator, amount }: IAddStaking) {
+  async function removeStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     const amt = Number(amount) * 10 ** 9
@@ -115,6 +116,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       })
       .then((response) => {
         successToast("Transaction Done")
+        callback?.()
       })
       .catch((err) => {
         errorToast(err)
@@ -124,6 +126,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     validatorFrom,
     validatorTo,
     amount,
+    callback,
   }: ITransferStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
@@ -135,13 +138,14 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       })
       .then(() => {
         successToast("Transaction Done")
+        callback?.()
       })
       .catch((err) => {
         errorToast(err)
       })
   }
 
-  async function transfer({ to, amount }: ITransfer) {
+  async function transfer({ to, amount, callback }: ITransfer) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     const amt = Number(amount) * 10 ** 9
@@ -154,7 +158,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
           if (status.isCompleted) {
           }
         },
-      )
+      ).then(() => {
+        successToast("Transaction Done")
+        callback?.()
+      }).catch((err) => {
+        errorToast(err)
+      })
   }
   async function handleWalletSelections(wallet: InjectedAccountWithMeta) {
     setSelectedAccount(wallet)

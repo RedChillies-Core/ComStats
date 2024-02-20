@@ -27,16 +27,19 @@ export interface InterfacePagination<Data> {
 export type IAddStaking = {
   validator: string
   amount: string
+  callback?: () => void
 }
 
 export type ITransfer = {
   to: string
   amount: string
+  callback?: () => void
 }
 export type ITransferStaking = {
   validatorFrom: string
   amount: string
-  validatorTo: strng
+  validatorTo: string
+  callback?: () => void
 }
 export interface IStats {
   circulating_supply: number

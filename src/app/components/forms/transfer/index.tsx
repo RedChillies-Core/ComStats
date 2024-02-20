@@ -11,6 +11,7 @@ const TransferForm = () => {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm({
     mode: "all",
@@ -20,6 +21,7 @@ const TransferForm = () => {
     transfer({
       amount: String(Number(data.amount) * 10 ** 9),
       to: String(data.receiverWallet),
+      callback: () => reset(),
     })
   }
   const { data: balanceData } = useGetBalanceQuery(
@@ -52,7 +54,7 @@ const TransferForm = () => {
               <div className="text-sm text-customBlack">
                 Input $COMAI Amount
               </div>
-              <div className="text-sm">234.56 $COMAI</div>
+              <div className="text-sm">{formatTokenPrice({ amount: Number(balanceData?.balance) })} $COMAI</div>
             </div>
           }
           type="number"
@@ -61,8 +63,8 @@ const TransferForm = () => {
           handleMaxClick={(e: any) => {
             e.preventDefault()
             setValue(
-              "stakeAmount",
-              formatTokenPrice({ amount: Number(balanceData?.balance) }),
+              "amount",
+              formatTokenPrice({ amount: Number(balanceData?.balance), precision: 9 }),
             )
           }}
           register={register}
@@ -76,7 +78,7 @@ const TransferForm = () => {
         size="large"
         variant="primary"
         className="w-full justify-center"
-        onClick={() => {}}
+        onClick={() => { }}
       >
         Transfer $COMAI
       </Button>

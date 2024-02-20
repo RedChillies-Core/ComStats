@@ -5,26 +5,37 @@ import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { ValidatorType } from "@/types"
 import { usePolkadot } from "@/context"
+import { formatTokenPrice } from "@/utils"
+import { useGetBalanceQuery } from "@/store/api/statsApi"
 
 const UnstakingForm = ({
   validator,
+  callback
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorType | undefined,
+  callback?: () => void
 }) => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "all",
   })
 
   const { selectedAccount, removeStake } = usePolkadot()
-
+  const { data: balanceData } = useGetBalanceQuery(
+    { wallet: String(selectedAccount?.address) },
+    {
+      skip: !selectedAccount,
+    },
+  )
   const onSubmit = (data: any) => {
     removeStake({
       amount: String(data.stakeAmount),
       validator: String(validator?.key),
+      callback,
     })
   }
   return (
@@ -42,6 +53,14 @@ const UnstakingForm = ({
           rules={{
             required: "Stake Amount is Required",
           }}
+          maxButton
+          handleMaxClick={(e: any) => {
+            e.preventDefault()
+            setValue(
+              "stakeAmount",
+              formatTokenPrice({ amount: Number(balanceData?.stakes.find(item => item.validator.key === validator?.key).amount), precision: 9 }),
+            )
+          }}
         />
       </div>
       {/* <StakingDisclaimer /> */}
@@ -50,7 +69,7 @@ const UnstakingForm = ({
         size="large"
         variant="primary"
         className="w-full justify-center"
-        onClick={() => {}}
+        onClick={() => { }}
       >
         Unstake $COMAI
       </Button>

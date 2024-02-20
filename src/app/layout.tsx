@@ -6,7 +6,16 @@ import "react-toastify/dist/ReactToastify.css"
 
 export const metadata: Metadata = {
   title: "ComStats",
-  description: "Comstats is the one stop solution for Commune AI.",
+  description: "All Statistics of CommuneAI at one place. Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI",
+  keywords: [
+    "CommuneAI",
+    "Bitensor",
+    "AI",
+    "Staking",
+    "COMAI",
+    "Validators",
+    "ComStats",
+  ]
 }
 
 export default function RootLayout({

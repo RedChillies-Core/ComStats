@@ -57,7 +57,7 @@ export function Input<T extends FieldValues>({
             {...props}
           />
           {maxButton ? (
-            <div className="absolute right-5 top-3 text-sm">
+            <div className="absolute right-4 top-3 text-sm">
               <button
                 onClick={handleMaxClick}
                 className="bg-button text-white py-1 px-3 rounded-3xl text-sm"

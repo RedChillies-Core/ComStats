@@ -12,8 +12,10 @@ import { infoToast } from "@/app/components/toast"
 
 const TransferStakingForm = ({
   validator,
+  callback
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorType | undefined,
+  callback?: () => void
 }) => {
   const {
     register,
@@ -24,14 +26,22 @@ const TransferStakingForm = ({
   } = useForm({
     mode: "all",
   })
-  const { transferStake } = usePolkadot()
+  const { transferStake, selectedAccount } = usePolkadot()
 
   const { data: validatorData } = useGetValidatorsQuery()
+  const { data: balanceData } = useGetBalanceQuery(
+    { wallet: String(selectedAccount?.address) },
+    {
+      skip: !selectedAccount,
+    },
+  )
+
   const onSubmit = (data: any) => {
     transferStake({
       amount: String(data.stakeAmount),
       validatorFrom: String(validator?.key),
       validatorTo: String(data.validator.value),
+      callback,
     })
   }
 
@@ -42,6 +52,10 @@ const TransferStakingForm = ({
         name="validator"
         isSearchable
         placeholder=""
+        value={{
+          label: "vali::comstats",
+          value: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX"
+        }}
         options={validatorData?.validators?.map((d) => ({
           label: d.name,
           value: d.key,
@@ -67,6 +81,14 @@ const TransferStakingForm = ({
             required: "Stake Amount is Required",
           }}
           errors={errors.stakeAmount}
+          maxButton
+          handleMaxClick={(e: any) => {
+            e.preventDefault()
+            setValue(
+              "stakeAmount",
+              formatTokenPrice({ amount: Number(balanceData?.stakes.find(item => item.validator.key === validator?.key).amount), precision: 9 }),
+            )
+          }}
         />
       </div>
       <StakingDisclaimer />
@@ -74,7 +96,7 @@ const TransferStakingForm = ({
         size="large"
         variant="primary"
         className="w-full justify-center"
-        onClick={() => {}}
+        onClick={() => { }}
       >
         Transfer $COMAI
       </Button>

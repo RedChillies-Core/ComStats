@@ -43,6 +43,7 @@ const SelectComp = ({
   isSmall = false,
   isSearchable = false,
   isClearable = false,
+  value: defValue
 }: SelectProps) => {
   const errorMessage: any = errors?.message
   const inputClass = errors ? " border-[red]" : "border-[#E8E8E8]"
@@ -77,9 +78,8 @@ const SelectComp = ({
         </p>
       )}
       <div
-        className={`flex w-full bg-white items-center ${
-          !iconComponent ? "ps-0" : "ps-3"
-        }  gap-x-4  ${inputClass}`}
+        className={`flex w-full bg-white items-center ${!iconComponent ? "ps-0" : "ps-3"
+          }  gap-x-4  ${inputClass}`}
       >
         {iconComponent && (
           <div className="h-[30px] w-[30px] flex justify-center items-center text-white bg-primary rounded-sm">
@@ -89,6 +89,7 @@ const SelectComp = ({
         <Controller
           control={control}
           name={name}
+          defaultValue={defValue}
           render={({ field: { onChange, value } }) => (
             <Select
               className="flex-1 rounded-3xl border-none"

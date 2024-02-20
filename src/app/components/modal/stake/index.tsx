@@ -11,6 +11,7 @@ import { ValidatorType } from "@/types"
 import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
+import Verified from "../../verified"
 
 type IStakingModal = {
   open: boolean
@@ -27,7 +28,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
         : String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       wallet: String(selectedAccount?.address),
     })
-    return (
+  return (
     <Modal open={open} onClose={() => setOpen(false)} center>
       <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
       <hr />
@@ -45,7 +46,10 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               <ul>
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
-                  <h1 className="font-normal w-1/2">{validatorData?.name}</h1>
+                  <div className="flex items-center">
+                    <h1 className="font-normal">{validatorData?.name}</h1>
+                    {validatorData?.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR && <Verified />}
+                  </div>
                 </li>
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">
@@ -83,7 +87,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               <h5 className="text-sm font-semibold flex items-center gap-x-3">
                 <AiFillInfoCircle />
                 You have staked $
-                {numberWithCommas(Number(validatorData?.wallet_staked) / 10 ** 9)} COMAI here.
+                {numberWithCommas((Number(validatorData?.wallet_staked) / 10 ** 9).toFixed(2))} COMAI here.
               </h5>
             </div>
           )}
@@ -93,9 +97,8 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
             variant="outlined"
             prefix={<FaMoneyBillTransfer />}
             size="small"
-            className={`${
-              selectedOperation === "add" ? "!bg-button !text-white" : ""
-            }`}
+            className={`${selectedOperation === "add" ? "!bg-button !text-white" : ""
+              }`}
             onClick={() => setSelectedOperation("add")}
           >
             Add Stake
@@ -105,9 +108,8 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               variant="outlined"
               prefix={<FaMoneyBillTransfer />}
               size="small"
-              className={`${
-                selectedOperation === "transfer" ? "!bg-button !text-white" : ""
-              }`}
+              className={`${selectedOperation === "transfer" ? "!bg-button !text-white" : ""
+                }`}
               onClick={() => setSelectedOperation("transfer")}
             >
               Transfer Stake
@@ -118,9 +120,8 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               variant="outlined"
               size="small"
               prefix={<AiOutlineClear />}
-              className={`${
-                selectedOperation === "unstake" ? "!bg-button !text-white" : ""
-              }`}
+              className={`${selectedOperation === "unstake" ? "!bg-button !text-white" : ""
+                }`}
               onClick={() => setSelectedOperation("unstake")}
             >
               Unstake
@@ -129,14 +130,14 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
         </div>
         <div className="pt-4">
           {selectedOperation === "add" && (
-            <AddStakingForm validator={validatorData} />
+            <AddStakingForm validator={validatorData} callback={() => setOpen(false)} />
           )}
 
           {selectedOperation === "transfer" && (
-            <TransferStakingForm validator={validatorData} />
+            <TransferStakingForm validator={validatorData} callback={() => setOpen(false)} />
           )}
           {selectedOperation === "unstake" && (
-            <UnstakingForm validator={validatorData} />
+            <UnstakingForm validator={validatorData} callback={() => setOpen(false)} />
           )}
         </div>
       </div>

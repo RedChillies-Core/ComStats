@@ -24,6 +24,8 @@ import SearchWalletForm from "./components/forms/search"
 import { PLATFORM_FEE } from "@/constants"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
+import Verified from "./components/verified"
+import 'react-tooltip/dist/react-tooltip.css'
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -59,10 +61,11 @@ export default function Home() {
         String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       ),
       description: (
-        <a href="" target="_blank" className="flex gap-x-1 items-center">
-          View Here
-          <FaExternalLinkAlt />
-        </a>
+        <div className="flex gap-x-1 items-center">
+          {/* View Here
+          <FaExternalLinkAlt /> */}
+          {comStatsData?.name}
+        </div>
       ),
     },
     {
@@ -86,7 +89,7 @@ export default function Home() {
       value: numberWithCommas(formatTokenPrice({
         amount: Number(comStatsData?.stake),
       })),
-      description: <p>{((Number(comStatsData?.stake) / 10 ** 9)/Number(chainData?.total_stake)).toFixed(6)}% of Total Staked</p>,
+      description: <p>{((Number(comStatsData?.stake) / 10 ** 9) / Number(chainData?.total_stake)).toFixed(6)}% of Total Staked</p>,
     },
     {
       id: 5,
@@ -158,8 +161,10 @@ export default function Home() {
               ComStats
             </h1>
             <p className="text-md font-medium text-textSecondary mt-3">
-              A easiest platform to stake on Commune AI with minimal fees or no
-              fees!
+              {/* An easiest platform to stake on Commune AI with minimal fees or no
+              fees! */}
+              All Statistics of CommuneAI at one place.
+              Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI
             </p>
           </div>
           <div className="flex gap-4 flex-col sm:flex-row">
@@ -221,8 +226,8 @@ export default function Home() {
 
         <p>
           Balance: {" "}
-          {numberWithCommas(Number(userBalance?.balance) / 10 ** 9) || 0} | Staked:{" "}
-          {numberWithCommas(Number(userBalance?.staked) / 10 ** 9) || 0}
+          {numberWithCommas((Number(userBalance?.balance || 0) / 10 ** 9).toFixed(2))} COMAI | Staked:{" "}
+          {numberWithCommas((Number(userBalance?.staked || 0) / 10 ** 9).toFixed(2))} COMAI
         </p>
       </div>
       <section className="container my-10">
@@ -279,17 +284,20 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {validatorData?.validators.map((validator, index, array) => (
+              {validatorData?.validators.toSorted((a, b) => a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1).map((validator, index, array) => (
                 <tr
-                  className={`text-sm font-medium   ${
-                    index === array.length - 1 ? "" : "border-b-2 bottom-shadow"
-                  } `}
+                  className={`text-sm font-medium   ${index === array.length - 1 ? "" : "border-b-2 bottom-shadow"
+                    } `}
                   key={validator.key}
                 >
                   <td className="py-6 pl-3 ">{index + 1}</td>
                   <td>
                     <div className="flex flex-col">
-                      <h6 className="text-md font-bold">{validator.name}</h6>
+                      <div className="flex items-center">
+
+                        <h6 className="text-md font-bold">{validator.name}</h6>
+                        {validator.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR && <Verified />}
+                      </div>
                       <p className="text-sm text-textSecondary">
                         {validator.address}
                       </p>
@@ -304,6 +312,7 @@ export default function Home() {
                       variant="primary"
                       size="large"
                       onClick={() => setDelegate(validator.key)}
+                      isDisabled={!isConnected}
                     >
                       Delegate
                     </Button>
@@ -321,9 +330,8 @@ export default function Home() {
             {validatorData?.validators.map((validator, index, array) => (
               <div
                 key={validator.key}
-                className={`py-4 ${
-                  index === array.length - 1 ? "" : "border-b-2"
-                }`}
+                className={`py-4 ${index === array.length - 1 ? "" : "border-b-2"
+                  }`}
                 onClick={() => toggleAccordion(validator.name)}
               >
                 <div className="flex justify-between items-center cursor-pointer">
