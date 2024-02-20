@@ -3,7 +3,7 @@ import { FaSpinner } from "react-icons/fa6"
 
 interface ButtonProps {
   children: ReactNode
-  onClick: () => void
+  onClick?: () => void
   size?: "small" | "medium" | "large"
   variant?: "primary" | "secondary" | "danger" | "outlined" | "transparent"
   prefix?: ReactNode
@@ -14,13 +14,13 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({
   children,
-  onClick,
   size = "medium",
   variant = "primary",
   prefix,
   suffix,
   isLoading = false,
   className = "",
+  ...rest
 }) => {
   // Define base styles
   const baseStyles =
@@ -52,7 +52,7 @@ const Button: React.FC<ButtonProps> = ({
   }`
 
   return (
-    <button className={classes} onClick={onClick} disabled={isDisabled}>
+    <button className={classes} disabled={isDisabled} {...rest}>
       {isLoading && <FaSpinner />}
       {prefix && <span className="button-prefix">{prefix}</span>}
       {children}

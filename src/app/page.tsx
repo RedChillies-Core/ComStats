@@ -14,10 +14,12 @@ import { useState } from "react"
 import StakingModal from "@/app/components/modal/stake"
 import TransferModal from "@/app/components/modal/transfer"
 import {
+  useGetBalanceQuery,
   useGetTotalStatsQuery,
   useGetValidatorsQuery,
 } from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
+import SearchWalletForm from "./components/forms/search"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -25,6 +27,13 @@ export default function Home() {
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsQuery()
   const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery()
+  const [walletAddress, setWalletAddress] = useState("")
+  const { data: userBalance } = useGetBalanceQuery(
+    { wallet: walletAddress },
+    {
+      skip: !walletAddress,
+    },
+  )
   const comswapStats = [
     {
       id: 1,
@@ -178,21 +187,9 @@ export default function Home() {
         <p className="mb-4">
           Check balances, staking and many more with just a single input!
         </p>
-        <input
-          type="text"
-          placeholder="Enter your wallet address"
-          className="p-4 bg-transparent border-white border-2 rounded-2xl w-96"
-        />
-        <Button
-          variant="transparent"
-          size="large"
-          className="mx-auto my-5"
-          onClick={() => {}}
-          prefix={<FaSearch />}
-        >
-          Check Now
-        </Button>
-
+        <div className="max-w-xl mx-auto">
+          <SearchWalletForm />
+        </div>
         <p>Total Balance: | Staked Balance: | Free: </p>
       </div>
       <section className="container my-10">

@@ -17,6 +17,11 @@ const TransferStakingForm = () => {
   })
   const { transferStake } = usePolkadot()
   const onSubmit = (data: any) => {
+    transferStake({
+      amount: String(data.stakeAmount),
+      validatorFrom: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      validatorTo: String(data.validator),
+    })
     // transferStake({ amount: data.amount })
   }
   return (
