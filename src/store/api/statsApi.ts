@@ -19,8 +19,11 @@ export const statsApi = createApi({
         return response
       },
     }),
-    getValidatorsById: builder.query<ValidatorType, { key: string }>({
-      query: ({ key }) => `/validators/${key}/`,
+    getValidatorsById: builder.query<
+      ValidatorType,
+      { key: string; wallet: string }
+    >({
+      query: ({ key, wallet }) => `/validators/${key}?wallet=${wallet}`,
       providesTags: ["SingleValidator"],
       transformResponse: (response: ValidatorType) => {
         return response
@@ -34,7 +37,7 @@ export const statsApi = createApi({
       },
     }),
     getBalance: builder.query<IBalanceType, { wallet: string }>({
-      query: ({ wallet }) => `/balance/${wallet}/`,
+      query: ({ wallet }) => `/balance/?wallet=${wallet}`,
       providesTags: ["SingleValidator"],
       transformResponse: (response: IBalanceType) => {
         return response

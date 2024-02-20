@@ -3,6 +3,9 @@ import { AiFillCopy } from "react-icons/ai"
 import Modal from "react-responsive-modal"
 import { usePolkadot } from "@/context"
 import TransferForm from "../../forms/transfer"
+import { CopyToClipboard } from "react-copy-to-clipboard"
+import { infoToast, successToast } from "../../toast"
+import { useCopyToClipboard } from "@/app/hooks/useCopy"
 
 type ITransferModal = {
   open: boolean
@@ -10,15 +13,10 @@ type ITransferModal = {
 }
 const TransferModal = ({ open, setOpen }: ITransferModal) => {
   const { selectedAccount } = usePolkadot()
+  const [copiedText, copy] = useCopyToClipboard()
+
   return (
-    <Modal
-      open={open}
-      onClose={() => setOpen(false)}
-      center
-      classNames={{
-        modal: "rounded-lg shadow-card",
-      }}
-    >
+    <Modal open={open} onClose={() => setOpen(false)} center>
       <h1 className="text-lg font-semibold leading-8">Transfer Funds</h1>
       <hr />
       <div className="w-full">
@@ -27,7 +25,15 @@ const TransferModal = ({ open, setOpen }: ITransferModal) => {
           <h5 className="text-sm font-semibold flex items-center gap-x-3">
             {selectedAccount?.address}
             <button
-              onClick={() => alert("Copy to Clipboard")}
+              onClick={() =>
+                copy(String(selectedAccount?.address))
+                  .then(() => {
+                    successToast("Copied to Clipboard")
+                  })
+                  .catch((error) => {
+                    console.error("Failed to copy!", error)
+                  })
+              }
               className="cursor-pointer"
             >
               <AiFillCopy />

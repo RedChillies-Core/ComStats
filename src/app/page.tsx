@@ -10,7 +10,7 @@ import { PiUsersThreeBold, PiVaultFill } from "react-icons/pi"
 import Button from "@/app/components/button"
 import Footer from "@/app/components/footer"
 import Navbar from "@/app/components/navbar"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import StakingModal from "@/app/components/modal/stake"
 import TransferModal from "@/app/components/modal/transfer"
 import {
@@ -23,26 +23,32 @@ import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import SearchWalletForm from "./components/forms/search"
 import { PLATFORM_FEE } from "@/constants"
 import { usePolkadot } from "@/context"
-import { ValidatorType } from "@/types"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsQuery()
+  const { isConnected, selectedAccount } = usePolkadot()
+  const [walletAddress, setWalletAddress] = useState("")
+  useEffect(() => {
+    if (isConnected) {
+      setWalletAddress(String(selectedAccount?.address))
+    }
+  }, [isConnected, selectedAccount])
   const { data: comStatsData, isLoading: comStatsLoading } =
     useGetValidatorsByIdQuery({
       key: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      wallet: "",
     })
   const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery()
-  const [walletAddress, setWalletAddress] = useState("")
+
   const { data: userBalance } = useGetBalanceQuery(
     { wallet: walletAddress },
     {
       skip: !walletAddress,
     },
   )
-  const { isConnected } = usePolkadot()
   const comswapStats = [
     {
       id: 1,
@@ -62,8 +68,8 @@ export default function Home() {
       id: 2,
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
-      value: comStatsData?.apy,
-      description: <p>{comStatsData?.apy}% ROI over a year</p>,
+      value: comStatsData?.apy?.toFixed(2),
+      description: <p>{comStatsData?.apy?.toFixed(2)}% ROI over a year</p>,
     },
     {
       id: 3,
@@ -177,11 +183,7 @@ export default function Home() {
               Transfer Funds
             </Button>
           </div>
-          <StakingModal
-            open={stakingOpen}
-            setOpen={setStakingOpen}
-            validator={comStatsData}
-          />
+          <StakingModal open={stakingOpen} setOpen={setStakingOpen} />
           <TransferModal open={transferOpen} setOpen={setTransferOpen} />
           <div className="container">
             <div className="flex justify-center w-full no-scrollbar p-5 flex-wrap gap-3">
@@ -212,9 +214,19 @@ export default function Home() {
           Check balances, staking and many more with just a single input!
         </p>
         <div className="max-w-xl mx-auto">
-          <SearchWalletForm />
+          <SearchWalletForm
+            wallet={walletAddress}
+            setWallet={setWalletAddress}
+          />
         </div>
-        <p>Total Balance: | Staked Balance: | Free: </p>
+
+        <p>
+          Total Balance:
+          {Number(userBalance?.balance) / 10 ** 9 || 0} | Staked:{" "}
+          {Number(userBalance?.staked) / 10 ** 9 || 0} | Free:{" "}
+          {Number(userBalance?.balance) -
+            Number(userBalance?.staked) / 10 ** 9 || 0}
+        </p>
       </div>
       <section className="container my-10">
         <div className="flex justify-between mb-4 items-center flex-col sm:flex-row">

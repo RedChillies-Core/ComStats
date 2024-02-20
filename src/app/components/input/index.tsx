@@ -21,7 +21,7 @@ interface InputProps<T extends FieldValues> {
   rules?: RegisterOptions
   defaultVal?: string
   maxButton?: ReactNode
-  handleMaxClick?: () => void
+  handleMaxClick?: (e: any) => void
 }
 
 export function Input<T extends FieldValues>({

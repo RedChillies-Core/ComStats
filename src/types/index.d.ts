@@ -13,6 +13,7 @@ export type ValidatorType = {
   type: string
   key: string
   apy: number
+  wallet_staked?: number
 }
 
 export interface InterfacePagination<Data> {

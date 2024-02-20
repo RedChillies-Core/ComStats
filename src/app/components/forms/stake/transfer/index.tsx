@@ -6,7 +6,9 @@ import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
 import { ValidatorType } from "@/types"
-import { useGetValidatorsQuery } from "@/store/api/statsApi"
+import { useGetBalanceQuery, useGetValidatorsQuery } from "@/store/api/statsApi"
+import { formatTokenPrice } from "@/utils"
+import { infoToast } from "@/app/components/toast"
 
 const TransferStakingForm = ({
   validator,
@@ -17,12 +19,14 @@ const TransferStakingForm = ({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "all",
   })
   const { transferStake } = usePolkadot()
-  const { data } = useGetValidatorsQuery()
+
+  const { data: validatorData } = useGetValidatorsQuery()
   const onSubmit = (data: any) => {
     transferStake({
       amount: String(data.stakeAmount),
@@ -37,25 +41,18 @@ const TransferStakingForm = ({
         name="validator"
         isSearchable
         placeholder=""
-        options={[{ label: "NA", value: "NA" }]}
+        options={validatorData?.validators?.map((d) => ({
+          label: d.name,
+          value: d.key,
+        }))}
         control={control}
         errors={errors["validator"]}
         rules={{ required: "Validator is required" }}
       />
       <div className="pt-3">
         <Input
-          label={
-            <div className="flex justify-between">
-              <div className="text-sm text-customBlack">
-                Input $COMAI Amount
-              </div>
-              <div className="text-sm">234.56 $COMAI</div>
-            </div>
-          }
           type="number"
           placeholder=""
-          maxButton
-          handleMaxClick={() => alert("Max")}
           register={register}
           name="stakeAmount"
           rules={{

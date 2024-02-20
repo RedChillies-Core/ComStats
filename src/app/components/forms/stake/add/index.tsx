@@ -6,6 +6,8 @@ import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
 import { useGetBalanceQuery } from "@/store/api/statsApi"
 import { ValidatorType } from "@/types"
+import { formatTokenPrice } from "@/utils"
+import { infoToast } from "@/app/components/toast"
 
 const AddStakingForm = ({
   validator,
@@ -15,20 +17,24 @@ const AddStakingForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     mode: "all",
   })
 
   const { addStake, selectedAccount } = usePolkadot()
-  const { data } = useGetBalanceQuery(
+  const { data: balanceData } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
       skip: !selectedAccount,
     },
   )
-
   const onSubmit = (data: any) => {
+    if (Number(balanceData?.balance) / 10 ** 9 < Number(data.stakeAmount)) {
+      infoToast("Insufficient Balance")
+      return
+    }
     addStake({
       validator: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       amount: data.stakeAmount,
@@ -43,17 +49,32 @@ const AddStakingForm = ({
               <div className="text-sm text-customBlack">
                 Input $COMAI Amount
               </div>
-              <div className="text-sm">234.56 $COMAI</div>
+              <div className="text-sm">
+                {formatTokenPrice({ amount: Number(balanceData?.balance) })}
+                $COMAI
+              </div>
             </div>
           }
           type="number"
           placeholder=""
           maxButton
-          handleMaxClick={() => alert("Max")}
+          handleMaxClick={(e: any) => {
+            e.preventDefault()
+            setValue(
+              "stakeAmount",
+              formatTokenPrice({ amount: Number(balanceData?.balance) }),
+            )
+          }}
           register={register}
           name="stakeAmount"
           errors={errors["stakeAmount"]}
-          rules={{ required: "Amount is required" }}
+          rules={{
+            required: "Amount is required",
+            min: {
+              value: 0,
+              message: "Minimum staking amount is 0",
+            },
+          }}
         />
       </div>
       <StakingDisclaimer />

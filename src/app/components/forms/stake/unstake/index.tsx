@@ -4,6 +4,7 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { ValidatorType } from "@/types"
+import { usePolkadot } from "@/context"
 
 const UnstakingForm = ({
   validator,
@@ -17,26 +18,30 @@ const UnstakingForm = ({
   } = useForm({
     mode: "all",
   })
-  const onSubmit = () => {}
+
+  const { selectedAccount, removeStake } = usePolkadot()
+
+  const onSubmit = (data: any) => {
+    removeStake({
+      amount: String(data.stakeAmount),
+      validator: String(validator?.key),
+    })
+  }
   return (
     <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
       <div>
         <Input
           label={
-            <div className="flex justify-between">
-              <div className="text-sm text-customBlack">
-                Input $COMAI Amount
-              </div>
-              <div className="text-sm">234.56 $COMAI</div>
-            </div>
+            <div className="text-sm text-customBlack">Input $COMAI Amount</div>
           }
           type="number"
           placeholder=""
-          maxButton
-          handleMaxClick={() => alert("Max")}
           register={register}
           name="stakeAmount"
           errors={errors["stakeAmount"]}
+          rules={{
+            required: "Stake Amount is Required",
+          }}
         />
       </div>
       <StakingDisclaimer />

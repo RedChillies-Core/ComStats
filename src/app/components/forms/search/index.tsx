@@ -4,16 +4,26 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import { FaSearch } from "react-icons/fa"
 
-const SearchWalletForm = () => {
+const SearchWalletForm = ({
+  wallet,
+  setWallet,
+}: {
+  wallet?: string
+  setWallet: (args: string) => void
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
     mode: "all",
+    defaultValues: {
+      wallet: wallet,
+    },
   })
+
   const onSubmit = (data: any) => {
-    // transferStake({ amount: data.amount })
+    setWallet(data.wallet)
   }
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -26,7 +36,7 @@ const SearchWalletForm = () => {
           rules={{
             required: "Wallet is Required",
           }}
-          errors={errors.stakeAmount}
+          errors={errors.wallet}
         />
       </div>
       <div className="py-3">

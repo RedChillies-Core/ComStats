@@ -8,6 +8,7 @@ import {
   InjectedExtension,
 } from "@polkadot/extension-inject/types"
 import WalletModal from "@/app/components/modal/connect"
+import { errorToast, successToast } from "@/app/components/toast"
 
 interface PolkadotApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null
@@ -90,21 +91,33 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function addStake({ validator, amount }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    await api.tx.subspaceModule
+    api.tx.subspaceModule
       .addStake(NET_ID, validator, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
         tip: PLATFORM_FEE,
       })
+      .then((response) => {
+        successToast("Transaction Done")
+      })
+      .catch((err) => {
+        errorToast(err)
+      })
   }
   async function removeStake({ validator, amount }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    await api.tx.subspaceModule
-      .addStake(NET_ID, validator, amount)
+    api.tx.subspaceModule
+      .removeStake(NET_ID, validator, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
         tip: PLATFORM_FEE,
+      })
+      .then((response) => {
+        successToast("Transaction Done")
+      })
+      .catch((err) => {
+        errorToast(err)
       })
   }
   async function transferStake({
@@ -115,17 +128,16 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     api.tx.subspaceModule
-      .addStake(NET_ID, validatorFrom, amount)
+      .transferStake(NET_ID, validatorFrom, validatorTo, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
         tip: PLATFORM_FEE,
       })
       .then((response) => {
-        console.log(response)
+        successToast("Transaction Done")
       })
       .catch((err) => {
-        console.log(err)
-        alert(err)
+        errorToast(err)
       })
   }
 

@@ -8,23 +8,25 @@ import AddStakingForm from "../../forms/stake/add"
 import TransferStakingForm from "../../forms/stake/transfer"
 import UnstakingForm from "../../forms/stake/unstake"
 import { ValidatorType } from "@/types"
+import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
+import { usePolkadot } from "@/context"
 
 type IStakingModal = {
   open: boolean
   setOpen: (arg: boolean) => void
-  validator: ValidatorType | undefined
+  validatorId?: string
 }
-const StakingModal = ({ open, setOpen, validator }: IStakingModal) => {
+const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
   const [selectedOperation, setSelectedOperation] = useState("add")
+  const { selectedAccount } = usePolkadot()
+  const { data: validatorData } = useGetValidatorsByIdQuery({
+    key: validatorId
+      ? validatorId
+      : String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+    wallet: String(selectedAccount?.address),
+  })
   return (
-    <Modal
-      open={open}
-      onClose={() => setOpen(false)}
-      center
-      classNames={{
-        modal: "rounded-lg shadow-card",
-      }}
-    >
+    <Modal open={open} onClose={() => setOpen(false)} center>
       <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
       <hr />
       <div className="w-full">
@@ -39,14 +41,14 @@ const StakingModal = ({ open, setOpen, validator }: IStakingModal) => {
             <ul>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
-                <h1 className="font-normal w-1/2">{validator?.name}</h1>
+                <h1 className="font-normal w-1/2">{validatorData?.name}</h1>
               </li>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">
                   Total Staked{" "}
                 </h6>
                 <h1 className="font-normal w-1/2 tracking-tighter">
-                  {validator?.stake} COMAI
+                  {validatorData?.stake} COMAI
                 </h1>
               </li>
               <li className="flex gap-x-2 pb-1">
@@ -54,7 +56,7 @@ const StakingModal = ({ open, setOpen, validator }: IStakingModal) => {
                   Total Stakers{" "}
                 </h6>
                 <h1 className="font-normal w-1/2 tracking-tighter">
-                  {validator?.total_stakers}
+                  {validatorData?.total_stakers}
                 </h1>
               </li>
               <li className="flex gap-x-2 pb-1">
@@ -62,23 +64,25 @@ const StakingModal = ({ open, setOpen, validator }: IStakingModal) => {
                   Monthly APY{" "}
                 </h6>
                 <h1 className="font-normal w-1/2 tracking-tighter">
-                  {validator?.apy}%
+                  {validatorData?.apy?.toFixed(2)}%
                 </h1>
               </li>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">Fees</h6>
                 <h1 className="font-normal w-1/2 tracking-tighter">
-                  {validator?.delegation_fee}%
+                  {validatorData?.delegation_fee}%
                 </h1>
               </li>
             </ul>
           </div>
-          <div className="flex p-3 rounded-2xl bg-green-100 items-center justify-between">
-            <h5 className="text-sm font-semibold flex items-center gap-x-3">
-              <AiFillInfoCircle />
-              You have staked $300 COMAI here.
-            </h5>
-          </div>
+          {validatorData?.wallet_staked !== 0 && (
+            <div className="flex p-3 rounded-2xl bg-green-100 items-center justify-between">
+              <h5 className="text-sm font-semibold flex items-center gap-x-3">
+                <AiFillInfoCircle />
+                You have staked ${validatorData?.wallet_staked} COMAI here.
+              </h5>
+            </div>
+          )}
         </div>
         <div className="flex py-2 flex-col gap-y-3  justify-between sm:flex-row sm:gap-x-3">
           <Button
@@ -92,38 +96,43 @@ const StakingModal = ({ open, setOpen, validator }: IStakingModal) => {
           >
             Add Stake
           </Button>
-          <Button
-            variant="outlined"
-            prefix={<FaMoneyBillTransfer />}
-            size="small"
-            className={`${
-              selectedOperation === "transfer" ? "!bg-button !text-white" : ""
-            }`}
-            onClick={() => setSelectedOperation("transfer")}
-          >
-            Transfer Stake
-          </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            prefix={<AiOutlineClear />}
-            className={`${
-              selectedOperation === "unstake" ? "!bg-button !text-white" : ""
-            }`}
-            onClick={() => setSelectedOperation("unstake")}
-          >
-            Unstake
-          </Button>
+          {validatorData?.wallet_staked !== 0 && (
+            <Button
+              variant="outlined"
+              prefix={<FaMoneyBillTransfer />}
+              size="small"
+              className={`${
+                selectedOperation === "transfer" ? "!bg-button !text-white" : ""
+              }`}
+              onClick={() => setSelectedOperation("transfer")}
+            >
+              Transfer Stake
+            </Button>
+          )}
+          {validatorData?.wallet_staked !== 0 && (
+            <Button
+              variant="outlined"
+              size="small"
+              prefix={<AiOutlineClear />}
+              className={`${
+                selectedOperation === "unstake" ? "!bg-button !text-white" : ""
+              }`}
+              onClick={() => setSelectedOperation("unstake")}
+            >
+              Unstake
+            </Button>
+          )}
         </div>
         <div className="pt-4">
           {selectedOperation === "add" && (
-            <AddStakingForm validator={validator} />
+            <AddStakingForm validator={validatorData} />
           )}
+
           {selectedOperation === "transfer" && (
-            <TransferStakingForm validator={validator} />
+            <TransferStakingForm validator={validatorData} />
           )}
           {selectedOperation === "unstake" && (
-            <UnstakingForm validator={validator} />
+            <UnstakingForm validator={validatorData} />
           )}
         </div>
       </div>
