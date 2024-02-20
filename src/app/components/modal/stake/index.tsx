@@ -51,7 +51,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                     Total Staked{" "}
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.stake} COMAI
+                    {Number(validatorData?.stake) / 10 ** 9} COMAI
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -63,9 +63,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
-                  <h6 className="font-normal w-1/2 tracking-tighter">
-                    Monthly APY{" "}
-                  </h6>
+                  <h6 className="font-normal w-1/2 tracking-tighter">APY </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
                     {validatorData?.apy?.toFixed(2)}%
                   </h1>
@@ -83,7 +81,8 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
             <div className="flex p-3 rounded-2xl bg-green-100 items-center justify-between">
               <h5 className="text-sm font-semibold flex items-center gap-x-3">
                 <AiFillInfoCircle />
-                You have staked ${validatorData?.wallet_staked} COMAI here.
+                You have staked $
+                {Number(validatorData?.wallet_staked) / 10 ** 9} COMAI here.
               </h5>
             </div>
           )}

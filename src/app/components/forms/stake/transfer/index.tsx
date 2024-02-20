@@ -56,7 +56,7 @@ const TransferStakingForm = ({
           label={
             <div className="flex justify-between">
               <div className="text-sm text-customBlack">
-                Enter Receiver Wallet
+                Input $COMAI Amount
               </div>
             </div>
           }

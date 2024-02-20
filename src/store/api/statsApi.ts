@@ -43,6 +43,12 @@ export const statsApi = createApi({
         return response
       },
     }),
+    searchBalance: builder.mutation<IBalanceType, { wallet: string }>({
+      query: ({ wallet }) => `/balance/?wallet=${wallet}`,
+      transformResponse: (response: IBalanceType) => {
+        return response
+      },
+    }),
   }),
 })
 
@@ -50,5 +56,6 @@ export const {
   useGetValidatorsQuery,
   useGetBalanceQuery,
   useGetTotalStatsQuery,
+  useSearchBalanceMutation,
   useGetValidatorsByIdQuery,
 } = statsApi

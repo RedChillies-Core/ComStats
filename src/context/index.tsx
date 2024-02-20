@@ -91,8 +91,9 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function addStake({ validator, amount }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Number(amount) * 10 ** 9
     api.tx.subspaceModule
-      .addStake(NET_ID, validator, amount)
+      .addStake(NET_ID, validator, amt)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
       })
@@ -106,8 +107,9 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function removeStake({ validator, amount }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Number(amount) * 10 ** 9
     api.tx.subspaceModule
-      .removeStake(NET_ID, validator, amount)
+      .removeStake(NET_ID, validator, amt)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
       })
@@ -125,12 +127,13 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   }: ITransferStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Number(amount) * 10 ** 9
     api.tx.subspaceModule
-      .transferStake(NET_ID, validatorFrom, validatorTo, amount)
+      .transferStake(NET_ID, validatorFrom, validatorTo, amt)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
       })
-      .then((response) => {
+      .then(() => {
         successToast("Transaction Done")
       })
       .catch((err) => {
@@ -141,8 +144,9 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function transfer({ to, amount }: ITransfer) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Number(amount) * 10 ** 9
     api.tx.balances
-      .transfer(to, amount)
+      .transfer(to, amt)
       .signAndSend(
         selectedAccount.address,
         { signer: injector.signer },

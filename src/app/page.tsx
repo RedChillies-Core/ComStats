@@ -46,7 +46,7 @@ export default function Home() {
   const { data: userBalance } = useGetBalanceQuery(
     { wallet: walletAddress },
     {
-      skip: !walletAddress,
+      skip: !walletAddress && walletAddress === "",
     },
   )
   const comswapStats = [
