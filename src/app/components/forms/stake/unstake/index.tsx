@@ -8,7 +8,6 @@ const UnstakingForm = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm({
     mode: "all",

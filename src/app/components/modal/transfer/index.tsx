@@ -2,7 +2,7 @@ import React from "react"
 import { AiFillCopy } from "react-icons/ai"
 import Modal from "react-responsive-modal"
 import { usePolkadot } from "@/context"
-import TransferForm from "../../../forms/transfer"
+import TransferForm from "../../forms/transfer"
 
 type ITransferModal = {
   open: boolean

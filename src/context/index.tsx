@@ -86,7 +86,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta>()
 
-  const addStake = async ({ validator, amount }: IAddStaking) => {
+  async function addStake({ validator, amount }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     await api.tx.subspaceModule
@@ -113,11 +113,18 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   }: ITransferStaking) => {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    await api.tx.subspaceModule
+    api.tx.subspaceModule
       .addStake(NET_ID, validatorFrom, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
         tip: PLATFORM_FEE,
+      })
+      .then((response) => {
+        console.log(response)
+      })
+      .catch((err) => {
+        console.log(err)
+        alert(err)
       })
   }
 

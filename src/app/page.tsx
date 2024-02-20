@@ -12,14 +12,19 @@ import Footer from "@/app/components/footer"
 import Navbar from "@/app/components/navbar"
 import { useState } from "react"
 import StakingModal from "@/app/components/modal/stake"
-import TransferModal from "@/app/components/modal/stake/transfer"
-import { useGetValidatorsQuery } from "@/store/api/statsApi"
+import TransferModal from "@/app/components/modal/transfer"
+import {
+  useGetTotalStatsQuery,
+  useGetValidatorsQuery,
+} from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
-  const { data: validatorData, isLoading } = useGetValidatorsQuery()
+  const { data: validatorData, isLoading: validatorLoading } =
+    useGetValidatorsQuery()
+  const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery()
   const comswapStats = [
     {
       id: 1,
@@ -62,40 +67,36 @@ export default function Home() {
       description: <p>Total Number of Stakers</p>,
     },
   ]
-
+  console.log(chainData)
   const comTokenStats = [
-    { id: "Price", value: "$4.67" },
+    { id: "Price", value: chainData?.price },
     {
       id: "Total $COMAI Circulating",
-      value: "77,849,000",
+      value: chainData?.circulating_supply,
     },
     {
       id: "Total Market Cap",
-      value: "270,000,000",
+      value: chainData?.marketcap,
     },
     {
       id: "Daily Emission",
-      value: "250,000",
-    },
-    {
-      id: "Daily Miner Reward",
-      value: "125,000",
-    },
-    {
-      id: "Total Staked",
-      value: "44,585,990 (90%)",
-    },
-    {
-      id: "Total Validators/Stakers",
-      value: "29,493",
-    },
-    {
-      id: "Latest Block",
-      value: "442255",
+      value: chainData?.daily_emission,
     },
     {
       id: "Total Miners",
-      value: "594",
+      value: chainData?.total_miners,
+    },
+    {
+      id: "Total Staked",
+      value: chainData?.total_stake,
+    },
+    {
+      id: "Total Validators/Stakers",
+      value: chainData?.total_stakers,
+    },
+    {
+      id: "Latest Block",
+      value: chainData?.block,
     },
   ]
 

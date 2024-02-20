@@ -4,18 +4,21 @@ import SelectComp from "@/app/components/select"
 import React from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
+import { usePolkadot } from "@/context"
 
 const TransferStakingForm = () => {
   const {
     register,
     handleSubmit,
     control,
-    setError,
     formState: { errors },
   } = useForm({
     mode: "all",
   })
-  const onSubmit = () => {}
+  const { transferStake } = usePolkadot()
+  const onSubmit = (data: any) => {
+    transferStake({ amount: data.amount })
+  }
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
       <SelectComp

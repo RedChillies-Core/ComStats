@@ -1,19 +1,31 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
-import React from "react"
+import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
+import { usePolkadot } from "@/context"
+import { useGetBalanceQuery } from "@/store/api/statsApi"
 
 const AddStakingForm = () => {
   const {
     register,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm({
     mode: "all",
   })
-  const onSubmit = () => {}
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { addStake, selectedAccount } = usePolkadot()
+  const { data } = useGetBalanceQuery(
+    { wallet: String(selectedAccount?.address) },
+    {
+      skip: !selectedAccount,
+    },
+  )
+
+  const onSubmit = (data: any) => {
+    addStake({ validator: "", amount: data.stakeAmount })
+  }
   return (
     <form className="space-y-2 w-full" onSubmit={handleSubmit(onSubmit)}>
       <div>
@@ -32,12 +44,15 @@ const AddStakingForm = () => {
           handleMaxClick={() => alert("Max")}
           register={register}
           name="stakeAmount"
+          errors={errors["stakeAmount"]}
+          rules={{ required: "Amount is required" }}
         />
       </div>
       <StakingDisclaimer />
       <Button
         size="large"
         variant="primary"
+        // isLoading
         className="w-full justify-center"
         onClick={() => {}}
       >

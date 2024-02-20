@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react"
+import { FaSpinner } from "react-icons/fa6"
 
 interface ButtonProps {
   children: ReactNode
@@ -7,6 +8,7 @@ interface ButtonProps {
   variant?: "primary" | "secondary" | "danger" | "outlined" | "transparent"
   prefix?: ReactNode
   suffix?: ReactNode
+  isLoading?: boolean
   className?: string
 }
 
@@ -17,13 +19,13 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   prefix,
   suffix,
+  isLoading = false,
   className = "",
 }) => {
   // Define base styles
   const baseStyles =
-    " flex items-center gap-x-2 ease-in-out duration-300 transition-all"
+    " flex items-center gap-x-2 ease-in-out duration-300 transition-all "
 
-  // Size classes
   const sizeClasses = {
     small: "text-sm py-1 px-3 rounded-2xl",
     medium: "text-sm py-2 px-4 rounded-2xl",
@@ -31,7 +33,6 @@ const Button: React.FC<ButtonProps> = ({
       "text-sm px-3 py-3 font-medium tracking-tight sm:text-md rounded-2xl",
   }
 
-  // Variant classes
   const variantClasses = {
     primary:
       "bg-button border-2  border-white text-white hover:!bg-none hover:border-2 hover:border-purple hover:text-purple",
@@ -41,12 +42,18 @@ const Button: React.FC<ButtonProps> = ({
     danger: "bg-red-500 hover:bg-red-700 text-white",
     transparent: "border-2 bg-transparent border-white",
   }
+  const isDisabled = isLoading
 
-  // Construct the className
-  const classes = `transform-${baseStyles} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`
+  const classes = `transform-${baseStyles} ${sizeClasses[size]} ${
+    variantClasses[variant]
+  } ${className} ${
+    isDisabled &&
+    "bg-none !bg-textSecondary hover:!bg-textSecondary focus:!bg-textSecondary hover:!text-white hover:border-none cursor-not-allowed"
+  }`
 
   return (
-    <button className={classes} onClick={onClick}>
+    <button className={classes} onClick={onClick} disabled={isDisabled}>
+      {isLoading && <FaSpinner />}
       {prefix && <span className="button-prefix">{prefix}</span>}
       {children}
       {suffix && <span className="button-suffix">{suffix}</span>}
