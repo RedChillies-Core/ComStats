@@ -304,14 +304,14 @@ export default function Home() {
                     >
                       Delegate
                     </Button>
-                    <StakingModal
-                      open={delegate === validator.key}
-                      setOpen={(s) => setDelegate("")}
-                      validatorId={validator.key}
-                    />
                   </td>
                 </tr>
               ))}
+              <StakingModal
+                open={delegate !== ""}
+                setOpen={(s) => setDelegate("")}
+                validatorId={delegate}
+              />
             </tbody>
           </table>
           <div className="sm:hidden">
