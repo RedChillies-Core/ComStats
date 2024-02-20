@@ -17,7 +17,7 @@ const TransferStakingForm = () => {
   })
   const { transferStake } = usePolkadot()
   const onSubmit = (data: any) => {
-    transferStake({ amount: data.amount })
+    // transferStake({ amount: data.amount })
   }
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
