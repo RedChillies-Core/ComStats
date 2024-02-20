@@ -16,16 +16,22 @@ import TransferModal from "@/app/components/modal/transfer"
 import {
   useGetBalanceQuery,
   useGetTotalStatsQuery,
+  useGetValidatorsByIdQuery,
   useGetValidatorsQuery,
 } from "@/store/api/statsApi"
-import { formatTokenPrice } from "@/utils"
+import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import SearchWalletForm from "./components/forms/search"
+import { PLATFORM_FEE } from "@/constants"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsQuery()
+  const { data: comStats, isLoading: comStatsLoading } =
+    useGetValidatorsByIdQuery({
+      key: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+    })
   const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery()
   const [walletAddress, setWalletAddress] = useState("")
   const { data: userBalance } = useGetBalanceQuery(
@@ -39,7 +45,9 @@ export default function Home() {
       id: 1,
       statsName: "Validator",
       icon: <LiaCubesSolid size={40} />,
-      value: "583....dsg",
+      value: truncateWalletAddress(
+        String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      ),
       description: (
         <a href="" target="_blank" className="flex gap-x-1 items-center">
           View Here
@@ -51,32 +59,35 @@ export default function Home() {
       id: 2,
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
-      value: "45%",
-      description: <p>45% ROI over a year</p>,
+      value: comStats?.apy,
+      description: <p>{comStats?.apy}% ROI over a year</p>,
     },
     {
       id: 3,
       statsName: "Delegation fee",
       icon: <CiCoinInsert size={40} />,
-      value: "5%",
-      description: <p>Minimal fee of 5%</p>,
+      value: formatTokenPrice({ amount: PLATFORM_FEE }),
+      description: (
+        <p>Minimal fee of {formatTokenPrice({ amount: PLATFORM_FEE })}%</p>
+      ),
     },
     {
       id: 4,
       statsName: "Total Staked",
       icon: <TbBasketDollar size={40} />,
-      value: "568,9394",
+      value: formatTokenPrice({
+        amount: Number(comStats?.stake),
+      }),
       description: <p>19.56% of Total Tokens</p>,
     },
     {
       id: 5,
       statsName: "Total Stakers",
       icon: <PiUsersThreeBold size={40} />,
-      value: "4,569",
+      value: comStats?.total_stakers,
       description: <p>Total Number of Stakers</p>,
     },
   ]
-  console.log(chainData)
   const comTokenStats = [
     { id: "Price", value: chainData?.price },
     {
