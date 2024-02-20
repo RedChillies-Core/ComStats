@@ -3,8 +3,13 @@ import { Input } from "@/app/components/input"
 import React from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
+import { ValidatorType } from "@/types"
 
-const UnstakingForm = () => {
+const UnstakingForm = ({
+  validator,
+}: {
+  validator: ValidatorType | undefined
+}) => {
   const {
     register,
     handleSubmit,

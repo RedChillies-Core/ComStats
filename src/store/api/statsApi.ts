@@ -20,7 +20,7 @@ export const statsApi = createApi({
       },
     }),
     getValidatorsById: builder.query<ValidatorType, { key: string }>({
-      query: (key) => `/validators/${key}/`,
+      query: ({ key }) => `/validators/${key}/`,
       providesTags: ["SingleValidator"],
       transformResponse: (response: ValidatorType) => {
         return response

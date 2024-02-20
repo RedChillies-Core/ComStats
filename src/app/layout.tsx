@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
+import Providers from "./provider"
 import "react-responsive-modal/styles.css"
 import "./globals.css"
-import Providers from "./provider"
+import "react-toastify/dist/ReactToastify.css"
 
 export const metadata: Metadata = {
   title: "ComStats",

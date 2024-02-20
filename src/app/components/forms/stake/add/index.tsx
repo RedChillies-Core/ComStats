@@ -5,8 +5,13 @@ import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
 import { useGetBalanceQuery } from "@/store/api/statsApi"
+import { ValidatorType } from "@/types"
 
-const AddStakingForm = () => {
+const AddStakingForm = ({
+  validator,
+}: {
+  validator: ValidatorType | undefined
+}) => {
   const {
     register,
     handleSubmit,
@@ -14,7 +19,7 @@ const AddStakingForm = () => {
   } = useForm({
     mode: "all",
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const { addStake, selectedAccount } = usePolkadot()
   const { data } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },

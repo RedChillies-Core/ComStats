@@ -10,6 +10,7 @@ interface ButtonProps {
   suffix?: ReactNode
   isLoading?: boolean
   className?: string
+  isDisabled?: boolean
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -20,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({
   suffix,
   isLoading = false,
   className = "",
+  isDisabled = false,
   ...rest
 }) => {
   // Define base styles
@@ -35,20 +37,16 @@ const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = {
     primary:
-      "bg-button border-2  border-white text-white hover:!bg-none hover:border-2 hover:border-purple hover:text-purple",
+      "bg-button border-2  border-white text-white hover:!bg-none hover:border-2 hover:border-purple hover:text-purple disabled:opacity-50 disabled:!bg-button disabled:!border-none disabled:!text-white disabled:cursor-not-allowed",
     secondary: "bg-gray-500 hover:bg-gray-700 text-white",
     outlined:
-      "bg-transparent border-purple border-2 text-purple hover:bg-button hover:text-white",
+      "bg-transparent border-purple border-2 text-purple hover:bg-button hover:text-white disabled:opacity-50 disabled:!bg-transparent disabled:!text-purple disabled:hover:!bg-none disabled:cursor-not-allowed",
     danger: "bg-red-500 hover:bg-red-700 text-white",
-    transparent: "border-2 bg-transparent border-white",
+    transparent:
+      "border-2 bg-transparent border-white disabled:opacity-50 disabled:cursor-not-allowed",
   }
-  const isDisabled = isLoading
 
-  const classes = `transform-${baseStyles} ${sizeClasses[size]} ${
-    variantClasses[variant]
-  } ${className} ${
-    isDisabled &&
-    "bg-none !bg-textSecondary hover:!bg-textSecondary focus:!bg-textSecondary hover:!text-white hover:border-none cursor-not-allowed"
+  const classes = `transform-${baseStyles} ${sizeClasses[size]} ${variantClasses[variant]} ${className}
   }`
 
   return (

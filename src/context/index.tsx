@@ -7,6 +7,7 @@ import {
   InjectedAccountWithMeta,
   InjectedExtension,
 } from "@polkadot/extension-inject/types"
+import WalletModal from "@/app/components/modal/connect"
 
 interface PolkadotApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null
@@ -16,6 +17,7 @@ interface PolkadotApiState {
 
 interface PolkadotContextType {
   api: ApiPromise | null
+  isConnected: boolean
   isInitialized: boolean
   accounts: InjectedAccountWithMeta[]
   selectedAccount: InjectedAccountWithMeta | undefined
@@ -42,7 +44,8 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   const [api, setApi] = useState<ApiPromise | null>(null)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([])
-
+  const [isConnected, setIsConnected] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
   const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
     web3Accounts: null,
     web3Enable: null,
@@ -78,9 +81,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     }
     const allAccounts = await polkadotApi.web3Accounts()
     setAccounts(allAccounts)
-    if (allAccounts.length === 1) {
-      setSelectedAccount(allAccounts[0])
-    }
+    setOpenModal(true)
   }
 
   const [selectedAccount, setSelectedAccount] =
@@ -96,7 +97,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         tip: PLATFORM_FEE,
       })
   }
-  const removeStake = async ({ validator, amount }: IAddStaking) => {
+  async function removeStake({ validator, amount }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     await api.tx.subspaceModule
@@ -106,11 +107,11 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         tip: PLATFORM_FEE,
       })
   }
-  const transferStake = async ({
+  async function transferStake({
     validatorFrom,
     validatorTo,
     amount,
-  }: ITransferStaking) => {
+  }: ITransferStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     api.tx.subspaceModule
@@ -128,7 +129,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       })
   }
 
-  const transfer = async ({ to, amount }: ITransfer) => {
+  async function transfer({ to, amount }: ITransfer) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
     api.tx.balances
@@ -142,12 +143,18 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         },
       )
   }
+  async function handleWalletSelections(wallet: InjectedAccountWithMeta) {
+    setSelectedAccount(wallet)
+    setIsConnected(true)
+    setOpenModal(false)
+  }
 
   return (
     <PolkadotContext.Provider
       value={{
         api,
         isInitialized,
+        isConnected,
         accounts,
         selectedAccount,
         handleConnect,
@@ -157,6 +164,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         transferStake,
       }}
     >
+      <WalletModal
+        open={openModal}
+        setOpen={setOpenModal}
+        wallets={accounts}
+        handleWalletSelections={handleWalletSelections}
+      />
       {children}
     </PolkadotContext.Provider>
   )

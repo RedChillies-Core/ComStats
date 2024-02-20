@@ -18,7 +18,6 @@ type SelectProps = {
   name: string
   options: Array<Options> | undefined
   placeholder?: string
-
   errors?: FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined
   label?: string
   labelIcon?: ReactNode

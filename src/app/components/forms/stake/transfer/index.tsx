@@ -5,8 +5,14 @@ import React from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
+import { ValidatorType } from "@/types"
+import { useGetValidatorsQuery } from "@/store/api/statsApi"
 
-const TransferStakingForm = () => {
+const TransferStakingForm = ({
+  validator,
+}: {
+  validator: ValidatorType | undefined
+}) => {
   const {
     register,
     handleSubmit,
@@ -16,10 +22,11 @@ const TransferStakingForm = () => {
     mode: "all",
   })
   const { transferStake } = usePolkadot()
+  const { data } = useGetValidatorsQuery()
   const onSubmit = (data: any) => {
     transferStake({
       amount: String(data.stakeAmount),
-      validatorFrom: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      validatorFrom: String(validator?.key),
       validatorTo: String(data.validator),
     })
   }
@@ -30,12 +37,7 @@ const TransferStakingForm = () => {
         name="validator"
         isSearchable
         placeholder=""
-        options={[
-          {
-            label: "osi2n1isndsajfisaf",
-            value: "123123dsfasfd",
-          },
-        ]}
+        options={[{ label: "NA", value: "NA" }]}
         control={control}
         errors={errors["validator"]}
         rules={{ required: "Validator is required" }}

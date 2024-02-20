@@ -7,12 +7,14 @@ import { FaMoneyBillTransfer } from "react-icons/fa6"
 import AddStakingForm from "../../forms/stake/add"
 import TransferStakingForm from "../../forms/stake/transfer"
 import UnstakingForm from "../../forms/stake/unstake"
+import { ValidatorType } from "@/types"
 
 type IStakingModal = {
   open: boolean
   setOpen: (arg: boolean) => void
+  validator: ValidatorType | undefined
 }
-const StakingModal = ({ open, setOpen }: IStakingModal) => {
+const StakingModal = ({ open, setOpen, validator }: IStakingModal) => {
   const [selectedOperation, setSelectedOperation] = useState("add")
   return (
     <Modal
@@ -37,29 +39,37 @@ const StakingModal = ({ open, setOpen }: IStakingModal) => {
             <ul>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
-                <h1 className="font-normal w-1/2">ekdhfy.....wiuhh</h1>
+                <h1 className="font-normal w-1/2">{validator?.name}</h1>
               </li>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">
                   Total Staked{" "}
                 </h6>
-                <h1 className="font-normal w-1/2 tracking-tighter">2 COMAI</h1>
+                <h1 className="font-normal w-1/2 tracking-tighter">
+                  {validator?.stake} COMAI
+                </h1>
               </li>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">
                   Total Stakers{" "}
                 </h6>
-                <h1 className="font-normal w-1/2 tracking-tighter">400</h1>
+                <h1 className="font-normal w-1/2 tracking-tighter">
+                  {validator?.total_stakers}
+                </h1>
               </li>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">
                   Monthly APY{" "}
                 </h6>
-                <h1 className="font-normal w-1/2 tracking-tighter">5%</h1>
+                <h1 className="font-normal w-1/2 tracking-tighter">
+                  {validator?.apy}%
+                </h1>
               </li>
               <li className="flex gap-x-2 pb-1">
                 <h6 className="font-normal w-1/2 tracking-tighter">Fees</h6>
-                <h1 className="font-normal w-1/2 tracking-tighter">2.34%</h1>
+                <h1 className="font-normal w-1/2 tracking-tighter">
+                  {validator?.delegation_fee}%
+                </h1>
               </li>
             </ul>
           </div>
@@ -106,9 +116,15 @@ const StakingModal = ({ open, setOpen }: IStakingModal) => {
           </Button>
         </div>
         <div className="pt-4">
-          {selectedOperation === "add" && <AddStakingForm />}
-          {selectedOperation === "transfer" && <TransferStakingForm />}
-          {selectedOperation === "unstake" && <UnstakingForm />}
+          {selectedOperation === "add" && (
+            <AddStakingForm validator={validator} />
+          )}
+          {selectedOperation === "transfer" && (
+            <TransferStakingForm validator={validator} />
+          )}
+          {selectedOperation === "unstake" && (
+            <UnstakingForm validator={validator} />
+          )}
         </div>
       </div>
     </Modal>

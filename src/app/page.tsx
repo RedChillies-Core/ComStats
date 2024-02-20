@@ -22,13 +22,15 @@ import {
 import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import SearchWalletForm from "./components/forms/search"
 import { PLATFORM_FEE } from "@/constants"
+import { usePolkadot } from "@/context"
+import { ValidatorType } from "@/types"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsQuery()
-  const { data: comStats, isLoading: comStatsLoading } =
+  const { data: comStatsData, isLoading: comStatsLoading } =
     useGetValidatorsByIdQuery({
       key: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
     })
@@ -40,6 +42,7 @@ export default function Home() {
       skip: !walletAddress,
     },
   )
+  const { isConnected } = usePolkadot()
   const comswapStats = [
     {
       id: 1,
@@ -59,8 +62,8 @@ export default function Home() {
       id: 2,
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
-      value: comStats?.apy,
-      description: <p>{comStats?.apy}% ROI over a year</p>,
+      value: comStatsData?.apy,
+      description: <p>{comStatsData?.apy}% ROI over a year</p>,
     },
     {
       id: 3,
@@ -76,7 +79,7 @@ export default function Home() {
       statsName: "Total Staked",
       icon: <TbBasketDollar size={40} />,
       value: formatTokenPrice({
-        amount: Number(comStats?.stake),
+        amount: Number(comStatsData?.stake),
       }),
       description: <p>19.56% of Total Tokens</p>,
     },
@@ -84,7 +87,7 @@ export default function Home() {
       id: 5,
       statsName: "Total Stakers",
       icon: <PiUsersThreeBold size={40} />,
-      value: comStats?.total_stakers,
+      value: comStatsData?.total_stakers,
       description: <p>Total Number of Stakers</p>,
     },
   ]
@@ -92,11 +95,11 @@ export default function Home() {
     { id: "Price", value: chainData?.price },
     {
       id: "Total $COMAI Circulating",
-      value: chainData?.circulating_supply,
+      value: chainData?.circulating_supply?.toFixed(2),
     },
     {
       id: "Total Market Cap",
-      value: chainData?.marketcap,
+      value: chainData?.marketcap?.toFixed(2),
     },
     {
       id: "Daily Emission",
@@ -108,10 +111,14 @@ export default function Home() {
     },
     {
       id: "Total Staked",
-      value: chainData?.total_stake,
+      value: chainData?.total_stake?.toFixed(2),
     },
     {
-      id: "Total Validators/Stakers",
+      id: "Total Stakers",
+      value: chainData?.total_stakers,
+    },
+    {
+      id: "Total Validators",
       value: chainData?.total_stakers,
     },
     {
@@ -155,6 +162,7 @@ export default function Home() {
               size="large"
               variant="primary"
               suffix={<PiVaultFill size={22} />}
+              isDisabled={!isConnected}
               onClick={() => setStakingOpen(true)}
             >
               Manage Stake
@@ -163,12 +171,17 @@ export default function Home() {
               size="large"
               variant="outlined"
               suffix={<AiOutlineSwap size={22} />}
+              isDisabled={!isConnected}
               onClick={() => setTransferOpen(true)}
             >
               Transfer Funds
             </Button>
           </div>
-          <StakingModal open={stakingOpen} setOpen={setStakingOpen} />
+          <StakingModal
+            open={stakingOpen}
+            setOpen={setStakingOpen}
+            validator={comStatsData}
+          />
           <TransferModal open={transferOpen} setOpen={setTransferOpen} />
           <div className="container">
             <div className="flex justify-center w-full no-scrollbar p-5 flex-wrap gap-3">
