@@ -12,6 +12,7 @@ import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "../../verified"
+import { VERIFIED_VALIDATORS } from "@/constants"
 
 type IStakingModal = {
   open: boolean
@@ -48,7 +49,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                   <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
                   <div className="flex items-center">
                     <h1 className="font-normal">{validatorData?.name}</h1>
-                    {validatorData?.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR && <Verified />}
+                    {VERIFIED_VALIDATORS.indexOf(validatorData?.key || "") !== -1 && <Verified />}
                   </div>
                 </li>
                 <li className="flex gap-x-2 pb-1">

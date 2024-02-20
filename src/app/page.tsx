@@ -21,7 +21,7 @@ import {
 } from "@/store/api/statsApi"
 import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import SearchWalletForm from "./components/forms/search"
-import { PLATFORM_FEE } from "@/constants"
+import { PLATFORM_FEE, VERIFIED_VALIDATORS } from "@/constants"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "./components/verified"
@@ -31,7 +31,9 @@ export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
   const [transferOpen, setTransferOpen] = useState(false)
   const { data: validatorData, isLoading: validatorLoading } =
-    useGetValidatorsQuery()
+    useGetValidatorsQuery(undefined, {
+      pollingInterval: 300000
+    })
   const { isConnected, selectedAccount } = usePolkadot()
   const [walletAddress, setWalletAddress] = useState("")
   useEffect(() => {
@@ -42,9 +44,11 @@ export default function Home() {
   const { data: comStatsData, isLoading: comStatsLoading } =
     useGetValidatorsByIdQuery({
       key: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
-      wallet: "",
+      wallet: ""
     })
-  const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery()
+  const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery(undefined, {
+    pollingInterval: 5000
+  })
 
   const { data: userBalance } = useGetBalanceQuery(
     { wallet: walletAddress },
@@ -237,7 +241,7 @@ export default function Home() {
             Token Stats
           </h1>
           <p className="text-sm font-light text-textSecondary tracking-tighter">
-            Last Updated: 3 seconds ago
+            Last Updated: 5 sec ago
           </p>
         </div>
 
@@ -296,7 +300,7 @@ export default function Home() {
                       <div className="flex items-center">
 
                         <h6 className="text-md font-bold">{validator.name}</h6>
-                        {validator.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR && <Verified />}
+                        {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}
                       </div>
                       <p className="text-sm text-textSecondary">
                         {validator.address}

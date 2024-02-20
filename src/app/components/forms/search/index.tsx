@@ -30,7 +30,7 @@ const SearchWalletForm = ({
       <div className="pt-3">
         <Input
           type="string"
-          placeholder=""
+          placeholder="Enter your wallet address"
           register={register}
           name="wallet"
           rules={{
@@ -45,7 +45,7 @@ const SearchWalletForm = ({
           variant="transparent"
           className="w-full justify-center"
           prefix={<FaSearch />}
-          onClick={() => {}}
+          onClick={() => { }}
         >
           Check Now
         </Button>
