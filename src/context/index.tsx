@@ -95,7 +95,6 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       .addStake(NET_ID, validator, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
-        tip: PLATFORM_FEE,
       })
       .then((response) => {
         successToast("Transaction Done")
@@ -111,7 +110,6 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       .removeStake(NET_ID, validator, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
-        tip: PLATFORM_FEE,
       })
       .then((response) => {
         successToast("Transaction Done")
@@ -131,7 +129,6 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       .transferStake(NET_ID, validatorFrom, validatorTo, amount)
       .signAndSend(selectedAccount.address, {
         signer: injector.signer,
-        tip: PLATFORM_FEE,
       })
       .then((response) => {
         successToast("Transaction Done")

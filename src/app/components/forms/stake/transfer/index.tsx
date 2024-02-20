@@ -53,6 +53,13 @@ const TransferStakingForm = ({
         <Input
           type="number"
           placeholder=""
+          label={
+            <div className="flex justify-between">
+              <div className="text-sm text-customBlack">
+                Enter Receiver Wallet
+              </div>
+            </div>
+          }
           register={register}
           name="stakeAmount"
           rules={{

@@ -75,10 +75,8 @@ export default function Home() {
       id: 3,
       statsName: "Delegation fee",
       icon: <CiCoinInsert size={40} />,
-      value: formatTokenPrice({ amount: PLATFORM_FEE }),
-      description: (
-        <p>Minimal fee of {formatTokenPrice({ amount: PLATFORM_FEE })}%</p>
-      ),
+      value: `${comStatsData?.delegation_fee}%`,
+      description: <p>Minimal fee of {comStatsData?.delegation_fee}%</p>,
     },
     {
       id: 4,
@@ -125,14 +123,14 @@ export default function Home() {
     },
     {
       id: "Total Validators",
-      value: chainData?.total_stakers,
+      value: chainData?.total_validators,
     },
     {
       id: "Latest Block",
       value: chainData?.block,
     },
   ]
-
+  const [delegate, setDelegate] = useState("")
   function toggleAccordion(item: string): void {
     const content = document.getElementById(`content-${item}`)
     if (content) {
@@ -221,11 +219,9 @@ export default function Home() {
         </div>
 
         <p>
-          Total Balance:
-          {Number(userBalance?.balance) / 10 ** 9 || 0} | Staked:{" "}
-          {Number(userBalance?.staked) / 10 ** 9 || 0} | Free:{" "}
-          {Number(userBalance?.balance) -
-            Number(userBalance?.staked) / 10 ** 9 || 0}
+          Balance Balance:
+          {Number(userBalance?.balance) || 0} | Staked:{" "}
+          {Number(userBalance?.staked) / 10 ** 9 || 0}
         </p>
       </div>
       <section className="container my-10">
@@ -275,7 +271,7 @@ export default function Home() {
                 <th className="py-4 pl-3">S.N</th>
                 <th>Validators</th>
                 <th>Stake</th>
-                <th>Monthly APY</th>
+                <th>APY</th>
                 <th>Fee</th>
                 <th>Action</th>
               </tr>
@@ -297,20 +293,27 @@ export default function Home() {
                       </p>
                     </div>
                   </td>
-                  <td>{formatTokenPrice({ amount: validator.balance })} COM</td>
+                  <td>{formatTokenPrice({ amount: validator.stake })} COM</td>
                   <td>{Number(validator.apy).toFixed(2)}%</td>
+                  <td>{validator.delegation_fee.toFixed(2)}%</td>
                   <td>
-                    {formatTokenPrice({
-                      amount: validator.delegation_fee,
-                      precision: 8,
-                    })}
+                    <Button
+                      variant="primary"
+                      size="large"
+                      onClick={() => setDelegate(validator.key)}
+                    >
+                      Delegate
+                    </Button>
+                    <StakingModal
+                      open={delegate === validator.key}
+                      setOpen={(s) => setDelegate("")}
+                      validatorId={validator.key}
+                    />
                   </td>
-                  <td>Delegate</td>
                 </tr>
               ))}
             </tbody>
           </table>
-
           <div className="sm:hidden">
             {validatorData?.validators.map((validator, index, array) => (
               <div
@@ -335,18 +338,14 @@ export default function Home() {
                   </div>
                   <div className="py-2">
                     <strong>Stake:</strong>{" "}
-                    {formatTokenPrice({ amount: validator.balance })} COM
+                    {formatTokenPrice({ amount: validator.stake })} COM
                   </div>
                   <div className="py-2">
                     <strong>Monthly APY:</strong>
                     {Number(validator.apy).toFixed(2)}%
                   </div>
                   <div className="py-2">
-                    <strong>Fee:</strong>{" "}
-                    {formatTokenPrice({
-                      amount: validator.delegation_fee,
-                      precision: 8,
-                    })}
+                    <strong>Fee:</strong> {validator.delegation_fee.toFixed(2)}%
                   </div>
                   {/* <div className="py-2">
                     <strong>Action:</strong> Delegate
