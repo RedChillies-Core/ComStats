@@ -10,6 +10,7 @@ import UnstakingForm from "../../forms/stake/unstake"
 import { ValidatorType } from "@/types"
 import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
 import { usePolkadot } from "@/context"
+import { numberWithCommas } from "@/utils/numberWithCommas"
 
 type IStakingModal = {
   open: boolean
@@ -26,7 +27,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
         : String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       wallet: String(selectedAccount?.address),
     })
-  return (
+    return (
     <Modal open={open} onClose={() => setOpen(false)} center>
       <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
       <hr />
@@ -51,7 +52,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                     Total Staked{" "}
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {Number(validatorData?.stake) / 10 ** 9} COMAI
+                    {numberWithCommas((Number(validatorData?.stake) / 10 ** 9).toFixed(2))} COMAI
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -59,7 +60,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                     Total Stakers{" "}
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.total_stakers}
+                    {numberWithCommas(validatorData?.total_stakers)}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -82,7 +83,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               <h5 className="text-sm font-semibold flex items-center gap-x-3">
                 <AiFillInfoCircle />
                 You have staked $
-                {Number(validatorData?.wallet_staked) / 10 ** 9} COMAI here.
+                {numberWithCommas(Number(validatorData?.wallet_staked) / 10 ** 9)} COMAI here.
               </h5>
             </div>
           )}

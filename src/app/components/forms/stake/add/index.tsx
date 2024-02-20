@@ -36,7 +36,7 @@ const AddStakingForm = ({
       return
     }
     addStake({
-      validator: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      validator: validator?.key ||  String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       amount: data.stakeAmount,
     })
   }

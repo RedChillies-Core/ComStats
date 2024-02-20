@@ -23,6 +23,7 @@ import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import SearchWalletForm from "./components/forms/search"
 import { PLATFORM_FEE } from "@/constants"
 import { usePolkadot } from "@/context"
+import { numberWithCommas } from "@/utils/numberWithCommas"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -68,7 +69,7 @@ export default function Home() {
       id: 2,
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
-      value: comStatsData?.apy?.toFixed(2),
+      value: `${comStatsData?.apy?.toFixed(2)}%`,
       description: <p>{comStatsData?.apy?.toFixed(2)}% ROI over a year</p>,
     },
     {
@@ -82,10 +83,10 @@ export default function Home() {
       id: 4,
       statsName: "Total Staked",
       icon: <TbBasketDollar size={40} />,
-      value: formatTokenPrice({
+      value: numberWithCommas(formatTokenPrice({
         amount: Number(comStatsData?.stake),
-      }),
-      description: <p>19.56% of Total Tokens</p>,
+      })),
+      description: <p>{((Number(comStatsData?.stake) / 10 ** 9)/Number(chainData?.total_stake)).toFixed(6)}% of Total Staked</p>,
     },
     {
       id: 5,
@@ -96,34 +97,34 @@ export default function Home() {
     },
   ]
   const comTokenStats = [
-    { id: "Price", value: chainData?.price },
+    { id: "Price", value: `$${chainData?.price}` },
     {
       id: "Total $COMAI Circulating",
-      value: chainData?.circulating_supply?.toFixed(2),
+      value: numberWithCommas(chainData?.circulating_supply?.toFixed(2)),
     },
     {
       id: "Total Market Cap",
-      value: chainData?.marketcap?.toFixed(2),
+      value: `$${numberWithCommas(chainData?.marketcap?.toFixed(2))}`,
     },
     {
       id: "Daily Emission",
-      value: chainData?.daily_emission,
+      value: numberWithCommas(chainData?.daily_emission),
     },
     {
       id: "Total Miners",
-      value: chainData?.total_miners,
+      value: numberWithCommas(chainData?.total_miners),
     },
     {
       id: "Total Staked",
-      value: chainData?.total_stake?.toFixed(2),
+      value: numberWithCommas(chainData?.total_stake?.toFixed(2)),
     },
     {
       id: "Total Stakers",
-      value: chainData?.total_stakers,
+      value: numberWithCommas(chainData?.total_stakers),
     },
     {
       id: "Total Validators",
-      value: chainData?.total_validators,
+      value: numberWithCommas(chainData?.total_validators),
     },
     {
       id: "Latest Block",
@@ -219,9 +220,9 @@ export default function Home() {
         </div>
 
         <p>
-          Balance Balance:
-          {Number(userBalance?.balance) || 0} | Staked:{" "}
-          {Number(userBalance?.staked) / 10 ** 9 || 0}
+          Balance: {" "}
+          {numberWithCommas(Number(userBalance?.balance) / 10 ** 9) || 0} | Staked:{" "}
+          {numberWithCommas(Number(userBalance?.staked) / 10 ** 9) || 0}
         </p>
       </div>
       <section className="container my-10">
@@ -270,6 +271,7 @@ export default function Home() {
               <tr className="uppercase text-xs  text-left font-semibold bottom-shadow">
                 <th className="py-4 pl-3">S.N</th>
                 <th>Validators</th>
+                <th>Stakers</th>
                 <th>Stake</th>
                 <th>APY</th>
                 <th>Fee</th>
@@ -293,7 +295,8 @@ export default function Home() {
                       </p>
                     </div>
                   </td>
-                  <td>{formatTokenPrice({ amount: validator.stake })} COM</td>
+                  <td>{numberWithCommas(validator.total_stakers)}</td>
+                  <td>{numberWithCommas(formatTokenPrice({ amount: validator.stake }))} COMAI</td>
                   <td>{Number(validator.apy).toFixed(2)}%</td>
                   <td>{validator.delegation_fee.toFixed(2)}%</td>
                   <td>

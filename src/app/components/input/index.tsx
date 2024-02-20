@@ -47,6 +47,7 @@ export function Input<T extends FieldValues>({
           <input
             placeholder={placeholder}
             type={type}
+            step={type === "number" ? "any" : undefined}
             defaultValue={defaultVal}
             className={classNames(
               "w-full bg-white border text-sm leading-6 font-medium text-[#202223] border-border rounded-lg  px-3 py-3 focus:ring-purple focus:outline-purple ",

@@ -1,7 +1,7 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
 import SelectComp from "@/app/components/select"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
@@ -31,9 +31,10 @@ const TransferStakingForm = ({
     transferStake({
       amount: String(data.stakeAmount),
       validatorFrom: String(validator?.key),
-      validatorTo: String(data.validator),
+      validatorTo: String(data.validator.value),
     })
   }
+
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
       <SelectComp
