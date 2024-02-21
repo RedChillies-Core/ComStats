@@ -76,14 +76,14 @@ export default function Home() {
       id: 2,
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
-      value: `${comStatsData?.apy?.toFixed(2)}%`,
-      description: <p>{comStatsData?.apy?.toFixed(2)}% ROI over a year</p>,
+      value: `${(comStatsData?.apy?? 0).toFixed(2)}%`,
+      description: <p>{(comStatsData?.apy ?? 0)?.toFixed(2)}% ROI over a year</p>,
     },
     {
       id: 3,
       statsName: "Delegation fee",
       icon: <CiCoinInsert size={40} />,
-      value: `${comStatsData?.delegation_fee}%`,
+      value: `${comStatsData?.delegation_fee ?? 0}%`,
       description: <p>Minimal fee of {comStatsData?.delegation_fee}%</p>,
     },
     {
@@ -92,7 +92,7 @@ export default function Home() {
       icon: <TbBasketDollar size={40} />,
       value: numberWithCommas(formatTokenPrice({
         amount: Number(comStatsData?.stake),
-      })),
+      })) ?? "0",
       description: <p>{((Number(comStatsData?.stake) / 10 ** 9) / Number(chainData?.total_stake)).toFixed(6)}% of Total Staked</p>,
     },
     {
@@ -107,7 +107,7 @@ export default function Home() {
     { id: "Price", value: `$${chainData?.price}` },
     {
       id: "Total $COMAI Circulating",
-      value: numberWithCommas(chainData?.circulating_supply?.toFixed(2)),
+      value: numberWithCommas(chainData?.circulating_supply?.toFixed(2)) ?? '0',
     },
     {
       id: "Total Market Cap",
@@ -206,7 +206,7 @@ export default function Home() {
                       {stats.statsName}
                     </h4>
                     <div className="text-md font-semibold w-full truncate tracking-tight">
-                      {stats.value}
+                      {stats.value ?? "N/A"}
                     </div>
                     <div className="text-[10px]">{stats.description}</div>
                   </div>
@@ -310,7 +310,7 @@ export default function Home() {
                   <td>{numberWithCommas(validator.total_stakers)}</td>
                   <td>{numberWithCommas(formatTokenPrice({ amount: validator.stake }))} COMAI</td>
                   <td>{Number(validator.apy).toFixed(2)}%</td>
-                  <td>{validator.delegation_fee.toFixed(2)}%</td>
+                  <td>{(validator?.delegation_fee ?? 0).toFixed(2)} %</td>
                   <td>
                     <Button
                       variant="primary"
@@ -356,7 +356,7 @@ export default function Home() {
                     {formatTokenPrice({ amount: validator.stake })} COM
                   </div>
                   <div className="py-2">
-                    <strong>Monthly APY:</strong>
+                    <strong>APY:</strong>
                     {Number(validator.apy).toFixed(2)}%
                   </div>
                   <div className="py-2">
