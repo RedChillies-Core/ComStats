@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { AiFillInfoCircle, AiOutlineClear } from "react-icons/ai"
 import { LiaCubesSolid } from "react-icons/lia"
 import Modal from "react-responsive-modal"
@@ -7,8 +7,7 @@ import { FaMoneyBillTransfer, FaSpinner } from "react-icons/fa6"
 import AddStakingForm from "../../forms/stake/add"
 import TransferStakingForm from "../../forms/stake/transfer"
 import UnstakingForm from "../../forms/stake/unstake"
-import { ValidatorType } from "@/types"
-import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
+import { useGetBalanceQuery, useGetValidatorsByIdQuery } from "@/store/api/statsApi"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "../../verified"
@@ -17,18 +16,30 @@ import { VERIFIED_VALIDATORS } from "@/constants"
 type IStakingModal = {
   open: boolean
   setOpen: (arg: boolean) => void
-  validatorId?: string
+  validatorId: string
 }
 const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
   const [selectedOperation, setSelectedOperation] = useState("add")
   const { selectedAccount } = usePolkadot()
-  const { data: validatorData, isLoading: validatorLoading } =
+  const { data: validatorData, isLoading: validatorLoading, refetch: validatorRefetch } =
     useGetValidatorsByIdQuery({
-      key: validatorId
-        ? validatorId
-        : String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      key: validatorId,
       wallet: String(selectedAccount?.address),
     })
+
+  const { refetch: refetchBalance } = useGetBalanceQuery(
+    { wallet: String(selectedAccount?.address) },
+    {
+      skip: !selectedAccount,
+    },
+  )
+
+  useEffect(() => {
+    if (open) {
+      setSelectedOperation("add")
+    }
+  }, [open])
+
   return (
     <Modal open={open} onClose={() => setOpen(false)} center>
       <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
@@ -131,14 +142,32 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
         </div>
         <div className="pt-4">
           {selectedOperation === "add" && (
-            <AddStakingForm validator={validatorData} callback={() => setOpen(false)} />
+            <AddStakingForm validator={validatorData} callback={() => {
+              setOpen(false)
+              setTimeout(() => {
+                refetchBalance()
+                validatorRefetch()
+              }, 8000)
+            }} />
           )}
 
           {selectedOperation === "transfer" && (
-            <TransferStakingForm validator={validatorData} callback={() => setOpen(false)} />
+            <TransferStakingForm validator={validatorData} callback={() => {
+              setOpen(false)
+              setTimeout(() => {
+                refetchBalance()
+                validatorRefetch()
+              }, 8000)
+            }} />
           )}
           {selectedOperation === "unstake" && (
-            <UnstakingForm validator={validatorData} callback={() => setOpen(false)} />
+            <UnstakingForm validator={validatorData} callback={() => {
+              setOpen(false)
+              setTimeout(() => {
+                refetchBalance()
+                validatorRefetch()
+              }, 8000)
+            }} />
           )}
         </div>
       </div>

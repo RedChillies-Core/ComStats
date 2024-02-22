@@ -47,10 +47,10 @@ export default function Home() {
       wallet: ""
     })
   const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery(undefined, {
-    pollingInterval: 5000
+    pollingInterval: 8000
   })
 
-  const { data: userBalance } = useGetBalanceQuery(
+  const { data: userBalance, isFetching: searchFetching, refetch: refetchSearch } = useGetBalanceQuery(
     { wallet: walletAddress },
     {
       skip: !walletAddress && walletAddress === "",
@@ -177,7 +177,10 @@ export default function Home() {
               variant="primary"
               suffix={<PiVaultFill size={22} />}
               isDisabled={!isConnected}
-              onClick={() => setStakingOpen(true)}
+              onClick={() => {
+                setStakingOpen(true)
+                setWalletAddress(String(selectedAccount?.address))
+              }}
             >
               Manage Stake
             </Button>
@@ -186,12 +189,15 @@ export default function Home() {
               variant="outlined"
               suffix={<AiOutlineSwap size={22} />}
               isDisabled={!isConnected}
-              onClick={() => setTransferOpen(true)}
+              onClick={() => {
+                setTransferOpen(true)
+                setWalletAddress(String(selectedAccount?.address))
+              }}
             >
               Transfer Funds
             </Button>
           </div>
-          <StakingModal open={stakingOpen} setOpen={setStakingOpen} />
+          <StakingModal open={stakingOpen} setOpen={setStakingOpen} validatorId={String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR)} />
           <TransferModal open={transferOpen} setOpen={setTransferOpen} />
           <div className="container">
             <div className="flex justify-center w-full no-scrollbar p-5 flex-wrap gap-3">
@@ -225,6 +231,8 @@ export default function Home() {
           <SearchWalletForm
             wallet={walletAddress}
             setWallet={setWalletAddress}
+            loading={searchFetching}
+            refetch={refetchSearch}
           />
         </div>
 
@@ -241,7 +249,7 @@ export default function Home() {
             Token Stats
           </h1>
           <p className="text-sm font-light text-textSecondary tracking-tighter">
-            Last Updated: 5 sec ago
+            Last Updated: 8 sec ago
           </p>
         </div>
 
@@ -315,7 +323,10 @@ export default function Home() {
                     <Button
                       variant="primary"
                       size="large"
-                      onClick={() => setDelegate(validator.key)}
+                      onClick={() => {
+                        setDelegate(validator.key)
+                        setWalletAddress(String(selectedAccount?.address))
+                      }}
                       isDisabled={!isConnected}
                     >
                       Delegate

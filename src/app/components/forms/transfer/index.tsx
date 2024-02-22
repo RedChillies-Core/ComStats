@@ -19,12 +19,17 @@ const TransferForm = () => {
   const { transfer, selectedAccount } = usePolkadot()
   const onSubmit = (data: any) => {
     transfer({
-      amount: String(Number(data.amount) * 10 ** 9),
+      amount: data.amount,
       to: String(data.receiverWallet),
-      callback: () => reset(),
+      callback: () => {
+        reset()
+        setTimeout(() => {
+          balanceRefetch()
+        }, 8000)
+      },
     })
   }
-  const { data: balanceData } = useGetBalanceQuery(
+  const { data: balanceData, refetch: balanceRefetch } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
       skip: !selectedAccount,
@@ -64,13 +69,19 @@ const TransferForm = () => {
             e.preventDefault()
             setValue(
               "amount",
-              formatTokenPrice({ amount: Number(balanceData?.balance), precision: 9 }),
+              formatTokenPrice({ amount: Number(balanceData?.balance) - 0.34327694 * 1e9, precision: 9 }),
             )
           }}
           register={register}
           name="amount"
           errors={errors["amount"]}
-          rules={{ required: "Amount is required" }}
+          rules={{
+            required: "Amount is required",
+            min: {
+              value: 0.000000001,
+              message: "Minimum Amount is 0.000000001 COMAI",
+            },
+          }}
         />
       </div>
 

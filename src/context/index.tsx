@@ -91,7 +91,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function addStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    const amt = Number(amount) * 10 ** 9
+    const amt = Math.floor(Number(amount) * 10 ** 9)
     api.tx.subspaceModule
       .addStake(NET_ID, validator, amt)
       .signAndSend(selectedAccount.address, {
@@ -108,7 +108,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function removeStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    const amt = Number(amount) * 10 ** 9
+    const amt = Math.floor(Number(amount) * 10 ** 9)
     api.tx.subspaceModule
       .removeStake(NET_ID, validator, amt)
       .signAndSend(selectedAccount.address, {
@@ -130,7 +130,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   }: ITransferStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    const amt = Number(amount) * 10 ** 9
+    const amt = Math.floor(Number(amount) * 10 ** 9)
     api.tx.subspaceModule
       .transferStake(NET_ID, validatorFrom, validatorTo, amt)
       .signAndSend(selectedAccount.address, {
@@ -148,7 +148,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   async function transfer({ to, amount, callback }: ITransfer) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
-    const amt = Number(amount) * 10 ** 9
+    const amt = Math.floor(Number(amount) * 10 ** 9)
     api.tx.balances
       .transfer(to, amt)
       .signAndSend(

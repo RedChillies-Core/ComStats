@@ -53,7 +53,7 @@ const AddStakingForm = ({
                 Input $COMAI Amount
               </div>
               <div className="text-sm">
-                {formatTokenPrice({ amount: Number(balanceData?.balance) })}
+                {formatTokenPrice({ amount: Number(balanceData?.balance) })} {" "}
                 $COMAI
               </div>
             </div>
@@ -65,7 +65,7 @@ const AddStakingForm = ({
             e.preventDefault()
             setValue(
               "stakeAmount",
-              formatTokenPrice({ amount: Number(balanceData?.balance), precision: 9 }),
+              formatTokenPrice({ amount: Number(balanceData?.balance) - 1000, precision: 9 }),
             )
           }}
           register={register}
@@ -74,8 +74,8 @@ const AddStakingForm = ({
           rules={{
             required: "Amount is required",
             min: {
-              value: 0,
-              message: "Minimum staking amount is 0",
+              value: 0.000001,
+              message: "Minimum staking amount is 0.000001 COMAI",
             },
           }}
         />

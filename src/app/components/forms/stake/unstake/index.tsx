@@ -51,7 +51,11 @@ const UnstakingForm = ({
           name="stakeAmount"
           errors={errors["stakeAmount"]}
           rules={{
-            required: "Stake Amount is Required",
+            required: "Unstake Amount is Required",
+            min: {
+              value: 0.000000001,
+              message: "Minimum Unstake Amount is 0.000000001 COMAI",
+            },
           }}
           maxButton
           handleMaxClick={(e: any) => {

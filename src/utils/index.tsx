@@ -22,5 +22,5 @@ export function formatTokenPrice({
   amount: number
   precision?: number
 }) {
-  return (amount / Math.pow(10, 9)).toFixed(precision)
+  return Number((amount > 0 ? (amount / Math.pow(10, 9)) : 0).toFixed(precision)).toString()
 }
