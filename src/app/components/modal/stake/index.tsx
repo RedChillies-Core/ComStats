@@ -51,7 +51,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
             <div className="border-[2px] my-5 p-4 text-sm rounded-lg shadow-card">
               <div className="flex justify-between">
                 <h6 className=" text-base tracking-tight font-semibold flex items-center">
-                  <LiaCubesSolid size={40} /> Validator Details
+                  <LiaCubesSolid size={40} /> Module Details
                 </h6>
               </div>
               <hr className="my-2" />

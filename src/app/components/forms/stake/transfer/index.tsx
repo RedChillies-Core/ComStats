@@ -48,7 +48,7 @@ const TransferStakingForm = ({
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
       <SelectComp
-        label="Select Validator"
+        label="Select Module"
         name="validator"
         isSearchable
         placeholder=""
@@ -56,13 +56,13 @@ const TransferStakingForm = ({
           label: "vali::comstats",
           value: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX"
         }}
-        options={validatorData?.validators?.map((d) => ({
+        options={validatorData?.validators.toSorted((a, b) => a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1).slice(0, 1000).map((d) => ({
           label: d.name,
           value: d.key,
         }))}
         control={control}
         errors={errors["validator"]}
-        rules={{ required: "Validator is required" }}
+        rules={{ required: "Module is required" }}
       />
       <div className="pt-3">
         <Input

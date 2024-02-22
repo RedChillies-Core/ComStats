@@ -25,6 +25,7 @@ import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "./components/verified"
 import 'react-tooltip/dist/react-tooltip.css'
+import { FaSpinner } from "react-icons/fa6"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -90,7 +91,7 @@ export default function Home() {
       value: numberWithCommas(formatTokenPrice({
         amount: Number(comStatsData?.stake),
       })) ?? "0",
-      description: <p>{((Number(comStatsData?.stake) / 10 ** 9) / Number(chainData?.total_stake)).toFixed(6)}% of Total Staked</p>,
+      description: <p>{((Number(comStatsData?.stake) / 10 ** 9) / Number(chainData?.total_stake)).toFixed(3)}% of Total Staked</p>,
     },
     {
       id: 5,
@@ -101,14 +102,14 @@ export default function Home() {
     },
   ]
   const comTokenStats = [
-    { id: "Price", value: `$${chainData?.price}` },
+    { id: "Price", value: chainData?.price && `$${chainData?.price}` },
     {
       id: "Total $COMAI Circulating",
       value: numberWithCommas(chainData?.circulating_supply?.toFixed(2)) ?? '0',
     },
     {
       id: "Total Market Cap",
-      value: `$${numberWithCommas(chainData?.marketcap?.toFixed(2))}`,
+      value: chainData?.marketcap && `$${numberWithCommas(chainData?.marketcap?.toFixed(2))}`,
     },
     {
       id: "Daily Emission",
@@ -209,7 +210,7 @@ export default function Home() {
                       {stats.statsName}
                     </h4>
                     <div className="text-md font-semibold w-full truncate tracking-tight">
-                      {stats.value ?? "N/A"}
+                      {stats.value || "N/A"}
                     </div>
                     <div className="text-[10px]">{stats.description}</div>
                   </div>
@@ -235,8 +236,8 @@ export default function Home() {
 
         <p>
           Balance: {" "}
-          {numberWithCommas((Number(userBalance?.balance || 0) / 10 ** 9).toFixed(2))} COMAI | Staked:{" "}
-          {numberWithCommas((Number(userBalance?.staked || 0) / 10 ** 9).toFixed(2))} COMAI
+          {numberWithCommas(Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2)))} COMAI | Staked:{" "}
+          {numberWithCommas(Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2)))} COMAI
         </p>
       </div>
       <section className="container my-10">
@@ -257,7 +258,7 @@ export default function Home() {
                 {item.id}
               </h6>
               <h1 className="text-md font-semibold w-full truncate tracking-tight">
-                {item.value}
+                {item.value || "N/A"}
               </h1>
             </div>
           ))}
@@ -314,8 +315,8 @@ export default function Home() {
                   </td>
                   <td>{numberWithCommas(validator.total_stakers)}</td>
                   <td>{numberWithCommas(formatTokenPrice({ amount: validator.stake }))} COMAI</td>
-                  <td>{Number(validator.apy).toFixed(2)}%</td>
-                  <td>{(validator?.delegation_fee ?? 0).toFixed(2)} %</td>
+                  <td>{Number(validator.apy.toFixed(2))}%</td>
+                  <td>{Number((validator?.delegation_fee ?? 0).toFixed(2))}%</td>
                   <td>
                     <Button
                       variant="primary"
@@ -338,6 +339,7 @@ export default function Home() {
               />
             </tbody>
           </table>
+          {validatorLoading && <FaSpinner className="spinner my-6 mx-auto" />}
           <div className="sm:hidden">
             {validatorData?.validators.map((validator, index, array) => (
               <div
@@ -364,11 +366,11 @@ export default function Home() {
                     {formatTokenPrice({ amount: validator.stake })} COM
                   </div>
                   <div className="py-2">
-                    <strong>APY:</strong>
-                    {Number(validator.apy).toFixed(2)}%
+                    <strong>APY: </strong>
+                    {Number(validator.apy.toFixed(2))}%
                   </div>
                   <div className="py-2">
-                    <strong>Fee:</strong> {validator.delegation_fee.toFixed(2)}%
+                    <strong>Fee:</strong> {Number(validator.delegation_fee.toFixed(2))}%
                   </div>
                   {/* <div className="py-2">
                     <strong>Action:</strong> Delegate
