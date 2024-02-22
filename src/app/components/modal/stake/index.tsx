@@ -87,7 +87,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
             <div className="flex p-3 rounded-2xl bg-green-100 items-center justify-between">
               <h5 className="text-sm font-semibold flex items-center gap-x-3">
                 <AiFillInfoCircle />
-                You have staked 
+                You have staked {" "}
                 {numberWithCommas((Number(validatorData?.wallet_staked) / 10 ** 9).toFixed(2))} COMAI here.
               </h5>
             </div>

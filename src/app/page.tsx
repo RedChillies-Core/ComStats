@@ -76,7 +76,7 @@ export default function Home() {
       id: 2,
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
-      value: `${(comStatsData?.apy?? 0).toFixed(2)}%`,
+      value: `${(comStatsData?.apy ?? 0).toFixed(2)}%`,
       description: <p>{(comStatsData?.apy ?? 0)?.toFixed(2)}% ROI over a year</p>,
     },
     {
@@ -263,7 +263,7 @@ export default function Home() {
         <p className="mb-4">
           Bring wCOMAI from Ethereum and stake in COMAI in a single go!
         </p>
-        <p className="mb-4">Exicted for it? So, are we.</p>
+        <p className="mb-4">Excited for it? So, are we.</p>
         <span className="italic font-semibold">Launching Soon on ComStats</span>
       </div>
       <section className="container my-10 ">
@@ -300,7 +300,7 @@ export default function Home() {
                       <div className="flex items-center">
 
                         <h6 className="text-md font-bold flex gap-4">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</h6>
-                        
+
                       </div>
                       <p className="text-sm text-textSecondary">
                         {validator.address}
