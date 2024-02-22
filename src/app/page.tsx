@@ -304,9 +304,7 @@ export default function Home() {
                   <td>
                     <div className="flex flex-col">
                       <div className="flex items-center">
-
-                        <h6 className="text-md font-bold flex gap-4">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</h6>
-
+                        <h6 className="text-md font-bold flex gap-1">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</h6>
                       </div>
                       <p className="text-[10px] text-textSecondary">
                         {validator.key}
@@ -349,7 +347,7 @@ export default function Home() {
                 onClick={() => toggleAccordion(validator.name)}
               >
                 <div className="flex justify-between items-center cursor-pointer">
-                  <div className="flex gap-2">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</div>
+                  <div className="flex gap-1 items-center">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</div>
                   <div>+</div>
                 </div>
                 <div id={`content-${validator.name}`} className="hidden">
