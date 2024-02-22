@@ -1,6 +1,5 @@
 "use client"
 import { AiOutlineSwap } from "react-icons/ai"
-import { FaExternalLinkAlt, FaSearch } from "react-icons/fa"
 import { LiaCubesSolid } from "react-icons/lia"
 import Image from "next/image"
 import { RiStockLine } from "react-icons/ri"
@@ -21,7 +20,7 @@ import {
 } from "@/store/api/statsApi"
 import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import SearchWalletForm from "./components/forms/search"
-import { PLATFORM_FEE, VERIFIED_VALIDATORS } from "@/constants"
+import { VERIFIED_VALIDATORS } from "@/constants"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "./components/verified"
@@ -66,8 +65,6 @@ export default function Home() {
       ),
       description: (
         <div className="flex gap-x-1 items-center">
-          {/* View Here
-          <FaExternalLinkAlt /> */}
           {comStatsData?.name}
         </div>
       ),
@@ -118,8 +115,8 @@ export default function Home() {
       value: numberWithCommas(chainData?.daily_emission),
     },
     {
-      id: "Total Miners",
-      value: numberWithCommas(chainData?.total_miners),
+      id: "Total Modules",
+      value: numberWithCommas(chainData?.total_modules),
     },
     {
       id: "Total Staked",
@@ -130,8 +127,8 @@ export default function Home() {
       value: numberWithCommas(chainData?.total_stakers),
     },
     {
-      id: "Total Validators",
-      value: numberWithCommas(chainData?.total_validators),
+      id: "Total Subnets",
+      value: numberWithCommas(chainData?.total_subnets),
     },
     {
       id: "Latest Block",
@@ -278,7 +275,7 @@ export default function Home() {
         <div className="flex justify-between mb-4 items-center flex-col sm:flex-row">
           <h1 className="text-2xl text-left font-semibold flex gap-x-2 leading-10 text-purple tracking-tighter items-center">
             <Image src="/CommAI.webp" alt="comm" height={30} width={30} /> COMAI
-            Validators
+            Modules
           </h1>
         </div>
 
@@ -287,7 +284,7 @@ export default function Home() {
             <thead>
               <tr className="uppercase text-xs  text-left font-semibold bottom-shadow">
                 <th className="py-4 pl-3">S.N</th>
-                <th>Validators</th>
+                <th>Modules</th>
                 <th>Stakers</th>
                 <th>Stake</th>
                 <th>APY</th>
@@ -296,7 +293,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {validatorData?.validators.toSorted((a, b) => a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1).map((validator, index, array) => (
+              {validatorData?.validators.toSorted((a, b) => a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1).slice(0, 1000).map((validator, index, array) => (
                 <tr
                   className={`text-sm font-medium   ${index === array.length - 1 ? "" : "border-b-2 bottom-shadow"
                     } `}
@@ -310,8 +307,8 @@ export default function Home() {
                         <h6 className="text-md font-bold flex gap-4">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</h6>
 
                       </div>
-                      <p className="text-sm text-textSecondary">
-                        {validator.address}
+                      <p className="text-[10px] text-textSecondary">
+                        {validator.key}
                       </p>
                     </div>
                   </td>
@@ -358,8 +355,8 @@ export default function Home() {
                     <span>
                       <strong>Name:</strong> {validator.name}
                     </span>
-                    <span className="text-sm text-textSecondary">
-                      {validator.address}
+                    <span className="text-[10px] text-textSecondary">
+                      {validator.key}
                     </span>
                   </div>
                   <div className="py-2">

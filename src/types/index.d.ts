@@ -51,6 +51,8 @@ export interface IStats {
   daily_emission: number
   block: number
   total_stakers: number
+  total_modules: number
+  total_subnets: number
 }
 export interface IBalanceType {
   balance: number
