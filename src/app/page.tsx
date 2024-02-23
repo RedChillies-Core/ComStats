@@ -34,7 +34,7 @@ export default function Home() {
     useGetValidatorsQuery(undefined, {
       pollingInterval: 300000
     })
-  const { isConnected, selectedAccount } = usePolkadot()
+  const { isConnected, selectedAccount, blockNumber } = usePolkadot()
   const [walletAddress, setWalletAddress] = useState("")
   useEffect(() => {
     if (isConnected) {
@@ -258,7 +258,7 @@ export default function Home() {
                 {item.id}
               </h6>
               <h1 className="text-md font-semibold w-full truncate tracking-tight">
-                {item.value || "N/A"}
+                {item.value || (item.id === "Latest Block" ? blockNumber : "N/A")}
               </h1>
             </div>
           ))}

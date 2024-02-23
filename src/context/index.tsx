@@ -18,6 +18,7 @@ interface PolkadotApiState {
 
 interface PolkadotContextType {
   api: ApiPromise | null
+  blockNumber: number
   isConnected: boolean
   isInitialized: boolean
   accounts: InjectedAccountWithMeta[]
@@ -47,6 +48,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const [openModal, setOpenModal] = useState(false)
+  const [blockNumber, setBlockNumber] = useState(0)
   const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
     web3Accounts: null,
     web3Enable: null,
@@ -73,6 +75,16 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       api?.disconnect()
     }
   }, [wsEndpoint])
+
+  useEffect(() => {
+
+    if (api) {
+      api.rpc.chain.subscribeNewHeads((header) => {
+        setBlockNumber(header.number.toNumber())
+      })
+    }
+  }
+  , [api])
 
   const handleConnect = async () => {
     if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
@@ -175,6 +187,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     <PolkadotContext.Provider
       value={{
         api,
+        blockNumber,
         isInitialized,
         isConnected,
         accounts,
