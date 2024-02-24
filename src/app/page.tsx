@@ -24,7 +24,7 @@ import { VERIFIED_VALIDATORS } from "@/constants"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "./components/verified"
-import 'react-tooltip/dist/react-tooltip.css'
+import "react-tooltip/dist/react-tooltip.css"
 import { FaSpinner } from "react-icons/fa6"
 
 export default function Home() {
@@ -32,7 +32,7 @@ export default function Home() {
   const [transferOpen, setTransferOpen] = useState(false)
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsQuery(undefined, {
-      pollingInterval: 300000
+      pollingInterval: 300000,
     })
   const { isConnected, selectedAccount, blockNumber } = usePolkadot()
   const [walletAddress, setWalletAddress] = useState("")
@@ -44,13 +44,20 @@ export default function Home() {
   const { data: comStatsData, isLoading: comStatsLoading } =
     useGetValidatorsByIdQuery({
       key: String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
-      wallet: ""
+      wallet: "",
     })
-  const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery(undefined, {
-    pollingInterval: 8000
-  })
+  const { data: chainData, isLoading: chainLoading } = useGetTotalStatsQuery(
+    undefined,
+    {
+      pollingInterval: 8000,
+    },
+  )
 
-  const { data: userBalance, isFetching: searchFetching, refetch: refetchSearch } = useGetBalanceQuery(
+  const {
+    data: userBalance,
+    isFetching: searchFetching,
+    refetch: refetchSearch,
+  } = useGetBalanceQuery(
     { wallet: walletAddress },
     {
       skip: !walletAddress && walletAddress === "",
@@ -65,9 +72,7 @@ export default function Home() {
         String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
       ),
       description: (
-        <div className="flex gap-x-1 items-center">
-          {comStatsData?.name}
-        </div>
+        <div className="flex gap-x-1 items-center">{comStatsData?.name}</div>
       ),
     },
     {
@@ -75,7 +80,9 @@ export default function Home() {
       statsName: "Current APY",
       icon: <RiStockLine size={40} />,
       value: `${(comStatsData?.apy ?? 0).toFixed(2)}%`,
-      description: <p>{(comStatsData?.apy ?? 0)?.toFixed(2)}% ROI over a year</p>,
+      description: (
+        <p>{(comStatsData?.apy ?? 0)?.toFixed(2)}% ROI over a year</p>
+      ),
     },
     {
       id: 3,
@@ -88,10 +95,22 @@ export default function Home() {
       id: 4,
       statsName: "Total Staked",
       icon: <TbBasketDollar size={40} />,
-      value: numberWithCommas(formatTokenPrice({
-        amount: Number(comStatsData?.stake),
-      })) ?? "0",
-      description: <p>{((Number(comStatsData?.stake) / 10 ** 9) / Number(chainData?.total_stake)).toFixed(3)}% of Total Staked</p>,
+      value:
+        numberWithCommas(
+          formatTokenPrice({
+            amount: Number(comStatsData?.stake),
+          }),
+        ) ?? "0",
+      description: (
+        <p>
+          {(
+            Number(comStatsData?.stake) /
+            10 ** 9 /
+            Number(chainData?.total_stake)
+          ).toFixed(3)}
+          % of Total Staked
+        </p>
+      ),
     },
     {
       id: 5,
@@ -101,41 +120,63 @@ export default function Home() {
       description: <p>Total Number of Stakers</p>,
     },
   ]
-  const comTokenStats = [
-    { id: "Price", value: chainData?.price && `$${chainData?.price}` },
+  const comswapStats1 = [
     {
-      id: "Total $COMAI Circulating",
-      value: numberWithCommas(chainData?.circulating_supply?.toFixed(2)) ?? '0',
+      id: 1,
+      statsName: "Price",
+      icon: <LiaCubesSolid size={40} />,
+      value: chainData?.price && `$${chainData?.price}`,
     },
     {
-      id: "Total Market Cap",
-      value: chainData?.marketcap && `$${numberWithCommas(chainData?.marketcap?.toFixed(2))}`,
+      id: 2,
+      statsName: "Total Circulation",
+      icon: <RiStockLine size={40} />,
+      value: numberWithCommas(chainData?.circulating_supply?.toFixed(2)) ?? "0",
     },
     {
-      id: "Daily Emission",
+      id: 3,
+      statsName: "Total Market Cap",
+      icon: <CiCoinInsert size={40} />,
+      value: `${comStatsData?.delegation_fee ?? 0}%`,
+    },
+    {
+      id: 4,
+      statsName: "Daily Emission",
+      icon: <TbBasketDollar size={40} />,
       value: numberWithCommas(chainData?.daily_emission),
     },
     {
-      id: "Total Modules",
+      id: 5,
+      statsName: "Total Modules",
+      icon: <PiUsersThreeBold size={40} />,
       value: numberWithCommas(chainData?.total_modules),
     },
     {
-      id: "Total Staked",
+      id: 6,
+      statsName: "Total Staked",
+      icon: <PiUsersThreeBold size={40} />,
       value: numberWithCommas(chainData?.total_stake?.toFixed(2)),
     },
     {
-      id: "Total Stakers",
+      id: 7,
+      statsName: "Total Stakers",
+      icon: <PiUsersThreeBold size={40} />,
       value: numberWithCommas(chainData?.total_stakers),
     },
     {
-      id: "Total Subnets",
+      id: 7,
+      statsName: "Total Subnets",
+      icon: <PiUsersThreeBold size={40} />,
       value: numberWithCommas(chainData?.total_subnets),
     },
     {
-      id: "Latest Block",
+      id: 8,
+      statsName: "Total Subnets",
+      icon: <PiUsersThreeBold size={40} />,
       value: chainData?.block,
     },
   ]
+
   const [delegate, setDelegate] = useState("")
   function toggleAccordion(item: string): void {
     const content = document.getElementById(`content-${item}`)
@@ -165,41 +206,20 @@ export default function Home() {
             <p className="text-md font-medium text-textSecondary mt-3">
               {/* An easiest platform to stake on Commune AI with minimal fees or no
               fees! */}
-              All Statistics of CommuneAI at one place.
-              Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI
+              All Statistics of CommuneAI at one place. Staking infrastructure,
+              prices, validators, miners, swap, bridge, exchange for $COMAI
             </p>
           </div>
-          <div className="flex gap-4 flex-col sm:flex-row">
-            <Button
-              size="large"
-              variant="primary"
-              suffix={<PiVaultFill size={22} />}
-              isDisabled={!isConnected}
-              onClick={() => {
-                setStakingOpen(true)
-                setWalletAddress(String(selectedAccount?.address))
-              }}
-            >
-              Manage Stake
-            </Button>
-            <Button
-              size="large"
-              variant="outlined"
-              suffix={<AiOutlineSwap size={22} />}
-              isDisabled={!isConnected}
-              onClick={() => {
-                setTransferOpen(true)
-                setWalletAddress(String(selectedAccount?.address))
-              }}
-            >
-              Transfer Funds
-            </Button>
-          </div>
-          <StakingModal open={stakingOpen} setOpen={setStakingOpen} validatorId={String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR)} />
+
+          <StakingModal
+            open={stakingOpen}
+            setOpen={setStakingOpen}
+            validatorId={String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR)}
+          />
           <TransferModal open={transferOpen} setOpen={setTransferOpen} />
           <div className="container">
             <div className="flex justify-center w-full no-scrollbar p-5 flex-wrap gap-3">
-              {comswapStats.map((stats) => (
+              {comswapStats1.map((stats) => (
                 <div
                   className="shadow-card rounded-xl flex items-center gap-x-4 p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/5 xl:w-1/6 truncate"
                   key={stats.id}
@@ -212,7 +232,7 @@ export default function Home() {
                     <div className="text-md font-semibold w-full truncate tracking-tight">
                       {stats.value || "N/A"}
                     </div>
-                    <div className="text-[10px]">{stats.description}</div>
+                    {/* <div className="text-[10px]">{stats.description}</div> */}
                   </div>
                 </div>
               ))}
@@ -235,33 +255,62 @@ export default function Home() {
         </div>
 
         <p>
-          Balance: {" "}
-          {numberWithCommas(Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2)))} COMAI | Staked:{" "}
-          {numberWithCommas(Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2)))} COMAI
+          Balance:{" "}
+          {numberWithCommas(
+            Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2)),
+          )}{" "}
+          COMAI | Staked:{" "}
+          {numberWithCommas(
+            Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2)),
+          )}{" "}
+          COMAI
         </p>
       </div>
       <section className="container my-10">
-        <div className="flex justify-between mb-4 items-center flex-col sm:flex-row">
-          <h1 className="text-2xl text-left font-semibold flex gap-x-2 leading-10 text-purple tracking-tighter items-center">
-            <Image src="/CommAI.webp" alt="comm" height={30} width={30} /> COMAI
-            Token Stats
+        <div className="flex justify-between mb-4 items-center flex-col gap-x-3 sm:flex-row">
+          <h1 className="text-2xl text-left font-semibold flex leading-10 text-purple tracking-tighter items-center">
+            <Image src="/Animated1.gif" alt="comm" height={30} width={30} />{" "}
+            ComStats Statistics
           </h1>
-          <p className="text-sm font-light text-textSecondary tracking-tighter">
-            Last Updated: 8 sec ago
-          </p>
         </div>
 
-        <div className="shadow-card mx-4 p-8 rounded-xl flex gap-8 flex-wrap justify-between sm:m-0">
-          {comTokenStats.map((item) => (
-            <div key={item.id} className="text-left w-full sm:w-1/4">
+        <div className="shadow-card mx-4 p-8 rounded-xl flex gap-8 justify-between sm:m-0">
+          {comswapStats.map((item) => (
+            <div key={item.id} className="text-left w-full sm:w-1/5">
               <h6 className="text-xs uppercase font-normal text-grey-500">
-                {item.id}
+                {item.statsName}
               </h6>
               <h1 className="text-md font-semibold w-full truncate tracking-tight">
-                {item.value || (item.id === "Latest Block" ? blockNumber : "N/A")}
+                {item.value}
               </h1>
             </div>
           ))}
+        </div>
+        <div className="flex gap-4 flex-col justify-center p-4 sm:flex-row">
+          <Button
+            size="large"
+            variant="primary"
+            suffix={<PiVaultFill size={22} />}
+            isDisabled={!isConnected}
+            onClick={() => {
+              setStakingOpen(true)
+              setWalletAddress(String(selectedAccount?.address))
+            }}
+          >
+            Manage Stake
+          </Button>
+          <Button
+            size="large"
+            variant="outlined"
+            suffix={<AiOutlineSwap size={22} />}
+            isDisabled={!isConnected}
+            onClick={() => {
+              setTransferOpen(true)
+              setWalletAddress(String(selectedAccount?.address))
+            }}
+          >
+            Transfer Funds
+          </Button>
         </div>
       </section>
       <div className="bg-button mx-3 p-5 rounded-lg shadow-lg text-white text-center my-10 sm:rounded-none sm:mx-0 sm:p-10">
@@ -294,42 +343,61 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {validatorData?.validators.toSorted((a, b) => a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1).slice(0, 1000).map((validator, index, array) => (
-                <tr
-                  className={`text-sm font-medium   ${index === array.length - 1 ? "" : "border-b-2 bottom-shadow"
+              {validatorData?.validators
+                .toSorted((a, b) =>
+                  a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1,
+                )
+                .slice(0, 1000)
+                .map((validator, index, array) => (
+                  <tr
+                    className={`text-sm font-medium   ${
+                      index === array.length - 1
+                        ? ""
+                        : "border-b-2 bottom-shadow"
                     } `}
-                  key={validator.key}
-                >
-                  <td className="py-6 pl-3 ">{index + 1}</td>
-                  <td>
-                    <div className="flex flex-col">
-                      <div className="flex items-center">
-                        <h6 className="text-md font-bold flex gap-1">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</h6>
+                    key={validator.key}
+                  >
+                    <td className="py-6 pl-3 ">{index + 1}</td>
+                    <td>
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <h6 className="text-md font-bold flex gap-1">
+                            {validator.name}{" "}
+                            {VERIFIED_VALIDATORS.indexOf(validator.key) !==
+                              -1 && <Verified />}
+                          </h6>
+                        </div>
+                        <p className="text-[10px] text-textSecondary">
+                          {validator.key}
+                        </p>
                       </div>
-                      <p className="text-[10px] text-textSecondary">
-                        {validator.key}
-                      </p>
-                    </div>
-                  </td>
-                  <td>{numberWithCommas(validator.total_stakers)}</td>
-                  <td>{numberWithCommas(formatTokenPrice({ amount: validator.stake }))} COMAI</td>
-                  <td>{Number(validator.apy.toFixed(2))}%</td>
-                  <td>{Number((validator?.delegation_fee ?? 0).toFixed(2))}%</td>
-                  <td>
-                    <Button
-                      variant="primary"
-                      size="large"
-                      onClick={() => {
-                        setDelegate(validator.key)
-                        setWalletAddress(String(selectedAccount?.address))
-                      }}
-                      isDisabled={!isConnected}
-                    >
-                      Delegate
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td>{numberWithCommas(validator.total_stakers)}</td>
+                    <td>
+                      {numberWithCommas(
+                        formatTokenPrice({ amount: validator.stake }),
+                      )}{" "}
+                      COMAI
+                    </td>
+                    <td>{Number(validator.apy.toFixed(2))}%</td>
+                    <td>
+                      {Number((validator?.delegation_fee ?? 0).toFixed(2))}%
+                    </td>
+                    <td>
+                      <Button
+                        variant="primary"
+                        size="large"
+                        onClick={() => {
+                          setDelegate(validator.key)
+                          setWalletAddress(String(selectedAccount?.address))
+                        }}
+                        isDisabled={!isConnected}
+                      >
+                        Delegate
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
               <StakingModal
                 open={delegate !== ""}
                 setOpen={(s) => setDelegate("")}
@@ -342,12 +410,18 @@ export default function Home() {
             {validatorData?.validators.map((validator, index, array) => (
               <div
                 key={validator.key}
-                className={`py-4 ${index === array.length - 1 ? "" : "border-b-2"
-                  }`}
+                className={`py-4 ${
+                  index === array.length - 1 ? "" : "border-b-2"
+                }`}
                 onClick={() => toggleAccordion(validator.name)}
               >
                 <div className="flex justify-between items-center cursor-pointer">
-                  <div className="flex gap-1 items-center">{validator.name} {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && <Verified />}</div>
+                  <div className="flex gap-1 items-center">
+                    {validator.name}{" "}
+                    {VERIFIED_VALIDATORS.indexOf(validator.key) !== -1 && (
+                      <Verified />
+                    )}
+                  </div>
                   <div>+</div>
                 </div>
                 <div id={`content-${validator.name}`} className="hidden">
@@ -368,7 +442,8 @@ export default function Home() {
                     {Number(validator.apy.toFixed(2))}%
                   </div>
                   <div className="py-2">
-                    <strong>Fee:</strong> {Number(validator.delegation_fee.toFixed(2))}%
+                    <strong>Fee:</strong>{" "}
+                    {Number(validator.delegation_fee.toFixed(2))}%
                   </div>
                   {/* <div className="py-2">
                     <strong>Action:</strong> Delegate
