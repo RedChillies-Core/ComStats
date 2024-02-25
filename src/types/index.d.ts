@@ -44,15 +44,15 @@ export type ITransferStaking = {
 export interface IStats {
   circulating_supply: number
   total_stake: number
+  total_subnets: number
   total_validators: number
   total_miners: number
+  total_modules: number
   price: number
   marketcap: number
   daily_emission: number
-  block: number
   total_stakers: number
-  total_modules: number
-  total_subnets: number
+  avg_apy: number
 }
 export interface IBalanceType {
   balance: number
