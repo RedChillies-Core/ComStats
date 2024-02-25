@@ -188,6 +188,8 @@ export default function Home() {
       }
     }
   }
+  const userBalanceDollar = (userBalance?.balance ?? 0) * (chainData?.price ?? 0) / 10 ** 9
+  const userStakedDollar = (userBalance?.staked ?? 0) * (chainData?.price ?? 0) / 10 ** 9
   return (
     <div>
       <Navbar />
@@ -260,7 +262,7 @@ export default function Home() {
           {numberWithCommas(
             Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2)),
           )}{" "}COMAI{" "}(${numberWithCommas(
-            Number(((userBalance?.balance || 0) * (chainData?.price ?? 0) / 10 ** 9).toFixed(2)),
+            Number((userBalanceDollar).toFixed(2)),
           )})
           
           </div>
@@ -270,7 +272,7 @@ export default function Home() {
             Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2)),
           )}{" "}
           COMAI{" "}(${numberWithCommas(
-            Number(((userBalance?.staked || 0) * (chainData?.price ?? 0) / 10 ** 9).toFixed(2)),
+            Number((userStakedDollar).toFixed(2)),
           )})
           </div>
          
