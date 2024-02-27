@@ -137,7 +137,7 @@ export default function Home() {
       id: 3,
       statsName: "Total Market Cap",
       icon: <CiCoinInsert size={40} />,
-      value: `${comStatsData?.delegation_fee ?? 0}%`,
+      value: `$${numberWithCommas((chainData?.marketcap ?? 0)?.toFixed(2))}`,
     },
     {
       id: 4,
@@ -171,9 +171,9 @@ export default function Home() {
     },
     {
       id: 8,
-      statsName: "Total Subnets",
+      statsName: "Average APY",
       icon: <PiUsersThreeBold size={40} />,
-      value: chainData?.block,
+      value: chainData?.avg_apy && `${chainData?.avg_apy?.toFixed(2)}%`,
     },
   ]
 
@@ -188,6 +188,8 @@ export default function Home() {
       }
     }
   }
+  const userBalanceDollar = (userBalance?.balance ?? 0) * (chainData?.price ?? 0) / 10 ** 9
+  const userStakedDollar = (userBalance?.staked ?? 0) * (chainData?.price ?? 0) / 10 ** 9
   return (
     <div>
       <Navbar />
@@ -254,17 +256,27 @@ export default function Home() {
           />
         </div>
 
-        <p>
+        <div>
+          <div>
           Balance:{" "}
           {numberWithCommas(
             Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2)),
-          )}{" "}
-          COMAI | Staked:{" "}
+          )}{" "}COMAI{" "}(${numberWithCommas(
+            Number((userBalanceDollar).toFixed(2)),
+          )})
+          
+          </div>
+          <div>
+          Staked:{" "}
           {numberWithCommas(
             Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2)),
           )}{" "}
-          COMAI
-        </p>
+          COMAI{" "}(${numberWithCommas(
+            Number((userStakedDollar).toFixed(2)),
+          )})
+          </div>
+         
+        </div>
       </div>
       <section className="container my-10">
         <div className="flex justify-between mb-4 items-center flex-col gap-x-3 sm:flex-row">
