@@ -274,7 +274,7 @@ export default function Home() {
           </h1>
         </div>
 
-        <div className="shadow-card mx-4 p-8 rounded-xl flex gap-8 justify-between sm:m-0">
+        <div className="shadow-card mx-4 p-8 rounded-xl flex gap-8 justify-between sm:m-0 flex-wrap">
           {comswapStats.map((item) => (
             <div key={item.id} className="text-left w-full sm:w-1/5">
               <h6 className="text-xs uppercase font-normal text-grey-500">
