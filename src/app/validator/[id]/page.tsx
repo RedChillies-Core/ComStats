@@ -169,10 +169,14 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                 <div className="card-validator">
                   <p className="card-validator-heading">
                     <RiAiGenerate size={20} />
-                    Emission
+                    Emission per 100 blocks
                   </p>
                   <h5 className="card-validator-data">
-                    {validatorData?.emission}
+                    {numberWithCommas(
+                      formatTokenPrice({
+                        amount: Number(validatorData?.emission),
+                      }),
+                    )}{" "}
                   </h5>
                 </div>
                 <div className="card-validator">
