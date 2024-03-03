@@ -9,7 +9,6 @@ import { PiUsersThreeBold, PiVaultFill } from "react-icons/pi"
 import Button from "@/app/components/button"
 import Footer from "@/app/components/footer"
 import { useState } from "react"
-import StakingModal from "@/app/components/modal/stake"
 import TransferModal from "@/app/components/modal/transfer"
 import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
 import { formatTokenPrice, truncateWalletAddress } from "@/utils"
@@ -174,6 +173,7 @@ export default function Home() {
             setOpen={setStakingOpen}
             // validatorId={String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR)}
           />
+
           <TransferModal open={transferOpen} setOpen={setTransferOpen} />
           <div className="container">
             <div className="flex justify-center w-full no-scrollbar p-5 flex-wrap gap-3">
