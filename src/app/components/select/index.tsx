@@ -43,7 +43,7 @@ const SelectComp = ({
   isSmall = false,
   isSearchable = false,
   isClearable = false,
-  value: defValue
+  value: defValue,
 }: SelectProps) => {
   const errorMessage: any = errors?.message
   const inputClass = errors ? " border-[red]" : "border-[#E8E8E8]"
@@ -65,8 +65,10 @@ const SelectComp = ({
       marginTop: "2px",
       borderRadius: "18px",
       width: "100%",
+      zIndex: 9999,
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     }),
+    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
   }
 
   return (
@@ -78,8 +80,9 @@ const SelectComp = ({
         </p>
       )}
       <div
-        className={`flex w-full bg-white items-center ${!iconComponent ? "ps-0" : "ps-3"
-          }  gap-x-4  ${inputClass}`}
+        className={`flex w-full bg-white items-center ${
+          !iconComponent ? "ps-0" : "ps-3"
+        }  gap-x-4  ${inputClass}`}
       >
         {iconComponent && (
           <div className="h-[30px] w-[30px] flex justify-center items-center text-white bg-primary rounded-sm">
@@ -92,6 +95,8 @@ const SelectComp = ({
           defaultValue={defValue}
           render={({ field: { onChange, value } }) => (
             <Select
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
               className="flex-1 rounded-3xl border-none"
               isSearchable={isSearchable}
               isClearable={isClearable}

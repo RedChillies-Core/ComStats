@@ -14,6 +14,7 @@ export type ValidatorType = {
   type: string
   key: string
   apy: number
+  isVerified?: boolean
   wallet_staked?: number
 }
 
@@ -57,5 +58,5 @@ export interface IStats {
 export interface IBalanceType {
   balance: number
   staked: number
-  stakes: any[]
+  stakes: { amount: number; validator: ValidatorType }[]
 }

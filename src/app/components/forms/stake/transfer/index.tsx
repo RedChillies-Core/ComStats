@@ -1,20 +1,19 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
 import SelectComp from "@/app/components/select"
-import React, { useEffect } from "react"
+import React from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
 import { ValidatorType } from "@/types"
 import { useGetBalanceQuery, useGetValidatorsQuery } from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
-import { infoToast } from "@/app/components/toast"
 
 const TransferStakingForm = ({
   validator,
-  callback
+  callback,
 }: {
-  validator: ValidatorType | undefined,
+  validator: ValidatorType | undefined
   callback?: () => void
 }) => {
   const {
@@ -54,9 +53,9 @@ const TransferStakingForm = ({
         placeholder=""
         value={{
           label: "vali::comstats",
-          value: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX"
+          value: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX",
         }}
-        options={validatorData?.validators.toSorted((a, b) => a.key === process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR ? -1 : 1).slice(0, 1000).map((d) => ({
+        options={validatorData?.map((d) => ({
           label: d.name,
           value: d.key,
         }))}
@@ -86,7 +85,14 @@ const TransferStakingForm = ({
             e.preventDefault()
             setValue(
               "stakeAmount",
-              formatTokenPrice({ amount: Number(balanceData?.stakes.find(item => item.validator.key === validator?.key).amount), precision: 9 }),
+              formatTokenPrice({
+                amount: Number(
+                  balanceData?.stakes?.find(
+                    (item) => item.validator.key === validator?.key,
+                  )?.amount,
+                ),
+                precision: 9,
+              }),
             )
           }}
         />
@@ -96,7 +102,7 @@ const TransferStakingForm = ({
         size="large"
         variant="primary"
         className="w-full justify-center"
-        onClick={() => { }}
+        onClick={() => {}}
       >
         Transfer $COMAI
       </Button>

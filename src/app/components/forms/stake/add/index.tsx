@@ -11,7 +11,7 @@ import { infoToast } from "@/app/components/toast"
 
 const AddStakingForm = ({
   validator,
-  callback
+  callback,
 }: {
   validator: ValidatorType | undefined
   callback?: () => void
@@ -38,7 +38,8 @@ const AddStakingForm = ({
       return
     }
     addStake({
-      validator: validator?.key || String(process.env.NEXT_PUBLIC_COMSWAP_VALIDATOR),
+      validator:
+        validator?.key || String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR),
       amount: data.stakeAmount,
       callback,
     })
@@ -53,7 +54,7 @@ const AddStakingForm = ({
                 Input $COMAI Amount
               </div>
               <div className="text-sm">
-                {formatTokenPrice({ amount: Number(balanceData?.balance) })} {" "}
+                {formatTokenPrice({ amount: Number(balanceData?.balance) })}{" "}
                 $COMAI
               </div>
             </div>
@@ -65,7 +66,10 @@ const AddStakingForm = ({
             e.preventDefault()
             setValue(
               "stakeAmount",
-              formatTokenPrice({ amount: Number(balanceData?.balance) - 1000, precision: 9 }),
+              formatTokenPrice({
+                amount: Number(balanceData?.balance) - 1000,
+                precision: 9,
+              }),
             )
           }}
           register={register}
@@ -86,7 +90,7 @@ const AddStakingForm = ({
         variant="primary"
         // isLoading
         className="w-full justify-center"
-        onClick={() => { }}
+        onClick={() => {}}
       >
         Stake $COMAI
       </Button>

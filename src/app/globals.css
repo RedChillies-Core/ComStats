@@ -25,6 +25,28 @@ body {
 .bottom-shadow {
   box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.1);
 }
+
+@layer components {
+  .heading {
+    @apply text-2xl font-semibold leading-8 tracking-wide text-textPrimary;
+  }
+  .miniHeading {
+    @apply text-xl font-medium leading-8 tracking-wide text-textPrimary;
+  }
+  .subheading {
+    @apply text-sm font-normal leading-5 text-textSecondary;
+  }
+  .card-validator {
+    @apply border-[1px] p-4  bg-blue-50 rounded-lg w-full my-2 lg:my-0 lg:w-[32%];
+  }
+  .card-validator-heading {
+    @apply text-sm leading-6 font-medium tracking-tight flex items-center gap-x-2 text-textSecondary;
+  }
+  .card-validator-data {
+    @apply pl-7 text-base font-semibold text-textPrimary;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -47,10 +69,7 @@ body {
 }
 
 .spinner {
-  animation: spin infinite 5s linear;
-
-  /*You can increase or decrease the timer (5s) to 
-     increase or decrease the speed of the spinner*/
+  animation: spin infinite 3s linear;
 }
 
 @keyframes spin {

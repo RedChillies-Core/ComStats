@@ -7,11 +7,13 @@ import { FaMoneyBillTransfer, FaSpinner } from "react-icons/fa6"
 import AddStakingForm from "../../forms/stake/add"
 import TransferStakingForm from "../../forms/stake/transfer"
 import UnstakingForm from "../../forms/stake/unstake"
-import { useGetBalanceQuery, useGetValidatorsByIdQuery } from "@/store/api/statsApi"
+import {
+  useGetBalanceQuery,
+  useGetValidatorsByIdQuery,
+} from "@/store/api/statsApi"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "../../verified"
-import { VERIFIED_VALIDATORS } from "@/constants"
 
 type IStakingModal = {
   open: boolean
@@ -21,11 +23,14 @@ type IStakingModal = {
 const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
   const [selectedOperation, setSelectedOperation] = useState("add")
   const { selectedAccount } = usePolkadot()
-  const { data: validatorData, isLoading: validatorLoading, refetch: validatorRefetch } =
-    useGetValidatorsByIdQuery({
-      key: validatorId,
-      wallet: String(selectedAccount?.address),
-    })
+  const {
+    data: validatorData,
+    isLoading: validatorLoading,
+    refetch: validatorRefetch,
+  } = useGetValidatorsByIdQuery({
+    key: validatorId,
+    wallet: String(selectedAccount?.address),
+  })
 
   const { refetch: refetchBalance } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
@@ -60,7 +65,14 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                   <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
                   <div className="flex items-center">
                     <h1 className="font-normal">{validatorData?.name}</h1>
-                    {VERIFIED_VALIDATORS.indexOf(validatorData?.key || "") !== -1 && <Verified />}
+                    {validatorData?.isVerified && (
+                      <Verified
+                        isGold={
+                          validatorData.key ===
+                          process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                        }
+                      />
+                    )}
                   </div>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -68,7 +80,10 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                     Total Staked{" "}
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {numberWithCommas((Number(validatorData?.stake) / 10 ** 9).toFixed(2))} COMAI
+                    {numberWithCommas(
+                      (Number(validatorData?.stake) / 10 ** 9).toFixed(2),
+                    )}{" "}
+                    COMAI
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -98,8 +113,11 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
             <div className="flex p-3 rounded-2xl bg-green-100 items-center justify-between">
               <h5 className="text-sm font-semibold flex items-center gap-x-3">
                 <AiFillInfoCircle />
-                You have staked {" "}
-                {numberWithCommas((Number(validatorData?.wallet_staked) / 10 ** 9).toFixed(2))} COMAI here.
+                You have staked{" "}
+                {numberWithCommas(
+                  (Number(validatorData?.wallet_staked) / 10 ** 9).toFixed(2),
+                )}{" "}
+                COMAI here.
               </h5>
             </div>
           )}
@@ -109,8 +127,9 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
             variant="outlined"
             prefix={<FaMoneyBillTransfer />}
             size="small"
-            className={`${selectedOperation === "add" ? "!bg-button !text-white" : ""
-              }`}
+            className={`${
+              selectedOperation === "add" ? "!bg-button !text-white" : ""
+            }`}
             onClick={() => setSelectedOperation("add")}
           >
             Add Stake
@@ -120,8 +139,9 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               variant="outlined"
               prefix={<FaMoneyBillTransfer />}
               size="small"
-              className={`${selectedOperation === "transfer" ? "!bg-button !text-white" : ""
-                }`}
+              className={`${
+                selectedOperation === "transfer" ? "!bg-button !text-white" : ""
+              }`}
               onClick={() => setSelectedOperation("transfer")}
             >
               Transfer Stake
@@ -132,8 +152,9 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               variant="outlined"
               size="small"
               prefix={<AiOutlineClear />}
-              className={`${selectedOperation === "unstake" ? "!bg-button !text-white" : ""
-                }`}
+              className={`${
+                selectedOperation === "unstake" ? "!bg-button !text-white" : ""
+              }`}
               onClick={() => setSelectedOperation("unstake")}
             >
               Unstake
@@ -142,32 +163,41 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
         </div>
         <div className="pt-4">
           {selectedOperation === "add" && (
-            <AddStakingForm validator={validatorData} callback={() => {
-              setOpen(false)
-              setTimeout(() => {
-                refetchBalance()
-                validatorRefetch()
-              }, 8000)
-            }} />
+            <AddStakingForm
+              validator={validatorData}
+              callback={() => {
+                setOpen(false)
+                setTimeout(() => {
+                  refetchBalance()
+                  validatorRefetch()
+                }, 8000)
+              }}
+            />
           )}
 
           {selectedOperation === "transfer" && (
-            <TransferStakingForm validator={validatorData} callback={() => {
-              setOpen(false)
-              setTimeout(() => {
-                refetchBalance()
-                validatorRefetch()
-              }, 8000)
-            }} />
+            <TransferStakingForm
+              validator={validatorData}
+              callback={() => {
+                setOpen(false)
+                setTimeout(() => {
+                  refetchBalance()
+                  validatorRefetch()
+                }, 8000)
+              }}
+            />
           )}
           {selectedOperation === "unstake" && (
-            <UnstakingForm validator={validatorData} callback={() => {
-              setOpen(false)
-              setTimeout(() => {
-                refetchBalance()
-                validatorRefetch()
-              }, 8000)
-            }} />
+            <UnstakingForm
+              validator={validatorData}
+              callback={() => {
+                setOpen(false)
+                setTimeout(() => {
+                  refetchBalance()
+                  validatorRefetch()
+                }, 8000)
+              }}
+            />
           )}
         </div>
       </div>

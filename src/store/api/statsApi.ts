@@ -6,17 +6,29 @@ import {
   InterfacePagination,
   ValidatorType,
 } from "@/types"
-
+import verifiedValidators from "../../../validators.json"
 export const statsApi = createApi({
   reducerPath: "statsApi",
   baseQuery: apiWrapper,
   tagTypes: ["ValidatorsList", "CommuneStats", "SingleValidator"],
   endpoints: (builder) => ({
-    getValidators: builder.query<InterfacePagination<ValidatorType[]>, void>({
+    getValidators: builder.query<ValidatorType[], void>({
       query: () => "/validators/",
       providesTags: ["ValidatorsList"],
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
-        return response
+        const validatedResponse: ValidatorType[] = response.validators.map(
+          (validator) => {
+            if (verifiedValidators.some((v) => v.key === validator.key)) {
+              validator.isVerified = true
+            } else {
+              validator.isVerified = false
+            }
+            return validator
+          },
+        )
+        return validatedResponse.toSorted((a, b) =>
+          a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1,
+        )
       },
     }),
     getValidatorsById: builder.query<
@@ -24,9 +36,16 @@ export const statsApi = createApi({
       { key: string; wallet: string }
     >({
       query: ({ key, wallet }) => `/validators/${key}?wallet=${wallet}`,
-      providesTags: ["SingleValidator"],
+      providesTags: (_, __, { key }) => [{ type: "SingleValidator", id: key }],
       transformResponse: (response: ValidatorType) => {
-        return response
+        const isVerified = verifiedValidators.some(
+          (validator) => validator.key === response.key,
+        )
+        const validatedResponse: ValidatorType = {
+          ...response,
+          isVerified: isVerified,
+        }
+        return validatedResponse
       },
     }),
     getTotalStats: builder.query<IStats, void>({
