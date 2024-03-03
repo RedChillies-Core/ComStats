@@ -37,11 +37,18 @@ const Navbar = () => {
   }, [])
 
   return (
-    <div className="px-3 sticky top-0 z-50 transition-all duration-100 ease-in-out py-0 bg-white shadow-sm sm:px-0">
+    <div className="px-3 sticky z-10 top-0  transition-all duration-100 ease-in-out py-0 bg-white shadow-sm sm:px-0">
       <div className="container flex justify-between items-center py-3">
-        <div>
-          <Image alt="blockchain" src="/Animated1.gif" height={50} width={50} />
-        </div>
+        <Link href="/">
+          <div>
+            <Image
+              alt="blockchain"
+              src="/Animated1.gif"
+              height={50}
+              width={50}
+            />
+          </div>
+        </Link>
 
         {isInitialized && selectedAccount ? (
           <div className="flex items-center">

@@ -38,7 +38,7 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
       <div className="flex py-5 items-center gap-x-3">
         <button
           className="border-2 p-2 rounded-lg cursor-pointer"
-          onClick={() => router.back()}
+          onClick={() => router.push("/")}
         >
           <FaArrowLeft />
         </button>

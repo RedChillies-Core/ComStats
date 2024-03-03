@@ -9,6 +9,7 @@ function Verified({ isGold = false }: { isGold?: boolean }) {
         isGold ? "ComStats Validator" : "Verified Validator"
       }`}
       data-tooltip-place="top"
+      className="z-50"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
