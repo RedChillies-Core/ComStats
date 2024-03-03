@@ -10,9 +10,9 @@ import { useGetBalanceQuery } from "@/store/api/statsApi"
 
 const UnstakingForm = ({
   validator,
-  callback
+  callback,
 }: {
-  validator: ValidatorType | undefined,
+  validator: ValidatorType | undefined
   callback?: () => void
 }) => {
   const {
@@ -62,7 +62,14 @@ const UnstakingForm = ({
             e.preventDefault()
             setValue(
               "stakeAmount",
-              formatTokenPrice({ amount: Number(balanceData?.stakes.find(item => item.validator.key === validator?.key).amount), precision: 9 }),
+              formatTokenPrice({
+                amount: Number(
+                  balanceData?.stakes?.find(
+                    (item) => item.validator.key === validator?.key,
+                  )?.amount,
+                ),
+                precision: 9,
+              }),
             )
           }}
         />
@@ -73,7 +80,7 @@ const UnstakingForm = ({
         size="large"
         variant="primary"
         className="w-full justify-center"
-        onClick={() => { }}
+        onClick={() => {}}
       >
         Unstake $COMAI
       </Button>
