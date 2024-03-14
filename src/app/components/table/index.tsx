@@ -6,6 +6,7 @@ import { numberWithCommas } from "@/utils/numberWithCommas"
 import { formatTokenPrice } from "@/utils"
 import Link from "next/link"
 import { FaAngleRight, FaSpinner } from "react-icons/fa6"
+import Button from "../button"
 
 const ValidatorTable = () => {
   const { data: validatorData, isLoading: validatorLoading } =
@@ -49,17 +50,17 @@ const ValidatorTable = () => {
                 <td>
                   <div className="flex flex-col">
                     <div className="flex items-center">
-                      <h6 className="text-md font-bold flex gap-1">
-                        {validator.name}{" "}
-                        {validator.isVerified && (
-                          <Verified
-                            isGold={
-                              validator.key ===
-                              process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
-                            }
-                          />
-                        )}
-                      </h6>
+                      <div className="text-md font-bold truncate  max-w-[200px]">
+                        {validator.name}
+                      </div>
+                      {validator.isVerified && (
+                        <Verified
+                          isGold={
+                            validator.key ===
+                            process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                          }
+                        />
+                      )}
                     </div>
                     <p className="text-[10px] text-textSecondary">
                       {validator.key}
@@ -79,9 +80,11 @@ const ValidatorTable = () => {
                 <td>
                   <Link
                     href={`/validator/${validator.key}`}
-                    className="flex items-center gap-x-1 underline"
+                    className="flex items-center gap-x-1 "
                   >
-                    Details <FaAngleRight />
+                    <Button size="small" variant="outlined">
+                      Delegate
+                    </Button>
                   </Link>
                 </td>
               </tr>
@@ -98,7 +101,7 @@ const ValidatorTable = () => {
           >
             <div className="flex justify-between items-center cursor-pointer">
               <div className="flex gap-1 items-center">
-                {validator.name}{" "}
+                <div className="truncate max-w-[200px]">{validator.name}</div>
                 {validator.isVerified && (
                   <Verified
                     isGold={
@@ -111,10 +114,10 @@ const ValidatorTable = () => {
               <div>+</div>
             </div>
             <div id={`content-${validator.name}`} className="hidden">
-              <div className="py-2 flex flex-col">
-                <span>
+              <div className="py-2 flex flex-col ">
+                <div className="w-[200px] truncate">
                   <strong>Name:</strong> {validator.name}
-                </span>
+                </div>
                 <span className="text-[10px] text-textSecondary">
                   {validator.key}
                 </span>
@@ -130,6 +133,14 @@ const ValidatorTable = () => {
               <div className="py-2">
                 <strong>Fee:</strong>{" "}
                 {Number(validator.delegation_fee.toFixed(2))}%
+              </div>
+              <div className="py-2">
+                <Link
+                  href={`/validator/${validator.key}`}
+                  className="flex items-center gap-x-1 underline"
+                >
+                  View More{" "}
+                </Link>
               </div>
             </div>
           </div>

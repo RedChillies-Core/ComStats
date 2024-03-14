@@ -24,6 +24,12 @@ export interface InterfacePagination<Data> {
   limit: number
   validators: Data
 }
+export interface InterfacePaginationSubnet<Data> {
+  total: number
+  page: number
+  limit: number
+  subnets: Data
+}
 
 export type IAddStaking = {
   validator: string
@@ -59,4 +65,14 @@ export interface IBalanceType {
   balance: number
   staked: number
   stakes: { amount: number; validator: ValidatorType }[]
+}
+
+export interface SubnetInterface {
+  name: string
+  emission: number
+  total_modules: number
+  founder: string
+  immunity_period: number
+  incentive_ratio: number
+  subnet_id: number
 }
