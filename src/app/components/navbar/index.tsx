@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { Fragment, useEffect, useState } from "react"
 import { AiFillWallet, AiOutlineSwap } from "react-icons/ai"
 import Button from "../button"
 import Image from "next/image"
@@ -49,41 +49,44 @@ const Navbar = () => {
             />
           </div>
         </Link>
-
-        {isInitialized && selectedAccount ? (
-          <div className="flex items-center">
-            <Link href="/portfolio">
-              <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
-                <GrDashboard /> Portfolio{" "}
-                <span className="inline-block bg-red-500 text-white text-xs font-semibold px-2 rounded-full uppercase">
-                  New
-                </span>
-              </div>
-            </Link>
-
-            <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2">
-              <button className="flex items-center cursor-pointer">
-                <AiFillWallet size={24} className="text-purple" />
-                <span className="ml-2 font-mono">
-                  {truncateWalletAddress(selectedAccount.address)}
-                </span>
-              </button>
+        <div className="flex items-center gap-x-2">
+          {/* <Link href="/subnets">
+            <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
+              <GrDashboard /> Subnets
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center gap-x-2">
-            {!isInitialized && <FaSpinner className="spinner" />}
-            <Button
-              size="large"
-              variant="primary"
-              onClick={handleConnect}
-              isDisabled={!isInitialized}
-            >
-              <AiFillWallet size={18} />
-              Connect Wallet
-            </Button>
-          </div>
-        )}
+          </Link> */}
+          {isInitialized && selectedAccount ? (
+            <Fragment>
+              <Link href="/portfolio">
+                <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
+                  <GrDashboard /> Portfolio
+                </div>
+              </Link>
+
+              <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2">
+                <button className="flex items-center cursor-pointer">
+                  <AiFillWallet size={24} className="text-purple" />
+                  <span className="ml-2 font-mono">
+                    {truncateWalletAddress(selectedAccount.address)}
+                  </span>
+                </button>
+              </div>
+            </Fragment>
+          ) : (
+            <Fragment>
+              {!isInitialized && <FaSpinner className="spinner" />}
+              <Button
+                size="large"
+                variant="primary"
+                onClick={handleConnect}
+                isDisabled={!isInitialized}
+              >
+                <AiFillWallet size={18} />
+                Connect Wallet
+              </Button>
+            </Fragment>
+          )}
+        </div>
       </div>
     </div>
   )
