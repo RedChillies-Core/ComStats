@@ -8,6 +8,7 @@ export type ValidatorType = {
   last_update: number
   balance: number
   stake: number
+  stake_from: []
   total_validators: number
   total_stakers: number
   delegation_fee: number

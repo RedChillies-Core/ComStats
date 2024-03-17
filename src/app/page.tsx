@@ -132,7 +132,11 @@ export default function Home() {
       id: 6,
       statsName: "Total Staked",
       icon: <PiUsersThreeBold size={40} />,
-      value: numberWithCommas(onChainData?.total_stake?.toFixed(2)),
+      value: `${numberWithCommas(onChainData?.total_stake?.toFixed(2))}~(${(
+        (Number(onChainData?.total_stake) /
+          Number(onChainData?.circulating_supply)) *
+        100
+      ).toFixed(0)}%)`,
     },
     {
       id: 7,

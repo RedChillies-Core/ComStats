@@ -29,6 +29,29 @@ type SelectProps = {
   control: Control<FieldValues, any>
   rules?: RegisterOptions
 }
+export const customStyles: StylesConfig = {
+  control: (provided) => ({
+    ...provided,
+    border: "1px solid #D5D8DB",
+    height: 50,
+    borderRadius: "8px",
+    boxShadow: "none !important",
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#7918F2" : "white",
+    color: state.isSelected ? "white" : "black",
+  }),
+  menu: (provided) => ({
+    ...provided,
+    marginTop: "2px",
+    borderRadius: "18px",
+    width: "100%",
+    zIndex: 9999,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  }),
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+}
 
 const SelectComp = ({
   name,
@@ -47,29 +70,6 @@ const SelectComp = ({
 }: SelectProps) => {
   const errorMessage: any = errors?.message
   const inputClass = errors ? " border-[red]" : "border-[#E8E8E8]"
-  const customStyles: StylesConfig = {
-    control: (provided) => ({
-      ...provided,
-      border: "1px solid #D5D8DB",
-      height: 50,
-      borderRadius: "8px",
-      boxShadow: "none !important",
-    }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isSelected ? "#7918F2" : "white",
-      color: state.isSelected ? "white" : "black",
-    }),
-    menu: (provided) => ({
-      ...provided,
-      marginTop: "2px",
-      borderRadius: "18px",
-      width: "100%",
-      zIndex: 9999,
-      boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-    }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-  }
 
   return (
     <>
