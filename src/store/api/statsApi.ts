@@ -43,7 +43,13 @@ export const statsApi = createApi({
       ValidatorType,
       { key: string; wallet: string }
     >({
-      query: ({ key, wallet }) => `/validators/${key}?wallet=${wallet}`,
+      query: ({ key, wallet }) => {
+        let url = `/validators/${key}`
+        if (wallet && wallet !== undefined) {
+          url += `?wallet=${wallet}`
+        }
+        return url
+      },
       providesTags: (_, __, { key }) => [{ type: "SingleValidator", id: key }],
       transformResponse: (response: ValidatorType) => {
         const isVerified = verifiedValidators.some(
@@ -53,6 +59,9 @@ export const statsApi = createApi({
           ...response,
           isVerified: isVerified,
         }
+        validatedResponse.stake_from = validatedResponse.stake_from.sort(
+          (a, b) => b[1] - a[1],
+        )
         return validatedResponse
       },
     }),
@@ -75,22 +84,26 @@ export const statsApi = createApi({
         // return validatedResponse.toSorted((a, b) =>
         //   a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1,
         // )
-        console.log(response)
         return response.subnets
       },
     }),
-    getSubnetById: builder.query<SubnetInterface, string>({
-      query: (id) => `/subnets/${id}`,
+    getSubnetById: builder.query<ValidatorType[], string>({
+      query: (id) => `/validators/?subnet_id=${id}`,
       providesTags: (_, __, id) => [{ type: "SingleSubnet", id: id }],
-      transformResponse: (response: SubnetInterface) => {
-        // const isVerified = verifiedValidators.some(
-        //   (validator) => validator.key === response.key,
-        // )
-        // const validatedResponse: ValidatorType = {
-        //   ...response,
-        //   isVerified: isVerified,
-        // }
-        return response
+      transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
+        const validatedResponse: ValidatorType[] = response.validators.map(
+          (validator) => {
+            if (verifiedValidators.some((v) => v.key === validator.key)) {
+              validator.isVerified = true
+            } else {
+              validator.isVerified = false
+            }
+            return validator
+          },
+        )
+        return validatedResponse.toSorted((a, b) =>
+          a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1,
+        )
       },
     }),
     getTotalStats: builder.query<IStats, void>({

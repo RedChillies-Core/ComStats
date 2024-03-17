@@ -1,34 +1,56 @@
 "use client"
 import { statsApi } from "@/store/api/statsApi"
 import React from "react"
-import ModuleCard from "../components/card/subnet"
+import SubnetTable from "../components/table/subnet"
+import { FaRegCircleCheck } from "react-icons/fa6"
+import Skeleton from "react-loading-skeleton"
 
 const Subnets = () => {
-  const { data } = statsApi.useGetSubnetsQuery()
-  const { data: subnetInfo } = statsApi.useGetSubnetByIdQuery("0")
-  console.log(subnetInfo)
+  const [subnetId, setSubnetId] = React.useState<string>("0")
+  const { data, isLoading } = statsApi.useGetSubnetsQuery()
+  const {
+    data: subnetValidators,
+    refetch,
+    isLoading: subnetLoading,
+  } = statsApi.useGetSubnetByIdQuery(subnetId)
 
+  const handleSubnetChange = (subnetId: string) => {
+    setSubnetId(subnetId)
+    refetch()
+  }
   return (
     <div className="container">
-      <div className="flex p-3">
-        <div className="w-72">
-          <div className="py-3 flex flex-wrap gap-1 items-center">
-            {data?.map((item) => (
-              <button
-                className="rouded-sm border px-5 py-1  w-8 flex items-center justify-center"
-                key={item.subnet_id}
-              >
-                {item.subnet_id}
-              </button>
-            ))}
-          </div>
+      {isLoading && (
+        <div className="flex flex-wrap gap-2 items-center w-full py-10">
+          {new Array(30).fill(0).map((_, index) => (
+            <Skeleton
+              count={1}
+              key={index}
+              className=" !w-[100px] h-[30px] rounded-3xl"
+            />
+          ))}
         </div>
-        <div className="px-5 flex gap-x-3">
-          <ModuleCard />
-          <ModuleCard />
-          <ModuleCard />
+      )}
+      {!isLoading && (
+        <div className="py-10 flex flex-wrap gap-2 items-center">
+          {data?.map((item) => (
+            <button
+              className={`border px-5 py-1  w-fit flex items-center justify-center rounded-3xl gap-x-2 ${
+                item.subnet_id === Number(subnetId)
+                  ? "bg-purple text-white"
+                  : "border-gray-300"
+              }`}
+              key={item.subnet_id}
+              onClick={() => handleSubnetChange(String(item.subnet_id))}
+            >
+              {item.subnet_id === Number(subnetId) && <FaRegCircleCheck />}{" "}
+              {item.name || item.subnet_id}
+            </button>
+          ))}
         </div>
-      </div>
+      )}
+
+      <SubnetTable subnet={subnetValidators || []} isLoading={subnetLoading} />
     </div>
   )
 }

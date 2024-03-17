@@ -9,6 +9,7 @@ import { truncateWalletAddress } from "@/utils"
 import { FaSpinner } from "react-icons/fa6"
 import { GrDashboard } from "react-icons/gr"
 import Link from "next/link"
+import { FaCubesStacked } from "react-icons/fa6"
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -50,11 +51,11 @@ const Navbar = () => {
           </div>
         </Link>
         <div className="flex items-center gap-x-2">
-          {/* <Link href="/subnets">
+          <Link href="/subnets">
             <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
-              <GrDashboard /> Subnets
+              <FaCubesStacked /> Subnets
             </div>
-          </Link> */}
+          </Link>
           {isInitialized && selectedAccount ? (
             <Fragment>
               <Link href="/portfolio">

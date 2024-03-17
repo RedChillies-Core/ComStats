@@ -4,6 +4,7 @@ import Providers from "@/app/provider"
 import "react-responsive-modal/styles.css"
 import "react-toastify/dist/ReactToastify.css"
 import "react-tooltip/dist/react-tooltip.css"
+import "react-loading-skeleton/dist/skeleton.css"
 import "./globals.css"
 
 export const metadata: Metadata = {

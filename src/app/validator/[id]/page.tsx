@@ -18,6 +18,7 @@ import { usePolkadot } from "@/context"
 import { FaXTwitter } from "react-icons/fa6"
 import { TbWorld } from "react-icons/tb"
 import Verified from "@/app/components/verified"
+import StakedUsersTable from "@/app/components/table/users"
 
 const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
   const { data: validatorData, isLoading: validatorLoading } =
@@ -55,149 +56,158 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
       </div>
       {validatorLoading && <FaSpinner className="spinner my-6 mx-auto" />}
       {!validatorLoading && (
-        <div className="flex gap-x-5 flex-col items-center lg:items-start lg:flex-row">
-          <div className="p-4 w-[300px]">
-            <div className="h-44 w-44  bg-slate-200 flex justify-center items-center rounded-3xl mx-auto">
-              {validatorData?.name}
-            </div>
-            {validatorData?.key ===
-              process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR && (
-              <p className="text-sm my-3 text-center">
-                All Statistics of CommuneAI at one place. Staking
-                infrastructure, prices, validators, miners, swap, bridge,
-                exchange for $COMAI
-              </p>
-            )}
-            <div className="flex justify-center gap-x-4 my-4">
-              <a href="" target="_blank">
-                <FaDiscord size={22} />
-              </a>
-              <a href="" target="_blank">
-                <FaXTwitter size={22} />
-              </a>
-              <a href="" target="_blank">
-                <TbWorld size={22} />
-              </a>
-            </div>
-            <div className="mt-4">
-              {!isConnected && (
-                <p className="text-[10px] mb-1 italic text-center">
-                  You have not connected your wallet.
+        <>
+          <div className="flex gap-x-5 flex-col items-center lg:items-start lg:flex-row">
+            <div className="p-4 w-[300px]">
+              <div className="h-44 w-44  bg-slate-200 flex justify-center items-center rounded-3xl mx-auto">
+                {validatorData?.name}
+              </div>
+              {validatorData?.key ===
+                process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR && (
+                <p className="text-sm my-3 text-center">
+                  All Statistics of CommuneAI at one place. Staking
+                  infrastructure, prices, validators, miners, swap, bridge,
+                  exchange for $COMAI
                 </p>
               )}
-              <Button
-                size="large"
-                variant="outlined"
-                className="w-full justify-center"
-                isDisabled={!isConnected}
-                onClick={() => setStakingOpen(true)}
-              >
-                Stake Now
-              </Button>
+              <div className="flex justify-center gap-x-4 my-4">
+                <a href="" target="_blank">
+                  <FaDiscord size={22} />
+                </a>
+                <a href="" target="_blank">
+                  <FaXTwitter size={22} />
+                </a>
+                <a href="" target="_blank">
+                  <TbWorld size={22} />
+                </a>
+              </div>
+              <div className="mt-4">
+                {!isConnected && (
+                  <p className="text-[10px] mb-1 italic text-center">
+                    You have not connected your wallet.
+                  </p>
+                )}
+                <Button
+                  size="large"
+                  variant="outlined"
+                  className="w-full justify-center"
+                  isDisabled={!isConnected}
+                  onClick={() => setStakingOpen(true)}
+                >
+                  Stake Now
+                </Button>
+              </div>
+            </div>
+            <div className="flex gap-4 flex-col flex-1">
+              <div>
+                <p className="card-validator-heading ">
+                  <GoKey size={16} /> Validator Key
+                </p>
+                <h5 className="card-validator-data truncate">
+                  {validatorData?.key}
+                </h5>
+              </div>
+              <div>
+                <p className="card-validator-heading">
+                  <PiCirclesFourLight size={20} /> Network URL
+                </p>
+                <h5 className="card-validator-data">
+                  {validatorData?.address}
+                </h5>
+              </div>
+              <div>
+                <p className="card-validator-heading ">
+                  <GiProfit size={20} />
+                  APY
+                </p>
+                <h5 className="card-validator-data">
+                  {validatorData?.apy?.toFixed(2)}%
+                </h5>
+              </div>
+              <div className="container">
+                <div className="flex pt-3 flex-wrap lg:space-x-3">
+                  <div className="card-validator">
+                    <p className="card-validator-heading">
+                      <SiBlockchaindotcom size={20} />
+                      Total Staked
+                    </p>
+                    <h5 className="card-validator-data">
+                      {numberWithCommas(
+                        formatTokenPrice({
+                          amount: Number(validatorData?.stake),
+                        }),
+                      )}{" "}
+                      COMAI
+                    </h5>
+                  </div>
+                  <div className="card-validator">
+                    <p className="card-validator-heading">
+                      <SiBlockchaindotcom size={20} />
+                      Registration Block
+                    </p>
+                    <h5 className="card-validator-data">
+                      {validatorData?.regblock}
+                    </h5>
+                  </div>
+                  <div className="card-validator">
+                    <p className="card-validator-heading">
+                      <FaUsers size={20} />
+                      Total Stakers
+                    </p>
+                    <h5 className="card-validator-data">
+                      {validatorData?.total_stakers}
+                    </h5>
+                  </div>
+                </div>
+
+                <div className="flex pt-3 flex-wrap lg:space-x-3">
+                  <div className="card-validator">
+                    <p className="card-validator-heading">
+                      <RiAiGenerate size={20} />
+                      Incentive
+                    </p>
+                    <h5 className="card-validator-data">
+                      {validatorData?.incentive}
+                    </h5>
+                  </div>
+                  <div className="card-validator">
+                    <p className="card-validator-heading">
+                      <RiAiGenerate size={20} />
+                      Emission per 100 blocks
+                    </p>
+                    <h5 className="card-validator-data">
+                      {numberWithCommas(
+                        formatTokenPrice({
+                          amount: Number(validatorData?.emission),
+                        }),
+                      )}{" "}
+                    </h5>
+                  </div>
+                  <div className="card-validator">
+                    <p className="card-validator-heading">
+                      <RiAiGenerate size={20} />
+                      Dividends
+                    </p>
+                    <h5 className="card-validator-data">
+                      {validatorData?.dividends}
+                    </h5>
+                  </div>
+                </div>
+
+                <StakingModal
+                  open={stakingOpen}
+                  setOpen={setStakingOpen}
+                  validatorId={String(params.id)}
+                />
+              </div>
             </div>
           </div>
-          <div className="flex gap-4 flex-col flex-1">
-            <div>
-              <p className="card-validator-heading ">
-                <GoKey size={16} /> Validator Key
-              </p>
-              <h5 className="card-validator-data truncate">
-                {validatorData?.key}
-              </h5>
-            </div>
-            <div>
-              <p className="card-validator-heading">
-                <PiCirclesFourLight size={20} /> Network URL
-              </p>
-              <h5 className="card-validator-data">{validatorData?.address}</h5>
-            </div>
-            <div>
-              <p className="card-validator-heading ">
-                <GiProfit size={20} />
-                APY
-              </p>
-              <h5 className="card-validator-data">
-                {validatorData?.apy?.toFixed(2)}%
-              </h5>
-            </div>
-            <div className="container">
-              <div className="flex pt-3 flex-wrap lg:space-x-3">
-                <div className="card-validator">
-                  <p className="card-validator-heading">
-                    <SiBlockchaindotcom size={20} />
-                    Total Staked
-                  </p>
-                  <h5 className="card-validator-data">
-                    {numberWithCommas(
-                      formatTokenPrice({
-                        amount: Number(validatorData?.stake),
-                      }),
-                    )}{" "}
-                    COMAI
-                  </h5>
-                </div>
-                <div className="card-validator">
-                  <p className="card-validator-heading">
-                    <SiBlockchaindotcom size={20} />
-                    Registration Block
-                  </p>
-                  <h5 className="card-validator-data">
-                    {validatorData?.regblock}
-                  </h5>
-                </div>
-                <div className="card-validator">
-                  <p className="card-validator-heading">
-                    <FaUsers size={20} />
-                    Total Stakers
-                  </p>
-                  <h5 className="card-validator-data">
-                    {validatorData?.total_stakers}
-                  </h5>
-                </div>
-              </div>
-
-              <div className="flex pt-3 flex-wrap lg:space-x-3">
-                <div className="card-validator">
-                  <p className="card-validator-heading">
-                    <RiAiGenerate size={20} />
-                    Incentive
-                  </p>
-                  <h5 className="card-validator-data">
-                    {validatorData?.incentive}
-                  </h5>
-                </div>
-                <div className="card-validator">
-                  <p className="card-validator-heading">
-                    <RiAiGenerate size={20} />
-                    Emission per 100 blocks
-                  </p>
-                  <h5 className="card-validator-data">
-                    {numberWithCommas(
-                      formatTokenPrice({
-                        amount: Number(validatorData?.emission),
-                      }),
-                    )}{" "}
-                  </h5>
-                </div>
-                <div className="card-validator">
-                  <p className="card-validator-heading">
-                    <RiAiGenerate size={20} />
-                    Dividends
-                  </p>
-                  <h5 className="card-validator-data">
-                    {validatorData?.dividends}
-                  </h5>
-                </div>
-              </div>
-
-              <StakingModal
-                open={stakingOpen}
-                setOpen={setStakingOpen}
-                validatorId={String(params.id)}
-              />
-            </div>
+          <div className="my-6">
+            {validatorData && validatorData?.stake_from && (
+              <StakedUsersTable stakedUsers={validatorData?.stake_from} />
+            )}
           </div>
-        </div>
+        </>
       )}
     </div>
   )
