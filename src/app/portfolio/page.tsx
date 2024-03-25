@@ -3,7 +3,7 @@
 import { usePolkadot } from "@/context"
 import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import Image from "next/image"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useUserStats } from "@/app/hooks/useUserStats"
 import { FaArrowLeft } from "react-icons/fa6"
 import { useRouter } from "next/navigation"
@@ -11,12 +11,19 @@ import Button from "../components/button"
 import Link from "next/link"
 import StakingModal from "../components/modal/stake"
 
+interface NonTransferEvent {
+  section: string
+  method: string
+  data: any
+}
+
 const Portfolio = () => {
-  const { selectedAccount, isConnected } = usePolkadot()
+  const { selectedAccount, isConnected, api } = usePolkadot()
   const { userBalance, userBalanceDollar, userStakedDollar } = useUserStats()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
   const [validatorId, setValidatorId] = useState("")
+
   return (
     <div className="container p-2 md:p-0">
       <div className="flex w-full">
@@ -133,7 +140,7 @@ const Portfolio = () => {
                 {userBalance?.stakes.map((stake) => (
                   <div
                     key={stake.validator.key}
-                    className=" bg-blue-50  p-4 rounded-xl flex sm:m-0 flex-wrap max-w-80 flex-col gap-y-1 items-start md:p-8 md:mx-4"
+                    className=" bg-blue-50  p-6 rounded-xl flex sm:m-0 flex-wrap max-w-80 flex-col gap-y-1 items-start md:p-8 md:mx-4"
                   >
                     <h1 className="text-lg font-bold">
                       {stake.validator.name}

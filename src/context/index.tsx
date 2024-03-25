@@ -1,7 +1,7 @@
 "use client"
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { ApiPromise, WsProvider } from "@polkadot/api"
-import { NET_ID, PLATFORM_FEE } from "@/constants"
+import { NET_ID } from "@/constants"
 import { IAddStaking, ITransfer, ITransferStaking } from "@/types"
 import {
   InjectedAccountWithMeta,
@@ -9,6 +9,7 @@ import {
 } from "@polkadot/extension-inject/types"
 import WalletModal from "@/app/components/modal/connect"
 import { errorToast, successToast } from "@/app/components/toast"
+import { getWallet, setWallet } from "@/utils/wallet"
 
 interface PolkadotApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null
@@ -69,22 +70,28 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     setIsInitialized(true)
   }
   useEffect(() => {
-    loadPolkadotApi()
-
+    async function init() {
+      await loadPolkadotApi()
+      const savedWallet = getWallet()
+      console.log(savedWallet)
+      if (savedWallet) {
+        setSelectedAccount(savedWallet)
+        setIsConnected(true)
+      }
+    }
+    init()
     return () => {
       api?.disconnect()
     }
   }, [wsEndpoint])
 
   useEffect(() => {
-
     if (api) {
       api.rpc.chain.subscribeNewHeads((header) => {
         setBlockNumber(header.number.toNumber())
       })
     }
-  }
-  , [api])
+  }, [api])
 
   const handleConnect = async () => {
     if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
@@ -170,15 +177,19 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
           if (status.isCompleted) {
           }
         },
-      ).then(() => {
+      )
+      .then(() => {
         successToast("Transaction Done")
         callback?.()
-      }).catch((err) => {
+      })
+      .catch((err) => {
         errorToast(err)
       })
   }
+
   async function handleWalletSelections(wallet: InjectedAccountWithMeta) {
     setSelectedAccount(wallet)
+    setWallet(wallet)
     setIsConnected(true)
     setOpenModal(false)
   }

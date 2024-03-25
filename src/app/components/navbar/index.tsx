@@ -75,14 +75,18 @@ const Navbar = () => {
             </Fragment>
           ) : (
             <Fragment>
-              {!isInitialized && <FaSpinner className="spinner" />}
               <Button
                 size="large"
                 variant="primary"
                 onClick={handleConnect}
                 isDisabled={!isInitialized}
               >
-                <AiFillWallet size={18} />
+                {" "}
+                {!isInitialized ? (
+                  <FaSpinner className="spinner" />
+                ) : (
+                  <AiFillWallet size={18} />
+                )}
                 Connect Wallet
               </Button>
             </Fragment>
