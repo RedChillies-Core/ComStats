@@ -42,7 +42,7 @@ const ValidatorTable = () => {
 
   return (
     <>
-      <div className="mb-5 flex gap-x-5 pt-3">
+      <div className="mb-5 flex gap-x-5 pt-3 sm:px-5">
         {options.map((opt) => (
           <button
             key={opt.value}
@@ -59,7 +59,7 @@ const ValidatorTable = () => {
           </button>
         ))}{" "}
       </div>
-      <div className="mb-5 flex gap-x-5">
+      <div className="mb-5 flex gap-x-5 sm:px-5">
         <div className="relative flex items-center flex-1">
           <input
             type="text"
