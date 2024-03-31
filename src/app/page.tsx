@@ -260,7 +260,7 @@ export default function Home() {
         </div>
       </div>
       <section className="container my-10">
-        <div className="flex justify-between mb-4 items-center flex-col gap-x-3 sm:flex-row">
+        <div className="flex justify-between mb-4 items-center flex-col gap-x-3 sm:flex-row sm:px-5">
           <h1 className="text-2xl text-left font-semibold flex leading-10 text-purple tracking-tighter items-center">
             <Image src="/Animated1.gif" alt="comm" height={30} width={30} />{" "}
             ComStats Statistics
@@ -309,7 +309,7 @@ export default function Home() {
         <p className="italic mt-3 text-sm">Coming Soon in April...</p>
       </div>
       <section className="container my-10 ">
-        <div className="flex justify-between mb-4 items-center flex-col sm:flex-row">
+        <div className="flex justify-between mb-4 items-center flex-col sm:flex-row sm:px-5">
           <h1 className="text-2xl text-left font-semibold flex gap-x-2 leading-10 text-purple tracking-tighter items-center">
             <Image src="/CommAI.webp" alt="comm" height={30} width={30} /> COMAI
             Modules
