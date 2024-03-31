@@ -295,12 +295,18 @@ export default function Home() {
         </div>
       </section>
       <div className="bg-button mx-3 p-5 rounded-lg shadow-lg text-white text-center my-10 sm:rounded-none sm:mx-0 sm:p-10">
-        <h1 className="text-2xl font-bold mb-2">Stake WCOMAI in one click?</h1>
+        <h1 className="text-2xl font-bold mb-2">
+          wCOMAI on Solana (soon in April) 🔥
+        </h1>
         <p className="mb-4">
-          Bring wCOMAI from Ethereum and stake in COMAI in a single go!
+          Bridge COMAI between Solana and CommuneAI | Powered by ComSolBridge
         </p>
-        <p className="mb-4">Excited for it? So, are we.</p>
-        <span className="italic font-semibold">Launching Soon on ComStats</span>
+        <div className="w-full flex justify-center">
+          <Button variant="transparent" size="medium">
+            Bridge Now
+          </Button>
+        </div>
+        <p className="italic mt-3 text-sm">Coming Soon in April...</p>
       </div>
       <section className="container my-10 ">
         <div className="flex justify-between mb-4 items-center flex-col sm:flex-row">

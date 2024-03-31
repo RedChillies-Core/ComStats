@@ -66,6 +66,7 @@ export interface IBalanceType {
   balance: number
   staked: number
   stakes: { amount: number; validator: ValidatorType }[]
+  daily_reward: number
 }
 
 export interface SubnetInterface {

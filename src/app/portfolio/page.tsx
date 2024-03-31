@@ -10,6 +10,13 @@ import { useRouter } from "next/navigation"
 import Button from "../components/button"
 import Link from "next/link"
 import StakingModal from "../components/modal/stake"
+import {
+  AiFillGift,
+  AiFillMoneyCollect,
+  AiOutlineAccountBook,
+} from "react-icons/ai"
+import { LuAlignVerticalDistributeStart } from "react-icons/lu"
+import { BiAnalyse, BiCube } from "react-icons/bi"
 
 interface NonTransferEvent {
   section: string
@@ -72,12 +79,10 @@ const Portfolio = () => {
               </div>
               <div className="flex gap-x-3 justify-between w-full flex-col gap-y-3 md:gap-y-0 md:flex-row ">
                 <div className=" bg-blue-50 rounded-2xl relative flex justify-center items-center space-x-4 flex-auto py-4 px-4 max-w-96">
-                  <div className="">
-                    <Image
-                      src="/CommAI.webp"
-                      alt="comm"
-                      height={40}
-                      width={40}
+                  <div className="absolute right-3">
+                    <AiFillMoneyCollect
+                      size={28}
+                      className="text-textSecondary"
                     />
                   </div>
                   <div className="flex-1">
@@ -94,13 +99,8 @@ const Portfolio = () => {
                   </div>
                 </div>
                 <div className=" bg-blue-50 rounded-2xl relative flex justify-center items-center space-x-4 flex-auto py-4 px-4 max-w-96 ">
-                  <div className="">
-                    <Image
-                      src="/CommAI.webp"
-                      alt="comm"
-                      height={40}
-                      width={40}
-                    />
+                  <div className="absolute right-3">
+                    <BiCube size={28} className="text-textSecondary" />
                   </div>
                   <div className="flex-1">
                     <p className="subheading tracking-tight">Your Stakes</p>
@@ -116,13 +116,8 @@ const Portfolio = () => {
                   </div>
                 </div>
                 <div className=" bg-blue-50 rounded-2xl relative flex justify-center items-center space-x-4 flex-auto py-4 px-4 max-w-96">
-                  <div className="">
-                    <Image
-                      src="/CommAI.webp"
-                      alt="comm"
-                      height={40}
-                      width={40}
-                    />
+                  <div className="absolute right-3">
+                    <BiAnalyse size={28} className="text-textSecondary" />
                   </div>
                   <div className="flex-1">
                     <p className="subheading tracking-tight">Total Stakes</p>
@@ -131,6 +126,23 @@ const Portfolio = () => {
                     </h2>
                     <p className="text-xs text-textSecondary">
                       Count of total stakes
+                    </p>
+                  </div>
+                </div>
+                <div className=" bg-blue-50 rounded-2xl relative flex justify-center items-center space-x-4 flex-auto py-4 px-4 max-w-96">
+                  <div className="absolute right-3">
+                    <AiFillGift size={28} className="text-textSecondary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="subheading tracking-tight">Daily Reward</p>
+                    <h2 className="heading flex items-center gap-x-3">
+                      {formatTokenPrice({
+                        amount: Number(userBalance?.daily_reward),
+                      })}{" "}
+                      COMAI
+                    </h2>
+                    <p className="text-xs text-textSecondary">
+                      Your 24h earning
                     </p>
                   </div>
                 </div>
