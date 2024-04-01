@@ -65,7 +65,9 @@ const Navbar = () => {
               </Link>
 
               <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2">
-                <button className="flex items-center cursor-pointer">
+                <button className="flex items-center cursor-pointer"
+                  onClick={handleConnect}
+                >
                   <AiFillWallet size={24} className="text-purple" />
                   <span className="ml-2 font-mono">
                     {truncateWalletAddress(selectedAccount.address)}

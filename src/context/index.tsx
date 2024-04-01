@@ -72,18 +72,34 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   useEffect(() => {
     async function init() {
       await loadPolkadotApi()
-      const savedWallet = getWallet()
-      console.log(savedWallet)
-      if (savedWallet) {
-        setSelectedAccount(savedWallet)
-        setIsConnected(true)
-      }
+
     }
     init()
     return () => {
       api?.disconnect()
     }
   }, [wsEndpoint])
+
+  useEffect(() => {
+    async function init() {
+
+      const savedWallet = getWallet()
+      if (!!savedWallet) {
+   
+        if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
+        const extensions = await polkadotApi.web3Enable("ComStats")
+        console.log(extensions)
+        if (!extensions) {
+          throw Error("NO_EXTENSION_FOUND")
+        }
+        const allAccounts = await polkadotApi.web3Accounts()
+        setAccounts(allAccounts)
+        setSelectedAccount(savedWallet)
+        setIsConnected(true)
+      }
+    }
+    if(isInitialized) init()
+  }, [isInitialized])
 
   useEffect(() => {
     if (api) {
@@ -95,7 +111,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
 
   const handleConnect = async () => {
     if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
-    const extensions = await polkadotApi.web3Enable("ComAISwap")
+    const extensions = await polkadotApi.web3Enable("ComStats")
     if (!extensions) {
       throw Error("NO_EXTENSION_FOUND")
     }
