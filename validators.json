@@ -1,4 +1,12 @@
-[
+[   
+    {
+        "key": "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
+        "name": "SolBridge"
+    },
+    {
+        "key":"5HQVoe51VyTDroHtWW7CZrqTVCqaki1wrJUGwGCdyyT2ULZg",
+        "name": "SocialVoting"
+    },
     {
         "key": "5CXiWwsS76H2vwroWu4SvdAS3kxprb7aFtqWLxxZC5FNhYri",
         "name": "comswap"

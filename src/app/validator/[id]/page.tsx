@@ -48,7 +48,11 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
           {validatorData?.isVerified && (
             <Verified
               isGold={
-                validatorData.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                [
+                  "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
+                  
+                  process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
+                ].includes(validatorData?.key)
               }
             />
           )}
@@ -99,7 +103,7 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
               </div>
             </div>
             <div className="flex gap-4 flex-col flex-1">
-              <div>
+              <div className="sm:w-auto w-52">
                 <p className="card-validator-heading ">
                   <GoKey size={16} /> Validator Key
                 </p>

@@ -44,12 +44,20 @@ const StakedUsersTable = ({ stakedUsers }: { stakedUsers: [] }) => {
                   index === stakedUsers.length - 1 ? "border-0" : ""
                 }`}
               >
-                <div className="text-sm text-gray-800">{index + 1}</div>
+                <div className="text-sm text-gray-800">
+                  <span className="md:hidden font-semibold">S.N.&ensp;</span>
+                  {index + 1}
+                  </div>
                 <div className="flex items-center space-x-3 text-sm">
-                  {user[0]}
+                  <div className="flex items-center">
+                    <span className="md:hidden font-semibold">Address&ensp;</span>
+                    {user[0]}
+                  
+                </div>
                 </div>
                 <div className="">
                   <p className="text-sm text-gray-800 text-left">
+                  <span className="md:hidden font-semibold">Amount&ensp;</span>
                     {formatTokenPrice({ amount: user[1] })} COMAI
                   </p>
                 </div>
