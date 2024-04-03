@@ -1,13 +1,13 @@
-"use client"
-import { useGetValidatorsQuery } from "@/store/api/statsApi"
-import React, { useState } from "react"
-import Verified from "../verified"
-import { numberWithCommas } from "@/utils/numberWithCommas"
-import { formatTokenPrice } from "@/utils"
-import Link from "next/link"
-import Button from "../button"
-import { FaSearch } from "react-icons/fa"
-import Skeleton from "react-loading-skeleton"
+"use client";
+import { useGetValidatorsQuery } from "@/store/api/statsApi";
+import React, { useState } from "react";
+import Verified from "../verified";
+import { numberWithCommas } from "@/utils/numberWithCommas";
+import { formatTokenPrice } from "@/utils";
+import Link from "next/link";
+import Button from "../button";
+import { FaSearch } from "react-icons/fa";
+import Skeleton from "react-loading-skeleton";
 
 enum ValidatorFilterType {
   ALL,
@@ -18,27 +18,27 @@ const ValidatorTable = () => {
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsQuery(undefined, {
       pollingInterval: 300000,
-    })
+    });
 
   const [validatorFilter, setValidatorFilter] = useState<ValidatorFilterType>(
-    ValidatorFilterType.ALL,
-  )
+    ValidatorFilterType.ALL
+  );
   function toggleAccordion(item: string): void {
-    const content = document.getElementById(`content-${item}`)
+    const content = document.getElementById(`content-${item}`);
     if (content) {
       if (content.classList.contains("hidden")) {
-        content.classList.remove("hidden")
+        content.classList.remove("hidden");
       } else {
-        content.classList.add("hidden")
+        content.classList.add("hidden");
       }
     }
   }
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState("");
   const options = [
     { value: ValidatorFilterType.ALL, label: "All" },
     { value: ValidatorFilterType.MINERS, label: "Miners" },
     { value: ValidatorFilterType.VALIDATORS, label: "Validators" },
-  ]
+  ];
 
   return (
     <>
@@ -121,16 +121,51 @@ const ValidatorTable = () => {
                 ?.filter((val) =>
                   String(val.address)
                     .toLowerCase()
-                    .includes(search.toLowerCase()),
+                    .includes(search.toLowerCase())
                 )
                 ?.filter((val) => {
                   if (validatorFilter === ValidatorFilterType.ALL) {
-                    return val
+                    return val;
                   } else if (validatorFilter === ValidatorFilterType.MINERS) {
-                    return val.type === "miner"
+                    return val.type === "miner";
                   } else {
-                    return val.type === "validator"
+                    return val.type === "validator";
                   }
+                })
+                .sort((a, b) => {
+                  if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                    return -1;
+                  } else if (
+                    b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                  ) {
+                    return 1;
+                  } else if (
+                    a.key === "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd"
+                  ) {
+                    return -1;
+                  } else if (
+                    b.key === "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd"
+                  ) {
+                    return 1;
+                  } else if (
+                    a.key === "5HQVoe51VyTDroHtWW7CZrqTVCqaki1wrJUGwGCdyyT2ULZg"
+                  ) {
+                    return -1;
+                  }
+                  if (
+                    b.key === "5HQVoe51VyTDroHtWW7CZrqTVCqaki1wrJUGwGCdyyT2ULZg"
+                  ) {
+                    return 1;
+                  } else if (a.isVerified && !b.isVerified) {
+                    return -1;
+                  } else if (!a.isVerified && b.isVerified) {
+                    return 1;
+                  } else if (a.stake > b.stake) {
+                    return -1;
+                  } else if (a.stake < b.stake) {
+                    return 1;
+                  }
+                  return 0;
                 })
                 .map((validator, index, array) => (
                   <tr
@@ -150,10 +185,11 @@ const ValidatorTable = () => {
                           </div>
                           {validator.isVerified && (
                             <Verified
-                              isGold={
-                                validator.key ===
-                                process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
-                              }
+                              isGold={[
+                                "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
+
+                                process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
+                              ].includes(validator?.key)}
                             />
                           )}
                         </div>
@@ -165,7 +201,7 @@ const ValidatorTable = () => {
                     <td>{numberWithCommas(validator.total_stakers)}</td>
                     <td>
                       {numberWithCommas(
-                        formatTokenPrice({ amount: validator.stake }),
+                        formatTokenPrice({ amount: validator.stake })
                       )}{" "}
                       COMAI
                     </td>
@@ -203,10 +239,11 @@ const ValidatorTable = () => {
                   <div className="truncate max-w-[200px]">{validator.name}</div>
                   {validator.isVerified && (
                     <Verified
-                      isGold={
-                        validator.key ===
-                        process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
-                      }
+                      isGold={[
+                        "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
+
+                        process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
+                      ].includes(validator.key)}
                     />
                   )}
                 </div>
@@ -247,7 +284,7 @@ const ValidatorTable = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ValidatorTable
+export default ValidatorTable;

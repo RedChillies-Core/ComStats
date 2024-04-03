@@ -68,8 +68,11 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                     {validatorData?.isVerified && (
                       <Verified
                         isGold={
-                          validatorData.key ===
-                          process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                          [
+                            "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
+                            
+                            process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
+                          ].includes(validatorData?.key)
                         }
                       />
                     )}
