@@ -17,6 +17,8 @@ export type ValidatorType = {
   apy: number
   isVerified?: boolean
   wallet_staked?: number
+  expire_at?: number
+  verified_type: string
 }
 
 export interface InterfacePagination<Data> {
@@ -77,4 +79,11 @@ export interface SubnetInterface {
   immunity_period: number
   incentive_ratio: number
   subnet_id: number
+}
+
+export interface IVerifyModule {
+  key: string,
+  verificationType: 'golden' | 'verified'
+  duration: 'monthly' | 'yearly'
+  callback?: () => void
 }

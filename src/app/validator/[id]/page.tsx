@@ -19,6 +19,7 @@ import { FaXTwitter } from "react-icons/fa6"
 import { TbWorld } from "react-icons/tb"
 import Verified from "@/app/components/verified"
 import StakedUsersTable from "@/app/components/table/users"
+import VerifyModal from "@/app/components/modal/verifyModule"
 
 const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
   const { data: validatorData, isLoading: validatorLoading } =
@@ -34,6 +35,7 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
   const { isConnected } = usePolkadot()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
+  const [verifyOpen, setVerifyOpen] = useState(false)
   return (
     <div className="container px-3 md:px-0">
       <div className="flex py-5 items-center gap-x-3">
@@ -100,6 +102,15 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                 >
                   Stake Now
                 </Button>
+                {validatorData?.verified_type === "unverified" && <Button
+                  size="large"
+                  variant="outlined"
+                  className="w-full justify-center mt-4"
+                  isDisabled={!isConnected}
+                  onClick={() => setVerifyOpen(true)}
+                >
+                  Verify Module
+                </Button>}
               </div>
             </div>
             <div className="flex gap-4 flex-col flex-1">
@@ -201,6 +212,11 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                 <StakingModal
                   open={stakingOpen}
                   setOpen={setStakingOpen}
+                  validatorId={String(params.id)}
+                />
+                 <VerifyModal
+                  open={verifyOpen}
+                  setOpen={setVerifyOpen}
                   validatorId={String(params.id)}
                 />
               </div>

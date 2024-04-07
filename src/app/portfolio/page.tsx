@@ -148,7 +148,7 @@ const Portfolio = () => {
                 </div>
               </div>
               <h1 className="heading my-8">Your Stakes</h1>
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap gap-y-8">
                 {userBalance?.stakes.map((stake) => (
                   <div
                     key={stake.validator.key}

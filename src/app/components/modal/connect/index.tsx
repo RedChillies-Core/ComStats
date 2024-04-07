@@ -1,10 +1,10 @@
-import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types"
-import React, { useState } from "react"
-import Modal from "react-responsive-modal"
-import Button from "../../button"
-import { AiFillCheckCircle } from "react-icons/ai"
-import { infoToast } from "../../toast"
-import { BiCheckCircle } from "react-icons/bi"
+import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+import React, { useState } from "react";
+import Modal from "react-responsive-modal";
+import Button from "../../button";
+import { AiFillCheckCircle } from "react-icons/ai";
+import { infoToast } from "../../toast";
+import { BiCheckCircle } from "react-icons/bi";
 
 const WalletModal = ({
   open,
@@ -12,13 +12,13 @@ const WalletModal = ({
   wallets,
   handleWalletSelections,
 }: {
-  open: boolean
-  setOpen: (args: boolean) => void
-  wallets: InjectedAccountWithMeta[]
-  handleWalletSelections: (arg: InjectedAccountWithMeta) => void
+  open: boolean;
+  setOpen: (args: boolean) => void;
+  wallets: InjectedAccountWithMeta[];
+  handleWalletSelections: (arg: InjectedAccountWithMeta) => void;
 }) => {
   const [selectedAccount, setSelectedAccount] =
-    useState<InjectedAccountWithMeta>()
+    useState<InjectedAccountWithMeta>();
   return (
     <Modal open={open} onClose={() => setOpen(false)} center>
       Choose your polkadot wallet to connect
@@ -43,7 +43,10 @@ const WalletModal = ({
                   }`}
                 />
               }{" "}
-              {item.address}
+              <div className="text-start">
+                <p className="font-semibold">{item.meta.name}</p>
+                <span className="text-xs">{item.address}</span>
+              </div>
             </button>
           ))}
           {!wallets.length && (
@@ -71,17 +74,17 @@ const WalletModal = ({
           className="w-full justify-center"
           onClick={() => {
             if (!selectedAccount) {
-              infoToast("Select at least one wallet!")
-              return
+              infoToast("Select at least one wallet!");
+              return;
             }
-            handleWalletSelections(selectedAccount as InjectedAccountWithMeta)
+            handleWalletSelections(selectedAccount as InjectedAccountWithMeta);
           }}
         >
           Select Wallet
         </Button>
       </div>
     </Modal>
-  )
-}
+  );
+};
 
-export default WalletModal
+export default WalletModal;

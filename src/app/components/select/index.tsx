@@ -28,6 +28,7 @@ type SelectProps = {
   isClearable?: boolean
   control: Control<FieldValues, any>
   rules?: RegisterOptions
+  valueChange?: (value: any) => void
 }
 export const customStyles: StylesConfig = {
   control: (provided) => ({
@@ -67,6 +68,7 @@ const SelectComp = ({
   isSearchable = false,
   isClearable = false,
   value: defValue,
+  valueChange,
 }: SelectProps) => {
   const errorMessage: any = errors?.message
   const inputClass = errors ? " border-[red]" : "border-[#E8E8E8]"
@@ -104,7 +106,12 @@ const SelectComp = ({
               value={options?.find(
                 (c) => String(c.value) === String(value?.value),
               )}
-              onChange={(val: any) => onChange(val)}
+              onChange={(val: any) => {
+                onChange(val)
+                if (valueChange) {
+                  valueChange(val)
+                }
+              }}
               styles={customStyles}
               placeholder={placeholder}
             />
