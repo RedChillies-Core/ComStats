@@ -7,7 +7,7 @@ import { usePolkadot } from "@/context"
 import { useGetBalanceQuery } from "@/store/api/statsApi"
 import { ValidatorType } from "@/types"
 import { formatTokenPrice } from "@/utils"
-import { infoToast } from "@/app/components/toast"
+import { errorToast, infoToast } from "@/app/components/toast"
 
 const AddStakingForm = ({
   validator,
@@ -64,10 +64,15 @@ const AddStakingForm = ({
           maxButton
           handleMaxClick={(e: any) => {
             e.preventDefault()
+            const amount = (Number(balanceData?.balance) - 1000 - 2 * 10 ** 9)
+            if(amount < 0) {
+              errorToast("Insufficient Balance")
+              return
+            }
             setValue(
               "stakeAmount",
               formatTokenPrice({
-                amount: Number(balanceData?.balance) - 1000,
+                amount,
                 precision: 9,
               }),
             )

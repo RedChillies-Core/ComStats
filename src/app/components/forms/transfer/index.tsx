@@ -5,6 +5,7 @@ import { useGetBalanceQuery } from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
 import React from "react"
 import { useForm } from "react-hook-form"
+import { errorToast } from "../../toast"
 
 const TransferForm = () => {
   const {
@@ -67,9 +68,14 @@ const TransferForm = () => {
           maxButton
           handleMaxClick={(e: any) => {
             e.preventDefault()
+            const amount = Number(balanceData?.balance) - 1000 - 8 * 10 ** 8
+            if(amount < 0) {
+              errorToast("Insufficient Balance")
+              return
+            }
             setValue(
               "amount",
-              formatTokenPrice({ amount: Number(balanceData?.balance) - 0.34327694 * 1e9, precision: 9 }),
+              formatTokenPrice({ amount, precision: 9 }),
             )
           }}
           register={register}

@@ -8,6 +8,7 @@ import { usePolkadot } from "@/context"
 import { ValidatorType } from "@/types"
 import { useGetBalanceQuery, useGetValidatorsQuery } from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
+import { errorToast } from "@/app/components/toast"
 
 const TransferStakingForm = ({
   validator,
@@ -83,14 +84,20 @@ const TransferStakingForm = ({
           maxButton
           handleMaxClick={(e: any) => {
             e.preventDefault()
+            const amount = Number(
+              balanceData?.stakes?.find(
+                (item) => item.validator.key === validator?.key,
+              )?.amount ?? 0,
+            )
+            if((balanceData?.balance ?? 0)  < 1 * 10 ** 9) {
+              errorToast("Insufficient balance for Transfer")
+              return
+            }
             setValue(
               "stakeAmount",
               formatTokenPrice({
-                amount: Number(
-                  balanceData?.stakes?.find(
-                    (item) => item.validator.key === validator?.key,
-                  )?.amount,
-                ),
+                amount: amount < 0 ? 0 : amount,
+                 
                 precision: 9,
               }),
             )

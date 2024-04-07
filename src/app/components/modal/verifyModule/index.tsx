@@ -14,14 +14,14 @@ import {
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "../../verified"
+import VerifyModuleForm from "../../forms/verify"
 
-type IStakingModal = {
+type IVerifyModal = {
   open: boolean
   setOpen: (arg: boolean) => void
   validatorId: string
 }
-const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
-  const [selectedOperation, setSelectedOperation] = useState("add")
+const VerifyModal = ({ open, setOpen, validatorId }: IVerifyModal) => {
   const { selectedAccount } = usePolkadot()
   const {
     data: validatorData,
@@ -39,15 +39,9 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
     },
   )
 
-  useEffect(() => {
-    if (open) {
-      setSelectedOperation("add")
-    }
-  }, [open])
-
   return (
     <Modal open={open} onClose={() => setOpen(false)} center>
-      <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
+      <h1 className="text-lg font-semibold leading-8">Verify {validatorData?.type}</h1>
       <hr />
       <div className="w-full">
         <div className="my-3">
@@ -68,7 +62,11 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                     {validatorData?.isVerified && (
                       <Verified
                         isGold={
-                          validatorData?.verified_type === 'golden'
+                          [
+                            "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
+                            
+                            process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
+                          ].includes(validatorData?.key)
                         }
                       />
                     )}
@@ -94,7 +92,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
-                  <h6 className="font-normal w-1/2 tracking-tighter">APY </h6>
+                  <h6 className="font-normal w-1/2 tracking-tighter">Net APY </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
                     {validatorData?.apy?.toFixed(2)}%
                   </h1>
@@ -108,61 +106,9 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
               </ul>
             </div>
           )}
-          {validatorData?.wallet_staked !== 0 && (
-            <div className="flex p-3 rounded-2xl bg-green-100 items-center justify-between">
-              <h5 className="text-sm font-semibold flex items-center gap-x-3">
-                <AiFillInfoCircle />
-                You have staked{" "}
-                {numberWithCommas(
-                  (Number(validatorData?.wallet_staked) / 10 ** 9).toFixed(2),
-                )}{" "}
-                COMAI here.
-              </h5>
-            </div>
-          )}
-        </div>
-        <div className="flex py-2 flex-col gap-y-3  justify-between sm:flex-row sm:gap-x-3">
-          <Button
-            variant="outlined"
-            prefix={<FaMoneyBillTransfer />}
-            size="small"
-            className={`${
-              selectedOperation === "add" ? "!bg-button !text-white" : ""
-            }`}
-            onClick={() => setSelectedOperation("add")}
-          >
-            Add Stake
-          </Button>
-          {validatorData?.wallet_staked !== 0 && (
-            <Button
-              variant="outlined"
-              prefix={<FaMoneyBillTransfer />}
-              size="small"
-              className={`${
-                selectedOperation === "transfer" ? "!bg-button !text-white" : ""
-              }`}
-              onClick={() => setSelectedOperation("transfer")}
-            >
-              Transfer Stake
-            </Button>
-          )}
-          {validatorData?.wallet_staked !== 0 && (
-            <Button
-              variant="outlined"
-              size="small"
-              prefix={<AiOutlineClear />}
-              className={`${
-                selectedOperation === "unstake" ? "!bg-button !text-white" : ""
-              }`}
-              onClick={() => setSelectedOperation("unstake")}
-            >
-              Unstake
-            </Button>
-          )}
         </div>
         <div className="pt-4">
-          {selectedOperation === "add" && (
-            <AddStakingForm
+            <VerifyModuleForm
               validator={validatorData}
               callback={() => {
                 setOpen(false)
@@ -172,36 +118,12 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                 }, 8000)
               }}
             />
-          )}
-
-          {selectedOperation === "transfer" && (
-            <TransferStakingForm
-              validator={validatorData}
-              callback={() => {
-                setOpen(false)
-                setTimeout(() => {
-                  refetchBalance()
-                  validatorRefetch()
-                }, 8000)
-              }}
-            />
-          )}
-          {selectedOperation === "unstake" && (
-            <UnstakingForm
-              validator={validatorData}
-              callback={() => {
-                setOpen(false)
-                setTimeout(() => {
-                  refetchBalance()
-                  validatorRefetch()
-                }, 8000)
-              }}
-            />
-          )}
+        
+          
         </div>
       </div>
     </Modal>
   )
 }
 
-export default StakingModal
+export default VerifyModal

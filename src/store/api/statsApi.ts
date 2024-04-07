@@ -26,11 +26,7 @@ export const statsApi = createApi({
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
         const validatedResponse: ValidatorType[] = response.validators.map(
           (validator) => {
-            if (verifiedValidators.some((v) => v.key === validator.key)) {
-              validator.isVerified = true
-            } else {
-              validator.isVerified = false
-            }
+            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()
             return validator
           },
         )
@@ -52,12 +48,9 @@ export const statsApi = createApi({
       },
       providesTags: (_, __, { key }) => [{ type: "SingleValidator", id: key }],
       transformResponse: (response: ValidatorType) => {
-        const isVerified = verifiedValidators.some(
-          (validator) => validator.key === response.key,
-        )
         const validatedResponse: ValidatorType = {
           ...response,
-          isVerified: isVerified,
+          isVerified:  response.expire_at === -1 || (response.expire_at || 0) > Date.now(),
         }
         console.log(validatedResponse)
         validatedResponse.stake_from = validatedResponse?.stake_from?.sort(
@@ -94,11 +87,7 @@ export const statsApi = createApi({
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
         const validatedResponse: ValidatorType[] = response.validators.map(
           (validator) => {
-            if (verifiedValidators.some((v) => v.key === validator.key)) {
-              validator.isVerified = true
-            } else {
-              validator.isVerified = false
-            }
+            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()
             return validator
           },
         )
