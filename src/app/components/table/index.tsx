@@ -135,28 +135,12 @@ const ValidatorTable = () => {
                 .sort((a, b) => {
                   if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
                     return -1;
-                  } else if (
-                    b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
-                  ) {
-                    return 1;
-                  } else if (
-                    a.key === "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd"
-                  ) {
-                    return -1;
-                  } else if (
-                    b.key === "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd"
-                  ) {
-                    return 1;
-                  } else if (
-                    a.key === "5HQVoe51VyTDroHtWW7CZrqTVCqaki1wrJUGwGCdyyT2ULZg"
-                  ) {
-                    return -1;
-                  }
-                  if (
-                    b.key === "5HQVoe51VyTDroHtWW7CZrqTVCqaki1wrJUGwGCdyyT2ULZg"
-                  ) {
-                    return 1;
-                  } else if (a.isVerified && !b.isVerified) {
+                  } else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
+                    return -1
+                  } else if (b.isVerified && b.verified_type === 'golden' && !a.isVerified){
+                    return 1
+                  } 
+                  else if (a.isVerified && !b.isVerified) {
                     return -1;
                   } else if (!a.isVerified && b.isVerified) {
                     return 1;
@@ -185,11 +169,10 @@ const ValidatorTable = () => {
                           </div>
                           {validator.isVerified && (
                             <Verified
-                              isGold={[
-                                "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
-
-                                process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
-                              ].includes(validator?.key)}
+                              isGold={validator.verified_type === "golden"}
+                              isOfComStats={
+                                validator?.expire_at === -1
+                              }
                             />
                           )}
                         </div>
@@ -226,7 +209,40 @@ const ValidatorTable = () => {
         </table>
 
         <div className="md:hidden">
-          {validatorData?.map((validator, index, array) => (
+          {validatorData
+                ?.filter((val) =>
+                  String(val.address)
+                    .toLowerCase()
+                    .includes(search.toLowerCase())
+                )
+                ?.filter((val) => {
+                  if (validatorFilter === ValidatorFilterType.ALL) {
+                    return val;
+                  } else if (validatorFilter === ValidatorFilterType.MINERS) {
+                    return val.type === "miner";
+                  } else {
+                    return val.type === "validator";
+                  }
+                })
+                .sort((a, b) => {
+                  if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                    return -1;
+                  } else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
+                    return -1
+                  } else if (b.isVerified && b.verified_type === 'golden' && !a.isVerified){
+                    return 1
+                  } 
+                  else if (a.isVerified && !b.isVerified) {
+                    return -1;
+                  } else if (!a.isVerified && b.isVerified) {
+                    return 1;
+                  } else if (a.stake > b.stake) {
+                    return -1;
+                  } else if (a.stake < b.stake) {
+                    return 1;
+                  }
+                  return 0;
+                }).map((validator, index, array) => (
             <div
               key={validator.key}
               className={`py-4 ${
@@ -239,11 +255,10 @@ const ValidatorTable = () => {
                   <div className="truncate max-w-[200px]">{validator.name}</div>
                   {validator.isVerified && (
                     <Verified
-                      isGold={[
-                        "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
-
-                        process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
-                      ].includes(validator.key)}
+                      isGold={validator.verified_type === "golden"}
+                      isOfComStats={
+                        validator?.expire_at === -1
+                      }
                     />
                   )}
                 </div>
