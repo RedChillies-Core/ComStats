@@ -9,7 +9,7 @@ function Verified({ isGold = false, isOfComStats = false }: { isGold?: boolean, 
         isGold ? `${isOfComStats ? "Comstats": "Golden"} Bagde` : "Verified Badge"
       }`}
       data-tooltip-place="top"
-      className="z-50"
+      className="z-30"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
