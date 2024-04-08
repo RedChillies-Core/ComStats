@@ -133,13 +133,40 @@ const ValidatorTable = () => {
                   }
                 })
                 .sort((a, b) => {
+                  //
                   if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
                     return -1;
-                  } else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
+                  }
+                  else if (a.verified_type === 'golden' && b.verified_type === 'golden'){
+                    if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                      return -1;
+                    }
+                    else if (b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                      return 1;
+                    }
+                    else if (a.stake > b.stake) {
+                      return -1;
+                    } else if (a.stake < b.stake) {
+                      return 1;
+                    }
+                  }
+
+                  else if (a.isVerified && a.verified_type === 'golden' && b.isVerified){
+                    return -1
+                  } else if (b.isVerified && b.verified_type === 'golden' && a.isVerified){
+                    return 1
+                  }  else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
                     return -1
                   } else if (b.isVerified && b.verified_type === 'golden' && !a.isVerified){
                     return 1
-                  } 
+                  } else if (a.isVerified && b.isVerified) {
+                    if (a.stake > b.stake) {
+                      return -1;
+                    }
+                    else if (a.stake < b.stake) {
+                      return 1;
+                    }
+                  }
                   else if (a.isVerified && !b.isVerified) {
                     return -1;
                   } else if (!a.isVerified && b.isVerified) {
@@ -225,13 +252,40 @@ const ValidatorTable = () => {
                   }
                 })
                 .sort((a, b) => {
+                  //
                   if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
                     return -1;
-                  } else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
+                  }
+                  else if (a.verified_type === 'golden' && b.verified_type === 'golden'){
+                    if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                      return -1;
+                    }
+                    else if (b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                      return 1;
+                    }
+                    else if (a.stake > b.stake) {
+                      return -1;
+                    } else if (a.stake < b.stake) {
+                      return 1;
+                    }
+                  }
+
+                  else if (a.isVerified && a.verified_type === 'golden' && b.isVerified){
+                    return -1
+                  } else if (b.isVerified && b.verified_type === 'golden' && a.isVerified){
+                    return 1
+                  }  else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
                     return -1
                   } else if (b.isVerified && b.verified_type === 'golden' && !a.isVerified){
                     return 1
-                  } 
+                  } else if (a.isVerified && b.isVerified) {
+                    if (a.stake > b.stake) {
+                      return -1;
+                    }
+                    else if (a.stake < b.stake) {
+                      return 1;
+                    }
+                  }
                   else if (a.isVerified && !b.isVerified) {
                     return -1;
                   } else if (!a.isVerified && b.isVerified) {
