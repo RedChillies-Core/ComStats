@@ -26,7 +26,7 @@ export const statsApi = createApi({
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
         const validatedResponse: ValidatorType[] = response.validators.map(
           (validator) => {
-            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()
+            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()/1000
             return validator
           },
         )
@@ -50,7 +50,7 @@ export const statsApi = createApi({
       transformResponse: (response: ValidatorType) => {
         const validatedResponse: ValidatorType = {
           ...response,
-          isVerified:  response.expire_at === -1 || (response.expire_at || 0) > Date.now(),
+          isVerified:  response.expire_at === -1 || (response.expire_at || 0) > Date.now()/1000,
         }
         console.log(validatedResponse)
         validatedResponse.stake_from = validatedResponse?.stake_from?.sort(
@@ -87,7 +87,7 @@ export const statsApi = createApi({
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
         const validatedResponse: ValidatorType[] = response.validators.map(
           (validator) => {
-            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()
+            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()/1000
             return validator
           },
         )

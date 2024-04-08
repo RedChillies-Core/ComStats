@@ -70,6 +70,9 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
                         isGold={
                           validatorData?.verified_type === 'golden'
                         }
+                        isOfComStats={
+                          validatorData?.expire_at === -1
+                        }
                       />
                     )}
                   </div>

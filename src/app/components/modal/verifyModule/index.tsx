@@ -62,11 +62,10 @@ const VerifyModal = ({ open, setOpen, validatorId }: IVerifyModal) => {
                     {validatorData?.isVerified && (
                       <Verified
                         isGold={
-                          [
-                            "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
-                            
-                            process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
-                          ].includes(validatorData?.key)
+                          validatorData?.verified_type === "golden"
+                        }
+                        isOfComStats={
+                          validatorData?.expire_at === -1
                         }
                       />
                     )}

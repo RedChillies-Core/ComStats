@@ -94,11 +94,10 @@ const SubnetTable = ({
                         {validator.isVerified && (
                           <Verified
                             isGold={
-                              [
-                                "5EWrhYAvSLCFi6wYAJY1cFmBuziaqKc6RrBjhuRMLu1QtHzd",
-                                
-                                process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
-                              ].includes(validator?.key)
+                              validator.verified_type === "golden"
+                            }
+                            isOfComStats={
+                              validator?.expire_at === -1
                             }
                           />
                         )}
