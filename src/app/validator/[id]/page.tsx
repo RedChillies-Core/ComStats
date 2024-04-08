@@ -21,6 +21,23 @@ import Verified from "@/app/components/verified"
 import StakedUsersTable from "@/app/components/table/users"
 import VerifyModal from "@/app/components/modal/verifyModule"
 
+const detailInfo = [
+  {
+    key: process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
+    name: "ComStats",
+    description: "All Statistics of CommuneAI at one place. Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI",
+    twitter: "https://twitter.com/comstatsorg",
+    discord: ""
+  },
+  {
+    key: "5DtTeoNjcN19qTpoFgyW9iQaiRsYtBPF5FarjoxPEy4k4ieJ",
+    name: "Project Eden",
+    description: "Education, validation, mining & more for CommuneAI",
+    twitter: "https://twitter.com/project_eden_ai",
+    discord: ""
+  }
+]
+
 const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsByIdQuery(
@@ -67,19 +84,20 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
               <div className="h-44 w-44  bg-slate-200 flex justify-center items-center rounded-3xl mx-auto">
                 {validatorData?.name}
               </div>
-              {validatorData?.key ===
-                process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR && (
+              {detailInfo.some(each=>each.key === validatorData?.key) && (
                 <p className="text-sm my-3 text-center">
-                  All Statistics of CommuneAI at one place. Staking
-                  infrastructure, prices, validators, miners, swap, bridge,
-                  exchange for $COMAI
+                  {detailInfo.find(each=>each.key === validatorData?.key)?.description}
                 </p>
               )}
               <div className="flex justify-center gap-x-4 my-4">
-                <a href="" target="_blank">
+                <a href={
+                  detailInfo.find(each=>each.key === validatorData?.key)?.discord || ""
+                } target="_blank">
                   <FaDiscord size={22} />
                 </a>
-                <a href="" target="_blank">
+                <a href={
+                  detailInfo.find(each=>each.key === validatorData?.key)?.twitter || ""
+                }  target="_blank">
                   <FaXTwitter size={22} />
                 </a>
                 <a href="" target="_blank">
