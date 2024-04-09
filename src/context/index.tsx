@@ -268,6 +268,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     key,
     verificationType,
     duration,
+    subnetId = 0,
     callback,
   }: IVerifyModule) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
@@ -279,7 +280,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         "5CVUUEQme5fWXD1zkMwZ9iSvR2PXNBsjnN6CX4dWMjc81fsD",
         amt
       ),
-      api.tx.system.remark(`${key},${verificationType}`),
+      api.tx.system.remark(`${key},${verificationType},${subnetId}`),
     ]);
 
     await completeTransaction(tx, callback);

@@ -27,6 +27,7 @@ export default function Home() {
     useGetValidatorsByIdQuery({
       key: String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR),
       wallet: "",
+      subnet_id: 0,
     })
   const {
     walletAddress,

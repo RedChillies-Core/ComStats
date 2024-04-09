@@ -37,12 +37,12 @@ export const statsApi = createApi({
     }),
     getValidatorsById: builder.query<
       ValidatorType,
-      { key: string; wallet: string }
+      { key: string; wallet: string, subnet_id?: number } 
     >({
-      query: ({ key, wallet }) => {
-        let url = `/validators/${key}`
+      query: ({ key, wallet, subnet_id = 0  }) => {
+        let url = `/validators/${key}?subnet_id=${subnet_id}`
         if (wallet && wallet !== undefined) {
-          url += `?wallet=${wallet}`
+          url += `&wallet=${wallet}`
         }
         return url
       },

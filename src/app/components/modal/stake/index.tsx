@@ -19,8 +19,9 @@ type IStakingModal = {
   open: boolean
   setOpen: (arg: boolean) => void
   validatorId: string
+  subnet_id: number
 }
-const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
+const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) => {
   const [selectedOperation, setSelectedOperation] = useState("add")
   const { selectedAccount } = usePolkadot()
   const {
@@ -30,6 +31,7 @@ const StakingModal = ({ open, setOpen, validatorId }: IStakingModal) => {
   } = useGetValidatorsByIdQuery({
     key: validatorId,
     wallet: String(selectedAccount?.address),
+    subnet_id,
   })
 
   const { refetch: refetchBalance } = useGetBalanceQuery(

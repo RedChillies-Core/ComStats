@@ -55,6 +55,7 @@ const VerifyModuleForm = ({
       verificationType: data.type.value,
       duration: data.duration.value,
       key: String(validator?.key),
+      subnetId: validator?.subnet_id ?? 0,
       callback,
     });
   };

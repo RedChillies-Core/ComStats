@@ -222,7 +222,7 @@ const ValidatorTable = () => {
                     </td>
                     <td>
                       <Link
-                        href={`/validator/${validator.key}`}
+                        href={`/validator/${validator.subnet_id}/${validator.key}`}
                         className="flex items-center gap-x-1 "
                       >
                         <Button size="small" variant="outlined">
@@ -341,7 +341,7 @@ const ValidatorTable = () => {
                 </div>
                 <div className="py-2">
                   <Link
-                    href={`/validator/${validator.key}`}
+                    href={`/validator/${validator.subnet_id}/${validator.key}`}
                     className="flex items-center gap-x-1 underline"
                   >
                     View More{" "}

@@ -20,8 +20,9 @@ type IVerifyModal = {
   open: boolean
   setOpen: (arg: boolean) => void
   validatorId: string
+  subnet_id: number
 }
-const VerifyModal = ({ open, setOpen, validatorId }: IVerifyModal) => {
+const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) => {
   const { selectedAccount } = usePolkadot()
   const {
     data: validatorData,
@@ -30,6 +31,7 @@ const VerifyModal = ({ open, setOpen, validatorId }: IVerifyModal) => {
   } = useGetValidatorsByIdQuery({
     key: validatorId,
     wallet: String(selectedAccount?.address),
+    subnet_id,
   })
 
   const { refetch: refetchBalance } = useGetBalanceQuery(

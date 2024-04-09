@@ -125,7 +125,7 @@ const SubnetTable = ({
                 <div className="">{Number(validator.apy.toFixed(2))}%</div>
                 <div className="">
                   <Link
-                    href={`/validator/${validator.key}`}
+                    href={`/validator/${validator.subnet_id}/${validator.key}`}
                     className="flex items-center gap-x-1 "
                   >
                     <Button size="small" variant="outlined">
