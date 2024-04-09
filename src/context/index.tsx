@@ -164,41 +164,26 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       {
         signer: injector.signer,
       },
-      (result) => {
+      async (result) => {
         const { events } = result;
-        if (
-          events.length > 0 &&
-          (result.status.isInBlock ||
-            result.status.isFinalized ||
-            result.status.isReady ||
-            result.status.isBroadcast)
-        ) {
-          const isSuccess = events.every(
-            ({ event }) => !api.events.system.ExtrinsicFailed.is(event)
-          );
-          if (isSuccess) {
-            // successToast("Transaction Done")
-            callback?.();
-            resolveOut();
+
+        if (result.isFinalized || result.isInBlock) {
+          // finalized
+          const isSucess = events.every(({ event: { method } }) => {
+            return method !== "ExtrinsicFailed";
+          });
+          if (isSucess) {
             unsub();
-          } else {
-            // console.log("events",events);,
-            rejectOut(new Error("Transaction failed"));
+            resolveOut();
+            callback && callback();
+            timeoutOut && clearTimeout(timeoutOut);
           }
         } else if (result.isError) {
-          // console.log("result", result);
+          // failed
+          timeoutOut && clearTimeout(timeoutOut);
+          callback && callback();
+          unsub();
           rejectOut(new Error("Transaction failed"));
-        } else if (result.isFinalized) {
-          const isSuccess = events.every(
-            ({ event }) => !api.events.system.ExtrinsicFailed.is(event)
-          );
-          if (isSuccess) {
-            // successToast("Transaction Done")
-            console.log("result", result);
-            callback?.();
-            resolveOut();
-            unsub();
-          }
         }
       }
     );
@@ -224,10 +209,8 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
     const amt = Math.floor(Number(amount) * 10 ** 9);
-    const tx = api.tx.utility.batchAll([
-      api.tx.subspaceModule.removeStake(NET_ID, validator, amt),
-      api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
+    const tx = api.tx.subspaceModule.removeStake(NET_ID, validator, amt);
+
     await completeTransaction(tx, callback);
   }
   async function transferStake({
