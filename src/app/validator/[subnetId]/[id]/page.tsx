@@ -38,12 +38,14 @@ const detailInfo = [
   }
 ]
 
-const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
+const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: string } }) => {
+  
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsByIdQuery(
       {
         key: String(params.id),
         wallet: "",
+        subnet_id: Number(params.subnetId),
       },
       {
         skip: !params.id,
@@ -230,11 +232,13 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                   open={stakingOpen}
                   setOpen={setStakingOpen}
                   validatorId={String(params.id)}
+                  subnet_id={Number(params.subnetId)}
                 />
                  <VerifyModal
                   open={verifyOpen}
                   setOpen={setVerifyOpen}
                   validatorId={String(params.id)}
+                  subnet_id={Number(params.subnetId)}
                 />
               </div>
             </div>

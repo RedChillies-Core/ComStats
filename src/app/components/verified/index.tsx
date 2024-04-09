@@ -9,7 +9,6 @@ function Verified({ isGold = false, isOfComStats = false }: { isGold?: boolean, 
         isGold ? `${isOfComStats ? "Comstats": "Golden"} Bagde` : "Verified Badge"
       }`}
       data-tooltip-place="top"
-      className="z-30"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -27,6 +26,7 @@ function Verified({ isGold = false, isOfComStats = false }: { isGold?: boolean, 
       </svg>
       <Tooltip
         id="verified-tooltip"
+        className="z-[999]"
         data-tooltip-id={Math.random().toString(36).substr(2, 5)}
       />
     </div>

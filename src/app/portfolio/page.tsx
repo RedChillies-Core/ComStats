@@ -30,6 +30,7 @@ const Portfolio = () => {
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
   const [validatorId, setValidatorId] = useState("")
+  const [subnetId, setSubnetId] = useState(0)
 
   return (
     <div className="container p-2 md:p-0">
@@ -184,11 +185,12 @@ const Portfolio = () => {
                         onClick={() => {
                           setStakingOpen(true)
                           setValidatorId(stake.validator.key)
+                          setSubnetId(stake.validator.subnet_id)
                         }}
                       >
                         Manage Stake
                       </Button>
-                      <Link href={`/validator/${stake.validator.key}`}>
+                      <Link href={`/validator/${stake.validator.subnet_id}/${stake.validator.key}`}>
                         <Button variant="outlined" size="large">
                           View Details
                         </Button>
@@ -203,6 +205,7 @@ const Portfolio = () => {
             open={stakingOpen}
             setOpen={setStakingOpen}
             validatorId={validatorId}
+            subnet_id={subnetId}
           />
         </div>
       </div>

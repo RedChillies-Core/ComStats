@@ -17,11 +17,13 @@ const ManageStakingForm = () => {
     mode: "all",
   })
   const [validatorId, setValidatorId] = useState("")
+  const [subnetId, setSubnetId] = useState(0)
   const [open, setOpen] = useState(false)
   const { data: validatorData } = useGetValidatorsQuery()
 
   const onSubmit = (data: any) => {
     setValidatorId(data.validator.value)
+    setSubnetId(data.validator.subnet_id)
     setOpen(true)
   }
 
@@ -54,7 +56,12 @@ const ManageStakingForm = () => {
           Select a Validator
         </Button>
       </div>
-      <StakingModal open={open} setOpen={setOpen} validatorId={validatorId} />
+      <StakingModal 
+        open={open} 
+        setOpen={setOpen} 
+        validatorId={validatorId} 
+        subnet_id={subnetId}  
+      />
     </form>
   )
 }

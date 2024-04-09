@@ -19,6 +19,7 @@ export type ValidatorType = {
   wallet_staked?: number
   expire_at?: number
   verified_type: string
+  subnet_id: number
 }
 
 export interface InterfacePagination<Data> {
@@ -85,5 +86,6 @@ export interface IVerifyModule {
   key: string,
   verificationType: 'golden' | 'verified'
   duration: 'monthly' | 'yearly'
+  subnetId: number
   callback?: () => void
 }
