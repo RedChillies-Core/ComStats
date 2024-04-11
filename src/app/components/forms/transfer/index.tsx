@@ -69,13 +69,10 @@ const TransferForm = () => {
           handleMaxClick={(e: any) => {
             e.preventDefault()
             const amount = Number(balanceData?.balance) - 1000 - 8 * 10 ** 8
-            if(amount < 0) {
-              errorToast("Insufficient Balance")
-              return
-            }
+            
             setValue(
               "amount",
-              formatTokenPrice({ amount, precision: 9 }),
+              formatTokenPrice({ amount: amount < 0 ? 0 : amount, precision: 9 }),
             )
           }}
           register={register}

@@ -65,14 +65,14 @@ const AddStakingForm = ({
           handleMaxClick={(e: any) => {
             e.preventDefault()
             const amount = (Number(balanceData?.balance) - 1000 - 2 * 10 ** 9)
-            if(amount < 0) {
-              errorToast("Insufficient Balance")
-              return
-            }
+            // if(amount < 0) {
+            //   // errorToast("Insufficient Balance")
+            //   return
+            // }
             setValue(
               "stakeAmount",
               formatTokenPrice({
-                amount,
+                amount: amount < 0 ? 0 : amount,
                 precision: 9,
               }),
             )

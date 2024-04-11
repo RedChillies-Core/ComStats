@@ -134,6 +134,16 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
     const amt = Math.floor(Number(amount) * 10 ** 9);
+    if (amt <= 0) {
+      errorToast("Stake amount must be greater than 0");
+      return;
+    }
+    const balance: any = await api.query.system.account(selectedAccount.address);
+    const freeBalance = balance.data.free.toNumber();
+    if(freeBalance < amt + 2 * 10 ** 9){
+      errorToast(`Insufficient balance. You need at least ${((amt + 2 * 10 ** 9)/10 ** 9).toFixed(2)} $COMAI to stake ${(amt /10 ** 9).toFixed(2)} $COMAI`);
+      return;
+    }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.addStake(NET_ID, validator, amt),
       api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
@@ -222,6 +232,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
     const amt = Math.floor(Number(amount) * 10 ** 9);
+    const balance: any = await api.query.system.account(selectedAccount.address);
+    const freeBalance = balance.data.free.toNumber();
+    if(freeBalance < 1 * 10 ** 9){
+      errorToast("Insufficient balance. You need at least 1 $COMAI in your account to transfer");
+      return;
+    }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.transferStake(
         NET_ID,
@@ -239,6 +255,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
     const amt = Math.floor(Number(amount) * 10 ** 9);
+    const balance: any = await api.query.system.account(selectedAccount.address);
+    const freeBalance = balance.data.free.toNumber();
+    if(freeBalance < amt + 1000 - 8 * 10 ** 8){
+      errorToast(`Insufficient balance. You need at least ${((amt + 1000 - 8 * 10 ** 8)/10 ** 9).toFixed(2)} $COMAI to transfer ${(amt /10 ** 9).toFixed(2)} $COMAI`);
+      return;
+    }
     const tx = api.tx.utility.batchAll([
       api.tx.balances.transfer(to, amt),
       api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
