@@ -89,10 +89,6 @@ const TransferStakingForm = ({
                 (item) => item.validator.key === validator?.key,
               )?.amount ?? 0,
             )
-            if((balanceData?.balance ?? 0)  < 1 * 10 ** 9) {
-              errorToast("Insufficient balance for Transfer")
-              return
-            }
             setValue(
               "stakeAmount",
               formatTokenPrice({
