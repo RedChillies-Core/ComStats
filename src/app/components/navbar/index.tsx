@@ -1,7 +1,7 @@
 "use client"
 
 import React, { Fragment, useEffect, useState } from "react"
-import { AiFillWallet, AiOutlineSwap } from "react-icons/ai"
+import { AiFillWallet, AiOutlineTransaction } from "react-icons/ai"
 import Button from "../button"
 import Image from "next/image"
 import { usePolkadot } from "@/context"
@@ -44,13 +44,18 @@ const Navbar = () => {
           <div>
             <Image
               alt="blockchain"
-              src="/Animated1.gif"
+              src="/comstats.webp"
               height={50}
               width={50}
             />
           </div>
         </Link>
         <div className="flex items-center gap-x-2">
+          <a href="https://comsolbridge.com" target="_blank">
+            <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
+              <AiOutlineTransaction /> Comsol Bridge
+            </div>
+          </a>
           <Link href="/subnets">
             <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
               <FaCubesStacked /> Subnets
@@ -65,7 +70,8 @@ const Navbar = () => {
               </Link>
 
               <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2">
-                <button className="flex items-center cursor-pointer"
+                <button
+                  className="flex items-center cursor-pointer"
                   onClick={handleConnect}
                 >
                   <AiFillWallet size={24} className="text-purple" />

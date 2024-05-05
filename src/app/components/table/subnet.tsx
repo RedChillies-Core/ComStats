@@ -18,7 +18,7 @@ const SubnetTable = ({
     <div className="max-w-full overflow-x-hidden">
       <div className="shadow-md rounded-lg">
         <div className="bg-gray-100 p-3 hidden md:block">
-          <div className="grid grid-cols-[5%_30%_15%_20%_10%_20%] gap-3">
+          <div className="grid grid-cols-[5%_25%_10%_15%_10%_10%_10%_10%] gap-3">
             <div>
               <p className="text-xs text-gray-500 font-semibold">S.N</p>
             </div>
@@ -35,6 +35,12 @@ const SubnetTable = ({
             </div>
             <div>
               <p className="text-xs text-gray-500 font-semibold">Net APY</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 font-semibold">Emission</p>
+            </div>
+            <div>
+              <p className="text-xs text-gray-500 font-semibold">Fee</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-semibold">Action</p>
@@ -79,7 +85,7 @@ const SubnetTable = ({
             subnet.map((validator, index) => (
               <div
                 key={index}
-                className={`grid grid-cols-1 md:grid-cols-[5%_30%_15%_20%_10%_20%] gap-3 items-center py-3 border-b ${
+                className={`grid grid-cols-1 md:grid-cols-[5%_25%_10%_15%_10%_10%_10%_10%] gap-3 items-center py-3 border-b ${
                   index === subnet.length - 1 ? "border-0" : ""
                 }`}
               >
@@ -93,12 +99,8 @@ const SubnetTable = ({
                         </div>
                         {validator.isVerified && (
                           <Verified
-                            isGold={
-                              validator.verified_type === "golden"
-                            }
-                            isOfComStats={
-                              validator?.expire_at === -1
-                            }
+                            isGold={validator.verified_type === "golden"}
+                            isOfComStats={validator?.expire_at === -1}
                           />
                         )}
                       </div>
@@ -123,6 +125,14 @@ const SubnetTable = ({
                   </p>
                 </div>
                 <div className="">{Number(validator.apy.toFixed(2))}%</div>
+                <div className="">
+                  {numberWithCommas(
+                    formatTokenPrice({
+                      amount: Number(validator?.emission),
+                    }),
+                  )}
+                </div>
+                <div className="">{validator.delegation_fee}%</div>
                 <div className="">
                   <Link
                     href={`/validator/${validator.subnet_id}/${validator.key}`}

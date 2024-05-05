@@ -297,17 +297,20 @@ export default function Home() {
       </section>
       <div className="bg-button mx-3 p-5 rounded-lg shadow-lg text-white text-center my-10 sm:rounded-none sm:mx-0 sm:p-10">
         <h1 className="text-2xl font-bold mb-2">
-          wCOMAI on Solana (soon in April) 🔥
+          wCOMAI on Solana (Live now) 🔥
         </h1>
         <p className="mb-4">
-          Bridge COMAI between Solana and CommuneAI | Powered by ComSolBridge
+          Bridge COMAI between Solana and CommuneAI
+          <br /> Powered by ComSolBridge
         </p>
         <div className="w-full flex justify-center">
-          <Button variant="transparent" size="medium">
-            Bridge Now
-          </Button>
+          <a href="https://comsolbridge.com" target="_blank">
+            <Button variant="transparent" size="medium">
+              Bridge Now
+            </Button>
+          </a>
         </div>
-        <p className="italic mt-3 text-sm">Coming Soon in April...</p>
+        {/* <p className="italic mt-3 text-sm">Coming Soon in April...</p> */}
       </div>
       <section className="container my-10 ">
         <div className="flex justify-between mb-4 items-center flex-col sm:flex-row sm:px-5">
