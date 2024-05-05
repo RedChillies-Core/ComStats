@@ -1,227 +1,232 @@
-"use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { ApiPromise, WsProvider } from "@polkadot/api";
-import { NET_ID, transactionFeeCollector } from "@/constants";
+"use client"
+import React, { createContext, useContext, useEffect, useState } from "react"
+import { ApiPromise, WsProvider } from "@polkadot/api"
+import { NET_ID, transactionFeeCollector } from "@/constants"
 import {
   IAddStaking,
   ITransfer,
   ITransferStaking,
   IVerifyModule,
-} from "@/types";
+} from "@/types"
 import {
   InjectedAccountWithMeta,
   InjectedExtension,
-} from "@polkadot/extension-inject/types";
-import WalletModal from "@/app/components/modal/connect";
-import { errorToast, successToast } from "@/app/components/toast";
-import { getWallet, setWallet } from "@/utils/wallet";
-import { toast } from "react-toastify";
-import { SubmittableExtrinsic } from "@polkadot/api-base/types";
-import { ISubmittableResult } from "@polkadot/types/types";
-import { getVerificationAmount } from "@/utils/getVerificationAmount";
+} from "@polkadot/extension-inject/types"
+import WalletModal from "@/app/components/modal/connect"
+import { errorToast, successToast } from "@/app/components/toast"
+import { getWallet, setWallet } from "@/utils/wallet"
+import { toast } from "react-toastify"
+import { SubmittableExtrinsic } from "@polkadot/api-base/types"
+import { ISubmittableResult } from "@polkadot/types/types"
+import { getVerificationAmount } from "@/utils/getVerificationAmount"
 
 interface PolkadotApiState {
-  web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
-  web3Enable: ((appName: string) => Promise<InjectedExtension[]>) | null;
-  web3FromAddress: ((address: string) => Promise<InjectedExtension>) | null;
+  web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null
+  web3Enable: ((appName: string) => Promise<InjectedExtension[]>) | null
+  web3FromAddress: ((address: string) => Promise<InjectedExtension>) | null
 }
 
 interface PolkadotContextType {
-  api: ApiPromise | null;
-  blockNumber: number;
-  isConnected: boolean;
-  isInitialized: boolean;
-  accounts: InjectedAccountWithMeta[];
-  selectedAccount: InjectedAccountWithMeta | undefined;
-  handleConnect: () => void;
-  addStake: (args: IAddStaking) => void;
-  removeStake: (args: IAddStaking) => void;
-  transfer: (args: ITransfer) => void;
-  transferStake: (args: ITransferStaking) => void;
-  verifyModule: (args: IVerifyModule) => void;
+  api: ApiPromise | null
+  blockNumber: number
+  isConnected: boolean
+  isInitialized: boolean
+  accounts: InjectedAccountWithMeta[]
+  selectedAccount: InjectedAccountWithMeta | undefined
+  handleConnect: () => void
+  addStake: (args: IAddStaking) => void
+  removeStake: (args: IAddStaking) => void
+  transfer: (args: ITransfer) => void
+  transferStake: (args: ITransferStaking) => void
+  verifyModule: (args: IVerifyModule) => void
 }
 
 const PolkadotContext = createContext<PolkadotContextType | undefined>(
-  undefined
-);
+  undefined,
+)
 
 interface PolkadotProviderProps {
-  children: React.ReactNode;
-  wsEndpoint: string;
+  children: React.ReactNode
+  wsEndpoint: string
 }
 
 export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   children,
   wsEndpoint,
 }) => {
-  const [api, setApi] = useState<ApiPromise | null>(null);
-  const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
-  const [isConnected, setIsConnected] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const [blockNumber, setBlockNumber] = useState(0);
+  const [api, setApi] = useState<ApiPromise | null>(null)
+  const [isInitialized, setIsInitialized] = useState<boolean>(false)
+  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([])
+  const [isConnected, setIsConnected] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const [blockNumber, setBlockNumber] = useState(0)
   const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
     web3Accounts: null,
     web3Enable: null,
     web3FromAddress: null,
-  });
+  })
   async function loadPolkadotApi() {
     const { web3Accounts, web3Enable, web3FromAddress } = await import(
       "@polkadot/extension-dapp"
-    );
+    )
     setPolkadotApi({
       web3Accounts,
       web3Enable,
       web3FromAddress,
-    });
-    const provider = new WsProvider(wsEndpoint);
-    const newApi = await ApiPromise.create({ provider });
-    setApi(newApi);
-    setIsInitialized(true);
+    })
+    const provider = new WsProvider(wsEndpoint)
+    const newApi = await ApiPromise.create({ provider })
+    setApi(newApi)
+    setIsInitialized(true)
   }
   useEffect(() => {
     async function init() {
-      await loadPolkadotApi();
+      await loadPolkadotApi()
     }
-    init();
+    init()
     return () => {
-      api?.disconnect();
-    };
-  }, [wsEndpoint]);
+      api?.disconnect()
+    }
+  }, [wsEndpoint])
 
   useEffect(() => {
     async function init() {
-      const savedWallet = getWallet();
+      const savedWallet = getWallet()
       if (!!savedWallet) {
-        if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return;
-        const extensions = await polkadotApi.web3Enable("ComStats");
-        console.log(extensions);
+        if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
+        const extensions = await polkadotApi.web3Enable("ComStats")
+        console.log(extensions)
         if (!extensions) {
-          throw Error("NO_EXTENSION_FOUND");
+          throw Error("NO_EXTENSION_FOUND")
         }
-        const allAccounts = await polkadotApi.web3Accounts();
-        setAccounts(allAccounts);
-        setSelectedAccount(savedWallet);
-        setIsConnected(true);
+        const allAccounts = await polkadotApi.web3Accounts()
+        setAccounts(allAccounts)
+        setSelectedAccount(savedWallet)
+        setIsConnected(true)
       }
     }
-    if (isInitialized) init();
-  }, [isInitialized]);
+    if (isInitialized) init()
+  }, [isInitialized])
 
   useEffect(() => {
     if (api) {
       api.rpc.chain.subscribeNewHeads((header) => {
-        setBlockNumber(header.number.toNumber());
-      });
+        setBlockNumber(header.number.toNumber())
+      })
     }
-  }, [api]);
+  }, [api])
 
   const handleConnect = async () => {
-    if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return;
-    const extensions = await polkadotApi.web3Enable("ComStats");
+    if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
+    const extensions = await polkadotApi.web3Enable("ComStats")
     if (!extensions) {
-      throw Error("NO_EXTENSION_FOUND");
+      throw Error("NO_EXTENSION_FOUND")
     }
-    const allAccounts = await polkadotApi.web3Accounts();
-    setAccounts(allAccounts);
-    setOpenModal(true);
-  };
+    const allAccounts = await polkadotApi.web3Accounts()
+    setAccounts(allAccounts)
+    setOpenModal(true)
+  }
 
   const [selectedAccount, setSelectedAccount] =
-    useState<InjectedAccountWithMeta>();
+    useState<InjectedAccountWithMeta>()
 
   async function addStake({ validator, amount, callback }: IAddStaking) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
-    const amt = Math.floor(Number(amount) * 10 ** 9);
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
+    const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Math.floor(Number(amount) * 10 ** 9)
     if (amt <= 0) {
-      errorToast("Stake amount must be greater than 0");
-      return;
+      errorToast("Stake amount must be greater than 0")
+      return
     }
-    const balance: any = await api.query.system.account(selectedAccount.address);
-    const freeBalance = balance.data.free.toNumber();
-    if(freeBalance < amt + 2 * 10 ** 9){
-      errorToast(`Insufficient balance. You need at least ${((amt + 2 * 10 ** 9)/10 ** 9).toFixed(2)} $COMAI to stake ${(amt /10 ** 9).toFixed(2)} $COMAI`);
-      return;
+    const balance: any = await api.query.system.account(selectedAccount.address)
+    const freeBalance = balance.data.free.toNumber()
+    if (freeBalance < amt + 2 * 10 ** 9) {
+      errorToast(
+        `Insufficient balance. You need at least ${(
+          (amt + 2 * 10 ** 9) /
+          10 ** 9
+        ).toFixed(2)} $COMAI to stake ${(amt / 10 ** 9).toFixed(2)} $COMAI`,
+      )
+      return
     }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.addStake(NET_ID, validator, amt),
       api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
-    await completeTransaction(tx, callback);
+    ])
+    await completeTransaction(tx, callback)
   }
 
   async function completeTransaction(
     tx: SubmittableExtrinsic<"promise", ISubmittableResult>,
-    callback?: () => void
+    callback?: () => void,
   ) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
+    const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
 
-    let timeoutOut: any;
-    let resolveOut: any;
-    let rejectOut: any;
+    let timeoutOut: any
+    let resolveOut: any
+    let rejectOut: any
 
     const promise = new Promise((resolve, reject) => {
-      resolveOut = resolve;
-      rejectOut = reject;
+      resolveOut = resolve
+      rejectOut = reject
       timeoutOut = setTimeout(() => {
-        reject(new Error("Transaction failed"));
-      }, 12000);
-    });
+        reject(new Error("Transaction failed"))
+      }, 12000)
+    })
     const unsub = await tx.signAndSend(
       selectedAccount.address,
       {
         signer: injector.signer,
       },
       async (result) => {
-        const { events } = result;
+        const { events } = result
 
         if (result.isFinalized || result.isInBlock) {
           // finalized
           const isSucess = events.every(({ event: { method } }) => {
-            return method !== "ExtrinsicFailed";
-          });
+            return method !== "ExtrinsicFailed"
+          })
           if (isSucess) {
-            unsub();
-            resolveOut();
-            callback && callback();
-            timeoutOut && clearTimeout(timeoutOut);
+            unsub()
+            resolveOut()
+            callback && callback()
+            timeoutOut && clearTimeout(timeoutOut)
           }
         } else if (result.isError) {
           // failed
-          timeoutOut && clearTimeout(timeoutOut);
-          callback && callback();
-          unsub();
-          rejectOut(new Error("Transaction failed"));
+          timeoutOut && clearTimeout(timeoutOut)
+          callback && callback()
+          unsub()
+          rejectOut(new Error("Transaction failed"))
         }
-      }
-    );
+      },
+    )
 
     await toast.promise(
       promise
         .then(() => {
-          console.log("promise resolved inside toast.promise");
+          console.log("promise resolved inside toast.promise")
         })
         .catch((err: any) => {
-          console.log("promise rejected inside toast.promise", err);
+          console.log("promise rejected inside toast.promise", err)
         }),
       {
         pending: "Sending transaction...",
         success: "Transaction successful",
         error: "Transaction failed",
-      }
-    );
-    clearTimeout(timeoutOut);
+      },
+    )
+    clearTimeout(timeoutOut)
   }
 
   async function removeStake({ validator, amount, callback }: IAddStaking) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
-    const amt = Math.floor(Number(amount) * 10 ** 9);
-    const tx = api.tx.subspaceModule.removeStake(NET_ID, validator, amt);
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
+    const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Math.floor(Number(amount) * 10 ** 9)
+    const tx = api.tx.subspaceModule.removeStake(NET_ID, validator, amt)
 
-    await completeTransaction(tx, callback);
+    await completeTransaction(tx, callback)
   }
   async function transferStake({
     validatorFrom,
@@ -229,44 +234,51 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     amount,
     callback,
   }: ITransferStaking) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
-    const amt = Math.floor(Number(amount) * 10 ** 9);
-    const balance: any = await api.query.system.account(selectedAccount.address);
-    const freeBalance = balance.data.free.toNumber();
-    if(freeBalance < 1 * 10 ** 9){
-      errorToast("Insufficient balance. You need at least 1 $COMAI in your account to transfer");
-      return;
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
+    const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Math.floor(Number(amount) * 10 ** 9)
+    const balance: any = await api.query.system.account(selectedAccount.address)
+    const freeBalance = balance.data.free.toNumber()
+    if (freeBalance < 1 * 10 ** 9) {
+      errorToast(
+        "Insufficient balance. You need at least 1 $COMAI in your account to transfer",
+      )
+      return
     }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.transferStake(
         NET_ID,
         validatorFrom,
         validatorTo,
-        amt
+        amt,
       ),
-      api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
-    await completeTransaction(tx, callback);
+      // api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
+    ])
+    await completeTransaction(tx, callback)
     // clearTimeout(timeoutOut);
   }
 
   async function transfer({ to, amount, callback }: ITransfer) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
-    const amt = Math.floor(Number(amount) * 10 ** 9);
-    const balance: any = await api.query.system.account(selectedAccount.address);
-    const freeBalance = balance.data.free.toNumber();
-    if(freeBalance < amt + 1000 - 8 * 10 ** 8){
-      errorToast(`Insufficient balance. You need at least ${((amt + 1000 - 8 * 10 ** 8)/10 ** 9).toFixed(2)} $COMAI to transfer ${(amt /10 ** 9).toFixed(2)} $COMAI`);
-      return;
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
+    const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amt = Math.floor(Number(amount) * 10 ** 9)
+    const balance: any = await api.query.system.account(selectedAccount.address)
+    const freeBalance = balance.data.free.toNumber()
+    if (freeBalance < amt + 1000 - 8 * 10 ** 8) {
+      errorToast(
+        `Insufficient balance. You need at least ${(
+          (amt + 1000 - 8 * 10 ** 8) /
+          10 ** 9
+        ).toFixed(2)} $COMAI to transfer ${(amt / 10 ** 9).toFixed(2)} $COMAI`,
+      )
+      return
     }
     const tx = api.tx.utility.batchAll([
       api.tx.balances.transfer(to, amt),
-      api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
+      // api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
+    ])
 
-    await completeTransaction(tx, callback);
+    await completeTransaction(tx, callback)
   }
 
   async function verifyModule({
@@ -276,26 +288,26 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     subnetId = 0,
     callback,
   }: IVerifyModule) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
-    const amount = getVerificationAmount(verificationType, duration);
-    const amt = Math.floor(Number(amount) * 10 ** 9);
+    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return
+    const injector = await polkadotApi.web3FromAddress(selectedAccount.address)
+    const amount = getVerificationAmount(verificationType, duration)
+    const amt = Math.floor(Number(amount) * 10 ** 9)
     const tx = api.tx.utility.batchAll([
       api.tx.balances.transfer(
         "5CVUUEQme5fWXD1zkMwZ9iSvR2PXNBsjnN6CX4dWMjc81fsD",
-        amt
+        amt,
       ),
       api.tx.system.remark(`${key},${verificationType},${subnetId}`),
-    ]);
+    ])
 
-    await completeTransaction(tx, callback);
+    await completeTransaction(tx, callback)
   }
 
   async function handleWalletSelections(wallet: InjectedAccountWithMeta) {
-    setSelectedAccount(wallet);
-    setWallet(wallet);
-    setIsConnected(true);
-    setOpenModal(false);
+    setSelectedAccount(wallet)
+    setWallet(wallet)
+    setIsConnected(true)
+    setOpenModal(false)
   }
 
   return (
@@ -323,13 +335,13 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       />
       {children}
     </PolkadotContext.Provider>
-  );
-};
+  )
+}
 
 export const usePolkadot = (): PolkadotContextType => {
-  const context = useContext(PolkadotContext);
+  const context = useContext(PolkadotContext)
   if (context === undefined) {
-    throw new Error("usePolkadot must be used within a PolkadotProvider");
+    throw new Error("usePolkadot must be used within a PolkadotProvider")
   }
-  return context;
-};
+  return context
+}
