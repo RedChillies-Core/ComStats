@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { NET_ID, transactionFeeCollector } from "@/constants";
 import {
@@ -19,6 +19,9 @@ import { toast } from "react-toastify";
 import { SubmittableExtrinsic } from "@polkadot/api-base/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { getVerificationAmount } from "@/utils/getVerificationAmount";
+import { getWallets } from "@subwallet/wallet-connect/dotsama/wallets";
+import { Wallet } from "@subwallet/wallet-connect/types";
+import BigNumber from "bignumber.js";
 
 interface PolkadotApiState {
   web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
@@ -39,6 +42,10 @@ interface PolkadotContextType {
   transfer: (args: ITransfer) => void;
   transferStake: (args: ITransferStaking) => void;
   verifyModule: (args: IVerifyModule) => void;
+  balance: BigNumber | undefined;
+  extensionSelected: Wallet | null;
+  setExtensionSelected: (wallet: Wallet) => void;
+  wallets: Wallet[];
 }
 
 const PolkadotContext = createContext<PolkadotContextType | undefined>(
@@ -49,16 +56,21 @@ interface PolkadotProviderProps {
   children: React.ReactNode;
   wsEndpoint: string;
 }
-
+let interval: any;
 export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   children,
   wsEndpoint,
 }) => {
+  const dotsamaWallets = getWallets();
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]);
+  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | []>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [balance, setBalance] = useState<BigNumber | undefined>();
+  const [extensionSelected, setExtensionSelected] = useState<Wallet | null>(
+    null
+  );
   const [blockNumber, setBlockNumber] = useState(0);
   const [polkadotApi, setPolkadotApi] = useState<PolkadotApiState>({
     web3Accounts: null,
@@ -132,7 +144,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
 
   async function addStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
+    
     const amt = Math.floor(Number(amount) * 10 ** 9);
     if (amt <= 0) {
       errorToast("Stake amount must be greater than 0");
@@ -155,9 +167,8 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     tx: SubmittableExtrinsic<"promise", ISubmittableResult>,
     callback?: () => void
   ) {
-    if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
-
+    if(selectedAccount === undefined) return;
+    if(extensionSelected === null) return;
     let timeoutOut: any;
     let resolveOut: any;
     let rejectOut: any;
@@ -167,12 +178,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       rejectOut = reject;
       timeoutOut = setTimeout(() => {
         reject(new Error("Transaction failed"));
-      }, 12000);
+      }, 30000);
     });
     const unsub = await tx.signAndSend(
       selectedAccount.address,
       {
-        signer: injector.signer,
+        signer: extensionSelected.signer,
       },
       async (result) => {
         const { events } = result;
@@ -197,7 +208,6 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         }
       }
     );
-
     await toast.promise(
       promise
         .then(() => {
@@ -217,7 +227,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
 
   async function removeStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
+    
     const amt = Math.floor(Number(amount) * 10 ** 9);
     const tx = api.tx.subspaceModule.removeStake(NET_ID, validator, amt);
 
@@ -230,7 +240,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     callback,
   }: ITransferStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
+    
     const amt = Math.floor(Number(amount) * 10 ** 9);
     const balance: any = await api.query.system.account(selectedAccount.address);
     const freeBalance = balance.data.free.toNumber();
@@ -253,7 +263,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
 
   async function transfer({ to, amount, callback }: ITransfer) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
+    
     const amt = Math.floor(Number(amount) * 10 ** 9);
     const balance: any = await api.query.system.account(selectedAccount.address);
     const freeBalance = balance.data.free.toNumber();
@@ -277,7 +287,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     callback,
   }: IVerifyModule) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    const injector = await polkadotApi.web3FromAddress(selectedAccount.address);
+    
     const amount = getVerificationAmount(verificationType, duration);
     const amt = Math.floor(Number(amount) * 10 ** 9);
     const tx = api.tx.utility.batchAll([
@@ -291,12 +301,26 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     await completeTransaction(tx, callback);
   }
 
-  async function handleWalletSelections(wallet: InjectedAccountWithMeta) {
-    setSelectedAccount(wallet);
-    setWallet(wallet);
-    setIsConnected(true);
-    setOpenModal(false);
+  async function getBalance(wallet: InjectedAccountWithMeta) {
+    if (!api || !wallet) return;
+    const { data } = (await api.query.system.account(wallet.address)) as any;
+    return new BigNumber(data.free.toString()).div(10 ** 9);
   }
+
+  const handleWalletSelections = useCallback(async (wallet: InjectedAccountWithMeta) => {
+    setSelectedAccount(wallet);
+   
+    window.localStorage.setItem("selectedAccount", JSON.stringify(wallet));
+    setIsConnected(true);
+    if (interval) {
+      clearInterval(interval);
+    }
+    getBalance(wallet).then((res) => setBalance(res));
+    interval = setInterval(() => {
+      getBalance(wallet).then((res) => setBalance(res));
+    }, 20000);
+    // setOpenModal(false)
+  }, [extensionSelected]);
 
   return (
     <PolkadotContext.Provider
@@ -313,13 +337,22 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         removeStake,
         transferStake,
         verifyModule,
+        wallets: dotsamaWallets,
+        balance,
+        extensionSelected,
+        setExtensionSelected,
       }}
     >
       <WalletModal
         open={openModal}
         setOpen={setOpenModal}
         wallets={accounts}
+        isConnected={isConnected}
+        extensionSelected={extensionSelected}
+        setSelectExtension={setExtensionSelected}
+        extensions={dotsamaWallets}
         handleWalletSelections={handleWalletSelections}
+        setWallets={setAccounts}
       />
       {children}
     </PolkadotContext.Provider>
