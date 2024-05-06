@@ -3,7 +3,7 @@
 import Button from "@/app/components/button"
 import StakingModal from "@/app/components/modal/stake"
 import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { FaArrowLeft, FaDiscord, FaSpinner } from "react-icons/fa6"
 import { GoKey } from "react-icons/go"
 import { PiCirclesFourLight } from "react-icons/pi"
@@ -28,6 +28,7 @@ const detailInfo = [
     name: "ComStats",
     description: "All Statistics of CommuneAI at one place. Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI",
     twitter: "https://twitter.com/comstatsorg",
+    website: "https://comstats.org",
     discord: ""
   },
   {
@@ -35,6 +36,7 @@ const detailInfo = [
     name: "Project Eden",
     description: "Education, validation, mining & more for CommuneAI",
     twitter: "https://twitter.com/project_eden_ai",
+    website: "https://projecteden.ai",
     discord: ""
   }
 ]
@@ -72,11 +74,19 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
     
   }, [validatorData]);
 
-  const isValidLink = (link: string, type: 'discord' | 'twitter') => {
+  const isValidLinkD = (link: string, type: 'discord' | 'twitter' | 'website') => {
     if (link === "") return false;
     if (type === 'discord' && !link.includes('discord.gg')) return false;
     if (type === 'twitter' && !link.includes('twitter.com')) return false;
+    if (type === 'website' && !link.includes('http')) return false;
+    return true;
   }
+  const isValidLink = useCallback(isValidLinkD, [
+    validatorData?.discord,
+    validatorData?.twitter,
+    detailInfo.find(each=>each.key === validatorData?.key)?.discord,
+    detailInfo.find(each=>each.key === validatorData?.key)?.twitter
+  ]);
   return (
     <div className="container px-3 md:px-0">
       <div className="flex py-5 items-center gap-x-3">
@@ -134,7 +144,11 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                 }  target="_blank">
                   <FaXTwitter size={22} />
                 </a>
-                <a href="" target="_blank">
+                <a href={
+                  isValidLink(validatorData?.website || detailInfo.find(each=>each.key === validatorData?.key)?.website || "", "website") ?
+                  (validatorData?.website || detailInfo.find(each=>each.key === validatorData?.key)?.website || "") : "#"
+
+                } target="_blank">
                   <TbWorld size={22} />
                 </a>
               </div>
