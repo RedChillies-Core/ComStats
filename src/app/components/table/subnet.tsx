@@ -17,7 +17,7 @@ const SubnetTable = ({
   return (
     <div className="max-w-full overflow-x-hidden">
       <div className="shadow-md rounded-lg">
-        <div className="bg-gray-100 p-3 hidden md:block">
+        <div className="bg-gray-100 p-3 hidden md:block !uppercase">
           <div className="grid grid-cols-[5%_25%_10%_15%_10%_10%_10%_10%] gap-3">
             <div>
               <p className="text-xs text-gray-500 font-semibold">S.N</p>
@@ -34,7 +34,7 @@ const SubnetTable = ({
               <p className="text-xs text-gray-500 font-semibold">Total Stake</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 font-semibold">Emission</p>
+              <p className="text-xs text-gray-500 font-semibold">EMISSION (COMAI per 100 blocks)</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-semibold">Net APY</p>
