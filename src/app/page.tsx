@@ -119,7 +119,7 @@ export default function Home() {
     },
     {
       id: 4,
-      statsName: "Daily Emission",
+      statsName: "EMISSION (COMAI per 100 blocks)",
       icon: <TbBasketDollar size={40} />,
       value: numberWithCommas(onChainData?.daily_emission),
     },

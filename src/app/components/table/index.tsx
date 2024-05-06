@@ -80,7 +80,7 @@ const ValidatorTable = () => {
               <th>Modules</th>
               <th>Stakers</th>
               <th>Stake</th>
-              <th>Emissionn</th>
+              <th>EMISSION (COMAI per 100 blocks)</th>
               <th>Net APY</th>
               <th>Fee</th>
               <th></th>
