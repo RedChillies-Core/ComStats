@@ -1,0 +1,127 @@
+import React, {  } from "react"
+import { LiaCubesSolid } from "react-icons/lia"
+import Modal from "react-responsive-modal"
+import { FaSpinner } from "react-icons/fa6"
+import {
+  useGetBalanceQuery,
+  useGetValidatorsByIdQuery,
+} from "@/store/api/statsApi"
+import { usePolkadot } from "@/context"
+import { numberWithCommas } from "@/utils/numberWithCommas"
+import Verified from "../../verified"
+import UpdateDetailsForm from "../../forms/update"
+import { successToast } from "../../toast"
+
+type IUpdateDetailsModal = {
+  open: boolean
+  setOpen: (arg: boolean) => void
+  validatorId: string
+  subnet_id: number
+}
+const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDetailsModal) => {
+  const { selectedAccount } = usePolkadot()
+  const {
+    data: validatorData,
+    isLoading: validatorLoading,
+    refetch: validatorRefetch,
+  } = useGetValidatorsByIdQuery({
+    key: validatorId,
+    wallet: String(selectedAccount?.address),
+    subnet_id,
+  })
+
+  const { refetch: refetchBalance } = useGetBalanceQuery(
+    { wallet: String(selectedAccount?.address) },
+    {
+      skip: !selectedAccount,
+    },
+  )
+  
+  return (
+    <Modal open={open} onClose={() => setOpen(false)} center>
+      <h1 className="text-lg font-semibold leading-8">Update {validatorData?.type} details</h1>
+      <hr />
+      <div className="w-full">
+        <div className="my-3">
+          {validatorLoading && <FaSpinner className="spinner" />}
+          {!validatorLoading && (
+            <div className="border-[2px] my-5 p-4 text-sm rounded-lg shadow-card">
+              <div className="flex justify-between">
+                <h6 className=" text-base tracking-tight font-semibold flex items-center">
+                  <LiaCubesSolid size={40} /> Module Details
+                </h6>
+              </div>
+              <hr className="my-2" />
+              <ul>
+                <li className="flex gap-x-2 pb-1">
+                  <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
+                  <div className="flex items-center">
+                    <h1 className="font-normal">{validatorData?.name}</h1>
+                    {validatorData?.isVerified && (
+                      <Verified
+                        isGold={
+                          validatorData?.verified_type === "golden"
+                        }
+                        isOfComStats={
+                          validatorData?.expire_at === -1
+                        }
+                      />
+                    )}
+                  </div>
+                </li>
+                <li className="flex gap-x-2 pb-1">
+                  <h6 className="font-normal w-1/2 tracking-tighter">
+                    Total Staked{" "}
+                  </h6>
+                  <h1 className="font-normal w-1/2 tracking-tighter">
+                    {numberWithCommas(
+                      (Number(validatorData?.stake) / 10 ** 9).toFixed(2),
+                    )}{" "}
+                    COMAI
+                  </h1>
+                </li>
+                <li className="flex gap-x-2 pb-1">
+                  <h6 className="font-normal w-1/2 tracking-tighter">
+                    Total Stakers{" "}
+                  </h6>
+                  <h1 className="font-normal w-1/2 tracking-tighter">
+                    {numberWithCommas(validatorData?.total_stakers)}
+                  </h1>
+                </li>
+                <li className="flex gap-x-2 pb-1">
+                  <h6 className="font-normal w-1/2 tracking-tighter">Net APY </h6>
+                  <h1 className="font-normal w-1/2 tracking-tighter">
+                    {validatorData?.apy?.toFixed(2)}%
+                  </h1>
+                </li>
+                <li className="flex gap-x-2 pb-1">
+                  <h6 className="font-normal w-1/2 tracking-tighter">Fees</h6>
+                  <h1 className="font-normal w-1/2 tracking-tighter">
+                    {validatorData?.delegation_fee}%
+                  </h1>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+        <div className="pt-4">
+            <UpdateDetailsForm
+              validator={validatorData}
+              callback={() => {
+                successToast("Details updated successfully")
+                setOpen(false)
+                setTimeout(() => {
+                  refetchBalance()
+                  validatorRefetch()
+                }, 8000)
+              }}
+            />
+        
+          
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+export default UpdateDetailsModal

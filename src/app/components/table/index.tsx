@@ -42,7 +42,7 @@ const ValidatorTable = () => {
 
   return (
     <>
-      <div className="mb-5 flex gap-x-5 pt-3 sm:px-5">
+      <div className="mb-5 flex gap-x-5 py-3">
         {options.map((opt) => (
           <button
             key={opt.value}
@@ -72,7 +72,7 @@ const ValidatorTable = () => {
           </div>
         </div>
       </div>
-      <div className="shadow-2xl px-6 py-3 rounded-3xl mt-6">
+      <div className="shadow-2xl px-6  rounded-3xl pt-3">
         <table className="hidden md:table border-separate w-full border-spacing-0">
           <thead>
             <tr className="uppercase text-xs  text-left font-semibold bottom-shadow">
@@ -80,6 +80,7 @@ const ValidatorTable = () => {
               <th>Modules</th>
               <th>Stakers</th>
               <th>Stake</th>
+              <th>Emissionn</th>
               <th>Net APY</th>
               <th>Fee</th>
               <th></th>
@@ -119,9 +120,9 @@ const ValidatorTable = () => {
               validatorData &&
               validatorData
                 ?.filter((val) =>
-                  String(val.address)
+                  String(val.key)
                     .toLowerCase()
-                    .includes(search.toLowerCase())
+                    .includes(search.toLowerCase()) || val.name.toLowerCase().includes(search.toLowerCase())
                 )
                 ?.filter((val) => {
                   if (validatorFilter === ValidatorFilterType.ALL) {
@@ -136,38 +137,52 @@ const ValidatorTable = () => {
                   //
                   if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
                     return -1;
-                  }
-                  else if (a.verified_type === 'golden' && b.verified_type === 'golden'){
+                  } else if (
+                    a.verified_type === "golden" &&
+                    b.verified_type === "golden"
+                  ) {
                     if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
                       return -1;
-                    }
-                    else if (b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                    } else if (
+                      b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                    ) {
                       return 1;
-                    }
-                    else if (a.stake > b.stake) {
+                    } else if (a.stake > b.stake) {
                       return -1;
                     } else if (a.stake < b.stake) {
                       return 1;
                     }
-                  }
-
-                  else if (a.isVerified && a.verified_type === 'golden' && b.isVerified){
-                    return -1
-                  } else if (b.isVerified && b.verified_type === 'golden' && a.isVerified){
-                    return 1
-                  }  else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
-                    return -1
-                  } else if (b.isVerified && b.verified_type === 'golden' && !a.isVerified){
-                    return 1
+                  } else if (
+                    a.isVerified &&
+                    a.verified_type === "golden" &&
+                    b.isVerified
+                  ) {
+                    return -1;
+                  } else if (
+                    b.isVerified &&
+                    b.verified_type === "golden" &&
+                    a.isVerified
+                  ) {
+                    return 1;
+                  } else if (
+                    a.isVerified &&
+                    a.verified_type === "golden" &&
+                    !b.isVerified
+                  ) {
+                    return -1;
+                  } else if (
+                    b.isVerified &&
+                    b.verified_type === "golden" &&
+                    !a.isVerified
+                  ) {
+                    return 1;
                   } else if (a.isVerified && b.isVerified) {
                     if (a.stake > b.stake) {
                       return -1;
-                    }
-                    else if (a.stake < b.stake) {
+                    } else if (a.stake < b.stake) {
                       return 1;
                     }
-                  }
-                  else if (a.isVerified && !b.isVerified) {
+                  } else if (a.isVerified && !b.isVerified) {
                     return -1;
                   } else if (!a.isVerified && b.isVerified) {
                     return 1;
@@ -197,9 +212,7 @@ const ValidatorTable = () => {
                           {validator.isVerified && (
                             <Verified
                               isGold={validator.verified_type === "golden"}
-                              isOfComStats={
-                                validator?.expire_at === -1
-                              }
+                              isOfComStats={validator?.expire_at === -1}
                             />
                           )}
                         </div>
@@ -216,6 +229,13 @@ const ValidatorTable = () => {
                       COMAI
                     </td>
 
+                    <td>
+                      {numberWithCommas(
+                        formatTokenPrice({
+                          amount: Number(validator.emission),
+                        })
+                      )}
+                    </td>
                     <td>{Number(validator.apy.toFixed(2))}%</td>
                     <td>
                       {Number((validator?.delegation_fee ?? 0).toFixed(2))}%
@@ -237,119 +257,132 @@ const ValidatorTable = () => {
 
         <div className="md:hidden">
           {validatorData
-                ?.filter((val) =>
-                  String(val.address)
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-                )
-                ?.filter((val) => {
-                  if (validatorFilter === ValidatorFilterType.ALL) {
-                    return val;
-                  } else if (validatorFilter === ValidatorFilterType.MINERS) {
-                    return val.type === "miner";
-                  } else {
-                    return val.type === "validator";
-                  }
-                })
-                .sort((a, b) => {
-                  //
-                  if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
-                    return -1;
-                  }
-                  else if (a.verified_type === 'golden' && b.verified_type === 'golden'){
-                    if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
-                      return -1;
-                    }
-                    else if (b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
-                      return 1;
-                    }
-                    else if (a.stake > b.stake) {
-                      return -1;
-                    } else if (a.stake < b.stake) {
-                      return 1;
-                    }
-                  }
-
-                  else if (a.isVerified && a.verified_type === 'golden' && b.isVerified){
-                    return -1
-                  } else if (b.isVerified && b.verified_type === 'golden' && a.isVerified){
-                    return 1
-                  }  else if (a.isVerified && a.verified_type === 'golden' && !b.isVerified){
-                    return -1
-                  } else if (b.isVerified && b.verified_type === 'golden' && !a.isVerified){
-                    return 1
-                  } else if (a.isVerified && b.isVerified) {
-                    if (a.stake > b.stake) {
-                      return -1;
-                    }
-                    else if (a.stake < b.stake) {
-                      return 1;
-                    }
-                  }
-                  else if (a.isVerified && !b.isVerified) {
-                    return -1;
-                  } else if (!a.isVerified && b.isVerified) {
-                    return 1;
-                  } else if (a.stake > b.stake) {
-                    return -1;
-                  } else if (a.stake < b.stake) {
-                    return 1;
-                  }
-                  return 0;
-                }).map((validator, index, array) => (
-            <div
-              key={validator.key}
-              className={`py-4 ${
-                index === array.length - 1 ? "" : "border-b-2"
-              }`}
-              onClick={() => toggleAccordion(validator.name)}
-            >
-              <div className="flex justify-between items-center cursor-pointer">
-                <div className="flex gap-1 items-center">
-                  <div className="truncate max-w-[200px]">{validator.name}</div>
-                  {validator.isVerified && (
-                    <Verified
-                      isGold={validator.verified_type === "golden"}
-                      isOfComStats={
-                        validator?.expire_at === -1
-                      }
-                    />
-                  )}
-                </div>
-                <div>+</div>
-              </div>
-              <div id={`content-${validator.name}`} className="hidden">
-                <div className="py-2 flex flex-col ">
-                  <div className="w-[200px] truncate">
-                    <strong>Name:</strong> {validator.name}
+            ?.filter((val) =>
+              String(val.address).toLowerCase().includes(search.toLowerCase())
+            )
+            ?.filter((val) => {
+              if (validatorFilter === ValidatorFilterType.ALL) {
+                return val;
+              } else if (validatorFilter === ValidatorFilterType.MINERS) {
+                return val.type === "miner";
+              } else {
+                return val.type === "validator";
+              }
+            })
+            .sort((a, b) => {
+              //
+              if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                return -1;
+              } else if (
+                a.verified_type === "golden" &&
+                b.verified_type === "golden"
+              ) {
+                if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
+                  return -1;
+                } else if (
+                  b.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR
+                ) {
+                  return 1;
+                } else if (a.stake > b.stake) {
+                  return -1;
+                } else if (a.stake < b.stake) {
+                  return 1;
+                }
+              } else if (
+                a.isVerified &&
+                a.verified_type === "golden" &&
+                b.isVerified
+              ) {
+                return -1;
+              } else if (
+                b.isVerified &&
+                b.verified_type === "golden" &&
+                a.isVerified
+              ) {
+                return 1;
+              } else if (
+                a.isVerified &&
+                a.verified_type === "golden" &&
+                !b.isVerified
+              ) {
+                return -1;
+              } else if (
+                b.isVerified &&
+                b.verified_type === "golden" &&
+                !a.isVerified
+              ) {
+                return 1;
+              } else if (a.isVerified && b.isVerified) {
+                if (a.stake > b.stake) {
+                  return -1;
+                } else if (a.stake < b.stake) {
+                  return 1;
+                }
+              } else if (a.isVerified && !b.isVerified) {
+                return -1;
+              } else if (!a.isVerified && b.isVerified) {
+                return 1;
+              } else if (a.stake > b.stake) {
+                return -1;
+              } else if (a.stake < b.stake) {
+                return 1;
+              }
+              return 0;
+            })
+            .map((validator, index, array) => (
+              <div
+                key={validator.key}
+                className={`py-4 ${
+                  index === array.length - 1 ? "" : "border-b-2"
+                }`}
+                onClick={() => toggleAccordion(validator.name)}
+              >
+                <div className="flex justify-between items-center cursor-pointer">
+                  <div className="flex gap-1 items-center">
+                    <div className="truncate max-w-[200px]">
+                      {validator.name}
+                    </div>
+                    {validator.isVerified && (
+                      <Verified
+                        isGold={validator.verified_type === "golden"}
+                        isOfComStats={validator?.expire_at === -1}
+                      />
+                    )}
                   </div>
-                  <span className="text-[10px] text-textSecondary">
-                    {validator.key}
-                  </span>
+                  <div>+</div>
                 </div>
-                <div className="py-2">
-                  <strong>Stake:</strong>{" "}
-                  {formatTokenPrice({ amount: validator.stake })} COM
-                </div>
-                <div className="py-2">
-                  <strong>APY: </strong>
-                  {Number(validator.apy.toFixed(2))}%
-                </div>
-                <div className="py-2">
-                  <strong>Fee:</strong>{" "}
-                  {Number(validator.delegation_fee.toFixed(2))}%
-                </div>
-                <div className="py-2">
-                  <Link
-                    href={`/validator/${validator.subnet_id}/${validator.key}`}
-                    className="flex items-center gap-x-1 underline"
-                  >
-                    View More{" "}
-                  </Link>
+                <div id={`content-${validator.name}`} className="hidden">
+                  <div className="py-2 flex flex-col ">
+                    <div className="w-[200px] truncate">
+                      <strong>Name:</strong> {validator.name}
+                    </div>
+                    <span className="text-[10px] text-textSecondary">
+                      {validator.key}
+                    </span>
+                  </div>
+                  <div className="py-2">
+                    <strong>Stake:</strong>{" "}
+                    {formatTokenPrice({ amount: validator.stake })} COM
+                  </div>
+                  <div className="py-2">
+                    <strong>APY: </strong>
+                    {Number(validator.apy.toFixed(2))}%
+                  </div>
+                  <div className="py-2">
+                    <strong>Fee:</strong>{" "}
+                    {Number(validator.delegation_fee.toFixed(2))}%
+                  </div>
+                  <div className="py-2">
+                    <Link
+                      href={`/validator/${validator.subnet_id}/${validator.key}`}
+                      className="flex items-center gap-x-1 underline"
+                    >
+                      View More{" "}
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </>

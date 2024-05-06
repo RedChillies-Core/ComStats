@@ -20,6 +20,11 @@ export type ValidatorType = {
   expire_at?: number
   verified_type: string
   subnet_id: number
+  discord?: string
+  twitter?: string
+  website?: string
+  description?: string
+  image?: string
 }
 
 export interface InterfacePagination<Data> {

@@ -33,12 +33,16 @@ const WalletModal = ({
     useState<InjectedAccountWithMeta>();
   const isMobile = useMobileDetect();
   return (
-    <Modal open={open} onClose={() => setOpen(false)} center>
+    <Modal classNames={{
+      // : "md:w-auto w-[350px]",
+       modal: "md:!max-w-[800px] !max-w-[400px] md:!min-w-[500px] !min-w-[380px] bg-white rounded-xl shadow-md",
+    }} open={open} onClose={() => setOpen(false)} center>
       Choose your polkadot wallet to connect
       <hr className="my-3" />
-      <div className="flex flex-row gap-4">
-        <div className="flex w-[250px] flex-col gap-y-4 max-h-[280px] overflow-y-scroll no-scrollbar">
-          {extensions
+      <div className="flex md:w-auto w-[350px] md:flex-row flex-col gap-4">
+        <div className="flex md:w-[250px] flex-col gap-y-4 max-h-[280px] overflow-y-scroll no-scrollbar">
+          {extensions?.length > 0 &&
+            extensions
             .sort((a, b) => {
               if (a.installed && !b.installed) return -1;
               if (!a.installed && b.installed) return 1;
@@ -115,7 +119,7 @@ const WalletModal = ({
             ))}
         </div>
 
-        <div className="flex flex-col gap-y-4 max-h-[280px] overflow-y-scroll no-scrollbar">
+        <div className="flex md:w-auto w-full flex-col gap-y-4 max-h-[280px] overflow-y-scroll no-scrollbar">
           {wallets.length === 0 && (
             <div className="text-center w-[488px]">No Account found</div>
           )}
@@ -150,7 +154,7 @@ const WalletModal = ({
         </div>
       </div>
       {(isConnected || wallets.length > 0) && (
-        <div className="">
+        <div className=" md:w-auto w-[350px]">
           <button
             type="button"
             className="transform- flex items-center gap-x-2 ease-in-out duration-300 transition-all  text-sm px-3 py-3 font-medium tracking-tight sm:text-md rounded-2xl bg-button border-2  border-white text-white hover:!bg-none hover:border-2 hover:border-purple hover:text-purple disabled:opacity-50 disabled:!bg-button disabled:!border-none disabled:!text-white disabled:cursor-not-allowed w-full justify-center"

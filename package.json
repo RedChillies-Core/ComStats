@@ -11,8 +11,10 @@
   "dependencies": {
     "@polkadot/extension-dapp": "^0.46.6",
     "@polkadot/extension-inject": "^0.46.6",
+    "@polkadot/react-hooks": "^0.39.1",
     "@reduxjs/toolkit": "^2.2.1",
     "@subwallet/wallet-connect": "^0.2.7",
+    "axios": "^1.6.8",
     "bignumber.js": "^9.1.2",
     "next": "14.1.0",
     "react": "^18",

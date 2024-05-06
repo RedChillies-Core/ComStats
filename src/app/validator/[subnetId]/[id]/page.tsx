@@ -3,7 +3,7 @@
 import Button from "@/app/components/button"
 import StakingModal from "@/app/components/modal/stake"
 import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { FaArrowLeft, FaDiscord, FaSpinner } from "react-icons/fa6"
 import { GoKey } from "react-icons/go"
 import { PiCirclesFourLight } from "react-icons/pi"
@@ -20,6 +20,7 @@ import { TbWorld } from "react-icons/tb"
 import Verified from "@/app/components/verified"
 import StakedUsersTable from "@/app/components/table/users"
 import VerifyModal from "@/app/components/modal/verifyModule"
+import UpdateDetailsModal from "@/app/components/modal/updateDetails"
 
 const detailInfo = [
   {
@@ -51,10 +52,31 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
         skip: !params.id,
       },
     )
-  const { isConnected } = usePolkadot()
+  const { isConnected, selectedAccount } = usePolkadot()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
   const [verifyOpen, setVerifyOpen] = useState(false)
+  const [updateOpen, setUpdateOpen] = useState(false)
+  const [isValidImage, setIsValidImage] = React.useState(false);
+
+  useEffect(() => {
+    const imgLink = `${process.env.NEXT_PUBLIC_ENDPOINT}/${validatorData?.image}`;
+    const img = new Image();
+    img.src = imgLink;
+    img.onload = () => {
+      setIsValidImage(true);
+    };
+    img.onerror = () => {
+      setIsValidImage(false);
+    };
+    
+  }, [validatorData]);
+
+  const isValidLink = (link: string, type: 'discord' | 'twitter') => {
+    if (link === "") return false;
+    if (type === 'discord' && !link.includes('discord.gg')) return false;
+    if (type === 'twitter' && !link.includes('twitter.com')) return false;
+  }
   return (
     <div className="container px-3 md:px-0">
       <div className="flex py-5 items-center gap-x-3">
@@ -83,22 +105,32 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
         <>
           <div className="flex gap-x-5 flex-col items-center lg:items-start lg:flex-row">
             <div className="p-4 w-[300px]">
-              <div className="h-44 w-44  bg-slate-200 flex justify-center items-center rounded-3xl mx-auto">
-                {validatorData?.name}
+              <div className={`h-44 ${isValidImage ? '': "bg-slate-200"} w-44 flex justify-center items-center rounded-3xl mx-auto`}
+                style={{
+                  backgroundImage: `url(${process.env.NEXT_PUBLIC_ENDPOINT}/${validatorData?.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
+              >
+                {!isValidImage && validatorData?.name}
               </div>
-              {detailInfo.some(each=>each.key === validatorData?.key) && (
-                <p className="text-sm my-3 text-center">
-                  {detailInfo.find(each=>each.key === validatorData?.key)?.description}
+              <p className="text-xl my-3 text-center font-bold">
+                 {validatorData?.name ?? detailInfo.find(each=>each.key === validatorData?.key)?.name}
                 </p>
-              )}
+                <p className="text-sm my-3 text-center">
+                  {validatorData?.description ?? detailInfo.find(each=>each.key === validatorData?.key)?.description}
+                </p>
+             
               <div className="flex justify-center gap-x-4 my-4">
                 <a href={
-                  detailInfo.find(each=>each.key === validatorData?.key)?.discord || ""
+                  isValidLink(validatorData?.discord || detailInfo.find(each=>each.key === validatorData?.key)?.discord || "", "discord") ? 
+                  (validatorData?.discord || detailInfo.find(each=>each.key === validatorData?.key)?.discord || "") : "#"
                 } target="_blank">
                   <FaDiscord size={22} />
                 </a>
                 <a href={
-                  detailInfo.find(each=>each.key === validatorData?.key)?.twitter || ""
+                  isValidLink(validatorData?.twitter || detailInfo.find(each=>each.key === validatorData?.key)?.twitter || "", "twitter") ?
+                  (validatorData?.twitter || detailInfo.find(each=>each.key === validatorData?.key)?.twitter || "") : "#"
                 }  target="_blank">
                   <FaXTwitter size={22} />
                 </a>
@@ -130,6 +162,18 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                 >
                   Verify Module
                 </Button>}
+                {validatorData?.key === selectedAccount?.address && (
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    className="w-full justify-center mt-4"
+                    isDisabled={!isConnected}
+                    onClick={() => setUpdateOpen(true)}
+                  >
+                    Update Details
+                  </Button>
+                
+                )}
               </div>
             </div>
             <div className="flex gap-4 flex-col flex-1">
@@ -237,6 +281,12 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                  <VerifyModal
                   open={verifyOpen}
                   setOpen={setVerifyOpen}
+                  validatorId={String(params.id)}
+                  subnet_id={Number(params.subnetId)}
+                />
+                 <UpdateDetailsModal
+                  open={updateOpen}
+                  setOpen={setUpdateOpen}
                   validatorId={String(params.id)}
                   subnet_id={Number(params.subnetId)}
                 />

@@ -7,14 +7,14 @@ import {
   ITransfer,
   ITransferStaking,
   IVerifyModule,
-} from "@/types";
+} from "@/types"
 import {
   InjectedAccountWithMeta,
   InjectedExtension,
 } from "@polkadot/extension-inject/types";
 import WalletModal from "@/app/components/modal/connect";
-import { errorToast, successToast } from "@/app/components/toast";
-import { getWallet, setWallet } from "@/utils/wallet";
+import { errorToast } from "@/app/components/toast";
+import { getWallet } from "@/utils/wallet";
 import { toast } from "react-toastify";
 import { SubmittableExtrinsic } from "@polkadot/api-base/types";
 import { ISubmittableResult } from "@polkadot/types/types";
@@ -24,9 +24,9 @@ import { Wallet } from "@subwallet/wallet-connect/types";
 import BigNumber from "bignumber.js";
 
 interface PolkadotApiState {
-  web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null;
-  web3Enable: ((appName: string) => Promise<InjectedExtension[]>) | null;
-  web3FromAddress: ((address: string) => Promise<InjectedExtension>) | null;
+  web3Accounts: (() => Promise<InjectedAccountWithMeta[]>) | null
+  web3Enable: ((appName: string) => Promise<InjectedExtension[]>) | null
+  web3FromAddress: ((address: string) => Promise<InjectedExtension>) | null
 }
 
 interface PolkadotContextType {
@@ -49,19 +49,19 @@ interface PolkadotContextType {
 }
 
 const PolkadotContext = createContext<PolkadotContextType | undefined>(
-  undefined
-);
+  undefined,
+)
 
 interface PolkadotProviderProps {
-  children: React.ReactNode;
-  wsEndpoint: string;
+  children: React.ReactNode
+  wsEndpoint: string
 }
 let interval: any;
 export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   children,
   wsEndpoint,
 }) => {
-  const dotsamaWallets = getWallets();
+  const [dotsamaWallets, setDotsamaWallets] = useState<Wallet[]>([]);
   const [api, setApi] = useState<ApiPromise | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | []>([]);
@@ -76,162 +76,226 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     web3Accounts: null,
     web3Enable: null,
     web3FromAddress: null,
-  });
+  })
   async function loadPolkadotApi() {
     const { web3Accounts, web3Enable, web3FromAddress } = await import(
       "@polkadot/extension-dapp"
-    );
+    )
     setPolkadotApi({
       web3Accounts,
       web3Enable,
       web3FromAddress,
-    });
-    const provider = new WsProvider(wsEndpoint);
-    const newApi = await ApiPromise.create({ provider });
-    setApi(newApi);
-    setIsInitialized(true);
+    })
+    const provider = new WsProvider(wsEndpoint)
+    const newApi = await ApiPromise.create({ provider })
+    setApi(newApi)
+    setIsInitialized(true)
   }
   useEffect(() => {
     async function init() {
-      await loadPolkadotApi();
+      await loadPolkadotApi()
     }
-    init();
+    init()
     return () => {
-      api?.disconnect();
-    };
-  }, [wsEndpoint]);
+      api?.disconnect()
+    }
+  }, [wsEndpoint])
+
+  useEffect(() => {
+    if (!api) return;
+
+    handleConnect();
+  }, [isInitialized, api]);
+
+  useEffect(() => {
+    if(!window) return;
+    const wallets = getWallets();
+    console.log(wallets);
+    setDotsamaWallets(wallets);
+  }, [])
 
   useEffect(() => {
     async function init() {
-      const savedWallet = getWallet();
+      const savedWallet = getWallet()
       if (!!savedWallet) {
-        if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return;
-        const extensions = await polkadotApi.web3Enable("ComStats");
-        console.log(extensions);
+        if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return
+        const extensions = await polkadotApi.web3Enable("ComStats")
+        console.log(extensions)
         if (!extensions) {
-          throw Error("NO_EXTENSION_FOUND");
+          throw Error("NO_EXTENSION_FOUND")
         }
-        const allAccounts = await polkadotApi.web3Accounts();
-        setAccounts(allAccounts);
-        setSelectedAccount(savedWallet);
-        setIsConnected(true);
+        const allAccounts = await polkadotApi.web3Accounts()
+        setAccounts(allAccounts)
+        setSelectedAccount(savedWallet)
+        setIsConnected(true)
       }
     }
-    if (isInitialized) init();
-  }, [isInitialized]);
+    if (isInitialized) init()
+  }, [isInitialized])
 
   useEffect(() => {
     if (api) {
       api.rpc.chain.subscribeNewHeads((header) => {
-        setBlockNumber(header.number.toNumber());
-      });
+        setBlockNumber(header.number.toNumber())
+      })
     }
-  }, [api]);
+  }, [api])
 
   const handleConnect = async () => {
     if (!polkadotApi.web3Enable || !polkadotApi.web3Accounts) return;
-    const extensions = await polkadotApi.web3Enable("ComStats");
-    if (!extensions) {
-      throw Error("NO_EXTENSION_FOUND");
+    const selectedCommuneExtension = window.localStorage.getItem("selectedCommuneExtension")!;
+    // const extensions = await polkadotApi.web3Enable("ComSol Bridge")
+    // if (!extensions) {
+    //   throw Error("NO_EXTENSION_FOUND")
+    // }
+    if (selectedCommuneExtension) {
+      const extension = dotsamaWallets.find(
+        (wallet) => wallet.title === selectedCommuneExtension
+      );
+
+      if (!extension) return;
+      if (extension.installed) {
+        setExtensionSelected(extension);
+        // console.log("enabling extension");
+        await extension?.enable();
+        // console.log("extension enabled", extension);
+
+        const accounts = await extension?.getAccounts();
+        // console.log("accounts", accounts);
+        accounts &&
+          setAccounts(
+            accounts.map((account) => ({
+              address: account.address,
+              meta: {
+                name: account.name,
+                source: extension?.title || "",
+                genesisHash: "",
+              },
+              type: "sr25519",
+            }))
+          );
+        const selectedAccount = window.localStorage.getItem("selectedAccount")!;
+        if (selectedAccount) {
+          const account = JSON.parse(selectedAccount);
+          handleWalletSelections(account);
+        }
+        window.localStorage.setItem(
+          "selectedCommuneExtension",
+          extension?.title || ""
+        );
+      }
     }
-    const allAccounts = await polkadotApi.web3Accounts();
-    setAccounts(allAccounts);
-    setOpenModal(true);
+    // const allAccounts = await polkadotApi.web3Accounts()
+    // console.log(allAccounts)
+    // setAccounts(allAccounts)
+
+    // setOpenModal(true)
   };
 
   const [selectedAccount, setSelectedAccount] =
-    useState<InjectedAccountWithMeta>();
+    useState<InjectedAccountWithMeta>()
 
   async function addStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     
     const amt = Math.floor(Number(amount) * 10 ** 9);
     if (amt <= 0) {
-      errorToast("Stake amount must be greater than 0");
-      return;
+      errorToast("Stake amount must be greater than 0")
+      return
     }
-    const balance: any = await api.query.system.account(selectedAccount.address);
-    const freeBalance = balance.data.free.toNumber();
-    if(freeBalance < amt + 2 * 10 ** 9){
-      errorToast(`Insufficient balance. You need at least ${((amt + 2 * 10 ** 9)/10 ** 9).toFixed(2)} $COMAI to stake ${(amt /10 ** 9).toFixed(2)} $COMAI`);
-      return;
+    const balance: any = await api.query.system.account(selectedAccount.address)
+    const freeBalance = balance.data.free.toNumber()
+    if (freeBalance < amt + 2 * 10 ** 9) {
+      errorToast(
+        `Insufficient balance. You need at least ${(
+          (amt + 2 * 10 ** 9) /
+          10 ** 9
+        ).toFixed(2)} $COMAI to stake ${(amt / 10 ** 9).toFixed(2)} $COMAI`,
+      )
+      return
     }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.addStake(NET_ID, validator, amt),
       api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
-    await completeTransaction(tx, callback);
+    ])
+    await completeTransaction(tx, callback)
   }
 
   async function completeTransaction(
-    tx: SubmittableExtrinsic<"promise", ISubmittableResult>,
-    callback?: () => void
+    tx: SubmittableExtrinsic<"promise", any>,
+    callback?: () => void,
   ) {
     if(selectedAccount === undefined) return;
-    if(extensionSelected === null) return;
+    if(extensionSelected === null || !extensionSelected.signer) return;
+    // check if meta update is needed
+    extensionSelected.metadata
     let timeoutOut: any;
     let resolveOut: any;
     let rejectOut: any;
 
     const promise = new Promise((resolve, reject) => {
-      resolveOut = resolve;
-      rejectOut = reject;
+      resolveOut = resolve
+      rejectOut = reject
       timeoutOut = setTimeout(() => {
         reject(new Error("Transaction failed"));
       }, 30000);
     });
-    const unsub = await tx.signAndSend(
-      selectedAccount.address,
-      {
-        signer: extensionSelected.signer,
-      },
-      async (result) => {
-        const { events } = result;
-
-        if (result.isFinalized || result.isInBlock) {
-          // finalized
-          const isSucess = events.every(({ event: { method } }) => {
-            return method !== "ExtrinsicFailed";
-          });
-          if (isSucess) {
-            unsub();
-            resolveOut();
-            callback && callback();
-            timeoutOut && clearTimeout(timeoutOut);
+    if(extensionSelected.signer){
+      const unsub = await tx.signAndSend(
+        selectedAccount.address,
+        {
+          signer: extensionSelected.signer
+        },
+        async (result) => {
+          const { events } = result
+  
+          if (result.isFinalized || result.isInBlock) {
+            // finalized
+            const isSucess = events.every(({ event: { method } }: {
+              event: { method: string }
+            }) => {
+              return method !== "ExtrinsicFailed"
+            })
+            if (isSucess) {
+              unsub()
+              resolveOut()
+              callback && callback()
+              timeoutOut && clearTimeout(timeoutOut)
+            }
+          } else if (result.isError) {
+            // failed
+            timeoutOut && clearTimeout(timeoutOut)
+            callback && callback()
+            unsub()
+            rejectOut(new Error("Transaction failed"))
           }
-        } else if (result.isError) {
-          // failed
-          timeoutOut && clearTimeout(timeoutOut);
-          callback && callback();
-          unsub();
-          rejectOut(new Error("Transaction failed"));
         }
-      }
-    );
-    await toast.promise(
-      promise
-        .then(() => {
-          console.log("promise resolved inside toast.promise");
-        })
-        .catch((err: any) => {
-          console.log("promise rejected inside toast.promise", err);
-        }),
-      {
-        pending: "Sending transaction...",
-        success: "Transaction successful",
-        error: "Transaction failed",
-      }
-    );
-    clearTimeout(timeoutOut);
+      );
+      await toast.promise(
+        promise
+          .then(() => {
+            console.log("promise resolved inside toast.promise")
+          })
+          .catch((err: any) => {
+            console.log("promise rejected inside toast.promise", err)
+          }),
+        {
+          pending: "Sending transaction...",
+          success: "Transaction successful",
+          error: "Transaction failed",
+        },
+      )
+      clearTimeout(timeoutOut)
+    }
   }
 
   async function removeStake({ validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
-    
+    console.log("extensionSelected", extensionSelected)
     const amt = Math.floor(Number(amount) * 10 ** 9);
     const tx = api.tx.subspaceModule.removeStake(NET_ID, validator, amt);
 
-    await completeTransaction(tx, callback);
+    await completeTransaction(tx, callback)
   }
   async function transferStake({
     validatorFrom,
@@ -253,11 +317,11 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         NET_ID,
         validatorFrom,
         validatorTo,
-        amt
+        amt,
       ),
-      api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
-    await completeTransaction(tx, callback);
+      // api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
+    ])
+    await completeTransaction(tx, callback)
     // clearTimeout(timeoutOut);
   }
 
@@ -273,10 +337,10 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     }
     const tx = api.tx.utility.batchAll([
       api.tx.balances.transfer(to, amt),
-      api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
-    ]);
+      // api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
+    ])
 
-    await completeTransaction(tx, callback);
+    await completeTransaction(tx, callback)
   }
 
   async function verifyModule({
@@ -293,12 +357,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     const tx = api.tx.utility.batchAll([
       api.tx.balances.transfer(
         "5CVUUEQme5fWXD1zkMwZ9iSvR2PXNBsjnN6CX4dWMjc81fsD",
-        amt
+        amt,
       ),
       api.tx.system.remark(`${key},${verificationType},${subnetId}`),
-    ]);
+    ])
 
-    await completeTransaction(tx, callback);
+    await completeTransaction(tx, callback)
   }
 
   async function getBalance(wallet: InjectedAccountWithMeta) {
@@ -331,7 +395,9 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
         isConnected,
         accounts,
         selectedAccount,
-        handleConnect,
+        handleConnect: ()=>{
+          setOpenModal(true);
+        },
         addStake,
         transfer,
         removeStake,
@@ -356,13 +422,13 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       />
       {children}
     </PolkadotContext.Provider>
-  );
-};
+  )
+}
 
 export const usePolkadot = (): PolkadotContextType => {
-  const context = useContext(PolkadotContext);
+  const context = useContext(PolkadotContext)
   if (context === undefined) {
-    throw new Error("usePolkadot must be used within a PolkadotProvider");
+    throw new Error("usePolkadot must be used within a PolkadotProvider")
   }
-  return context;
-};
+  return context
+}
