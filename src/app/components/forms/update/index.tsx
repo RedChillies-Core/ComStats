@@ -13,6 +13,7 @@ import { formatTokenPrice } from "@/utils";
 import { getVerificationAmount } from "@/utils/getVerificationAmount";
 import { errorToast } from "../../toast";
 import { api } from "@/store/api/api";
+import { toast } from "react-toastify";
 
 type ValidatorDetails = {
   /**
@@ -24,7 +25,7 @@ type ValidatorDetails = {
   twitter?: string;
   discord?: string;
   website?: string;
-  image: File;
+  image?: FileList;
 };
 
 const UpdateDetailsForm = ({
@@ -62,16 +63,20 @@ const UpdateDetailsForm = ({
       skip: !selectedAccount,
     }
   );
- 
 
   const onSubmit = async (data: any) => {
+    console.log("data", data);
     try {
       if (!data.image) {
-        errorToast("Image is required");
+        toast.error("Image is required");
         return;
       }
       if (!data.description) {
-        errorToast("Description is required");
+        toast.error("Description is required");
+        return;
+      }
+      if (data.description.length > 1000) {
+        toast.error("Description is too long");
         return;
       }
       if (
@@ -99,7 +104,9 @@ const UpdateDetailsForm = ({
       formData.append("twitter", data.twitter);
       formData.append("discord", data.discord);
       formData.append("website", data.website);
-      formData.append("image", data.image[0]);
+      if (data.image && data.image.length > 0) {
+        formData.append("image", data.image[0]);
+      }
       formData.append("message", message);
       formData.append("signature", signature);
       await api.post(
@@ -127,8 +134,17 @@ const UpdateDetailsForm = ({
             className="w-full bg-white border text-sm leading-6 font-medium text-[#202223] border-border rounded-lg  px-3 py-3 focus:ring-purple focus:outline-purple "
             {...register("description", {
               required: "Description is required",
+              validate: {
+                lessThan1000: (value) =>
+                  value.length < 1000 || "Description is too long",
+              },
             })}
           />
+          {errors.description && (
+            <span className="text-red-500 text-xs">
+              {errors.description.message}
+            </span>
+          )}
         </div>
       </div>
 
@@ -139,8 +155,7 @@ const UpdateDetailsForm = ({
             placeholder="Twitter"
             type="text"
             className="w-full bg-white border text-sm leading-6 font-medium text-[#202223] border-border rounded-lg  px-3 py-3 focus:ring-purple focus:outline-purple "
-            {...register("twitter", {
-            })}
+            {...register("twitter", {})}
           />
         </div>
       </div>
@@ -152,8 +167,7 @@ const UpdateDetailsForm = ({
             placeholder="Discord"
             type="text"
             className="w-full bg-white border text-sm leading-6 font-medium text-[#202223] border-border rounded-lg  px-3 py-3 focus:ring-purple focus:outline-purple "
-            {...register("discord", {
-            })}
+            {...register("discord", {})}
           />
         </div>
       </div>
@@ -165,9 +179,7 @@ const UpdateDetailsForm = ({
             placeholder="Website"
             type="text"
             className="w-full bg-white border text-sm leading-6 font-medium text-[#202223] border-border rounded-lg  px-3 py-3 focus:ring-purple focus:outline-purple "
-            {...register("website", {
-              required: "Website link is required",
-            })}
+            {...register("website", {})}
           />
         </div>
       </div>
@@ -179,10 +191,32 @@ const UpdateDetailsForm = ({
             type="file"
             className="w-full bg-white border text-sm leading-6 font-medium text-[#202223] border-border rounded-lg  px-3 py-3 focus:ring-purple focus:outline-purple "
             {...register("image", {
-              required: "Image is required",
+              // required: "Image is required",
+              validate: {
+                fileFormat: (value) => {
+                  if (value && value?.length > 0) {
+                    return (
+                      value[0].type.includes("image") || "Invalid file format"
+                    );
+                  }
+                  return true;
+                },
+                fileSize: (value) => {
+                  if (value && value?.length > 0) {
+                    return (
+                      value[0].size < 5000000 ||
+                      "Image size should be less than 5MB"
+                    );
+                  }
+                  return true;
+                },
+              },
             })}
             multiple={false}
           />
+          {errors.image && (
+            <span className="text-red-500 text-xs">{errors.image.message}</span>
+          )}
         </div>
       </div>
 
