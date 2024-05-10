@@ -124,6 +124,21 @@ const VerifyModuleForm = ({
         )}{" "}
         $COMAI
       </div>
+      <div>
+        Wallet Balance:{" "}
+        {((balanceData?.balance ?? 0)/1e9).toFixed(3)} $COMAI
+      </div>
+      <div className="text-red-400">
+        {(balanceData?.balance ?? 0)/1e9 <
+          getVerificationAmount(
+            getValues().type?.value,
+            getValues().duration?.value
+          ) && `Insufficient balance, additional ${(getVerificationAmount(
+            getValues().type?.value,
+            getValues().duration?.value
+          ) - (balanceData?.balance ?? 0)/1e9 + 1).toFixed(3)} $COMAI required`
+          }
+      </div>
       <Button
         size="large"
         variant="primary"
