@@ -38,6 +38,7 @@ const AddStakingForm = ({
       return
     }
     addStake({
+      subnetId: validator?.subnet_id || 0,
       validator:
         validator?.key || String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR),
       amount: data.stakeAmount,

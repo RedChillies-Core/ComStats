@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { NET_ID, transactionFeeCollector } from "@/constants";
+import { transactionFeeCollector } from "@/constants";
 import {
   IAddStaking,
   ITransfer,
@@ -17,7 +17,6 @@ import { errorToast } from "@/app/components/toast";
 import { getWallet } from "@/utils/wallet";
 import { toast } from "react-toastify";
 import { SubmittableExtrinsic } from "@polkadot/api-base/types";
-import { ISubmittableResult } from "@polkadot/types/types";
 import { getVerificationAmount } from "@/utils/getVerificationAmount";
 import { getWallets } from "@subwallet/wallet-connect/dotsama/wallets";
 import { Wallet } from "@subwallet/wallet-connect/types";
@@ -195,7 +194,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   const [selectedAccount, setSelectedAccount] =
     useState<InjectedAccountWithMeta>()
 
-  async function addStake({ validator, amount, callback }: IAddStaking) {
+  async function addStake({ subnetId, validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     
     const amt = Math.floor(Number(amount) * 10 ** 9);
@@ -215,7 +214,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       return
     }
     const tx = api.tx.utility.batchAll([
-      api.tx.subspaceModule.addStake(NET_ID, validator, amt),
+      api.tx.subspaceModule.addStake(subnetId, validator, amt),
       api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
     ])
     await completeTransaction(tx, callback)
@@ -289,15 +288,16 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     }
   }
 
-  async function removeStake({ validator, amount, callback }: IAddStaking) {
+  async function removeStake({ subnetId, validator, amount, callback }: IAddStaking) {
     if (!api || !selectedAccount || !polkadotApi.web3FromAddress) return;
     console.log("extensionSelected", extensionSelected)
     const amt = Math.floor(Number(amount) * 10 ** 9);
-    const tx = api.tx.subspaceModule.removeStake(NET_ID, validator, amt);
+    const tx = api.tx.subspaceModule.removeStake(subnetId, validator, amt);
 
     await completeTransaction(tx, callback)
   }
   async function transferStake({
+    subnetId,
     validatorFrom,
     validatorTo,
     amount,
@@ -314,7 +314,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.transferStake(
-        NET_ID,
+        subnetId,
         validatorFrom,
         validatorTo,
         amt,

@@ -33,6 +33,7 @@ const UnstakingForm = ({
   )
   const onSubmit = (data: any) => {
     removeStake({
+      subnetId: Number(validator?.subnet_id) || 0,
       amount: String(data.stakeAmount),
       validator: String(validator?.key),
       callback,

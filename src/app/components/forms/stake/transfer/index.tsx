@@ -38,6 +38,7 @@ const TransferStakingForm = ({
 
   const onSubmit = (data: any) => {
     transferStake({
+      subnetId: Number(validator?.subnet_id) || 0,
       amount: String(data.stakeAmount),
       validatorFrom: String(validator?.key),
       validatorTo: String(data.validator.value),

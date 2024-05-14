@@ -41,6 +41,7 @@ export interface InterfacePaginationSubnet<Data> {
 }
 
 export type IAddStaking = {
+  subnetId: number
   validator: string
   amount: string
   callback?: () => void
@@ -52,6 +53,7 @@ export type ITransfer = {
   callback?: () => void
 }
 export type ITransferStaking = {
+  subnetId: number
   validatorFrom: string
   amount: string
   validatorTo: string
