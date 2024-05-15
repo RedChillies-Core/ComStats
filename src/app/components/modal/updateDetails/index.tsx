@@ -91,13 +91,13 @@ const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDe
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">Net APY </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.apy?.toFixed(2)}%
+                    {validatorData?.type === 'miner' ? '-' : `${validatorData?.apy?.toFixed(2)} %`}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">Fees</h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.delegation_fee}%
+                    {`${validatorData?.delegation_fee?.toFixed(2)} %`}
                   </h1>
                 </li>
               </ul>

@@ -95,7 +95,7 @@ const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) =>
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">Net APY </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.apy?.toFixed(2)}%
+                    {validatorData?.type === "miner" ? "-" : `${validatorData?.apy?.toFixed(2)} %`}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">

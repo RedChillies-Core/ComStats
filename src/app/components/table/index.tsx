@@ -1,6 +1,6 @@
 "use client";
 import { useGetValidatorsQuery } from "@/store/api/statsApi";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Verified from "../verified";
 import { numberWithCommas } from "@/utils/numberWithCommas";
 import { formatTokenPrice } from "@/utils";
@@ -8,6 +8,7 @@ import Link from "next/link";
 import Button from "../button";
 import { FaSearch } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
+import { ValidatorType } from "@/types";
 
 enum ValidatorFilterType {
   ALL,
@@ -15,7 +16,7 @@ enum ValidatorFilterType {
   VALIDATORS,
 }
 const ValidatorTable = () => {
-  const { data: validatorData, isLoading: validatorLoading } =
+  const { data: allValidatorsData, isLoading: fetchLoading } =
     useGetValidatorsQuery(undefined, {
       pollingInterval: 300000,
     });
@@ -23,6 +24,8 @@ const ValidatorTable = () => {
   const [validatorFilter, setValidatorFilter] = useState<ValidatorFilterType>(
     ValidatorFilterType.ALL
   );
+  const [validatorData, setValidatorData] = useState<ValidatorType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   function toggleAccordion(item: string): void {
     const content = document.getElementById(`content-${item}`);
     if (content) {
@@ -39,6 +42,43 @@ const ValidatorTable = () => {
     { value: ValidatorFilterType.MINERS, label: "Miners" },
     { value: ValidatorFilterType.VALIDATORS, label: "Validators" },
   ];
+
+  useEffect(()=> {
+    if (allValidatorsData) {
+      setIsLoading(true);
+      setValidatorData([]);
+
+      setTimeout(() => {
+        setValidatorData(
+          allValidatorsData
+          ?.filter((val) =>
+            String(val.key)
+              .toLowerCase()
+              .includes(search.toLowerCase()) || val.name.toLowerCase().includes(search.toLowerCase())
+          )
+          ?.filter((val) => {
+            if (validatorFilter === ValidatorFilterType.ALL) {
+              return val;
+            } else if (validatorFilter === ValidatorFilterType.MINERS) {
+              return val.type === "miner";
+            } else {
+              return val.type === "validator";
+            }
+          })
+        );
+        setIsLoading(false);
+      }, 2000);
+    }
+  }, [
+    allValidatorsData,
+    fetchLoading,
+    validatorFilter,
+    search,
+  ])
+
+  const validatorLoading = useMemo(() => {
+    return fetchLoading || isLoading;
+  }, [isLoading, fetchLoading])
 
   return (
     <>
@@ -119,20 +159,13 @@ const ValidatorTable = () => {
             {!validatorLoading &&
               validatorData &&
               validatorData
-                ?.filter((val) =>
-                  String(val.key)
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) || val.name.toLowerCase().includes(search.toLowerCase())
-                )
-                ?.filter((val) => {
-                  if (validatorFilter === ValidatorFilterType.ALL) {
-                    return val;
-                  } else if (validatorFilter === ValidatorFilterType.MINERS) {
-                    return val.type === "miner";
-                  } else {
-                    return val.type === "validator";
-                  }
-                })
+              //  ?.sort((a, b) => {
+              //   return a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1;
+              //  })
+                
+                 ?.sort((a, b) => {
+              return a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1;
+             })
                 .sort((a, b) => {
                   //
                   if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
@@ -236,7 +269,11 @@ const ValidatorTable = () => {
                         })
                       )}
                     </td>
-                    <td>{Number(validator.apy.toFixed(2))}%</td>
+                    <td>
+                      {validator?.type === "miner"
+                        ? "-"
+                        : `${Number(validator.apy.toFixed(2))}%`}
+                    </td>
                     <td>
                       {Number((validator?.delegation_fee ?? 0).toFixed(2))}%
                     </td>
@@ -257,18 +294,12 @@ const ValidatorTable = () => {
 
         <div className="md:hidden">
           {validatorData
-            ?.filter((val) =>
-              String(val.address).toLowerCase().includes(search.toLowerCase())
-            )
-            ?.filter((val) => {
-              if (validatorFilter === ValidatorFilterType.ALL) {
-                return val;
-              } else if (validatorFilter === ValidatorFilterType.MINERS) {
-                return val.type === "miner";
-              } else {
-                return val.type === "validator";
-              }
-            })
+            //  ?.sort((a, b) => {
+            //   return a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1;
+            //  })
+             ?.sort((a, b) => {
+              return a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1;
+             })
             .sort((a, b) => {
               //
               if (a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR) {
@@ -366,7 +397,9 @@ const ValidatorTable = () => {
                   </div>
                   <div className="py-2">
                     <strong>APY: </strong>
-                    {Number(validator.apy.toFixed(2))}%
+                    {validator.type === "miner"
+                      ? "-"
+                      : `${Number(validator.apy.toFixed(2))}%`}
                   </div>
                   <div className="py-2">
                     <strong>Fee:</strong>{" "}

@@ -213,7 +213,8 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                   APY
                 </p>
                 <h5 className="card-validator-data">
-                  {validatorData?.apy?.toFixed(2)}%
+                {validatorData?.type == "miner" ? '-': `${validatorData?.apy?.toFixed(2)} %`}
+
                 </h5>
               </div>
               <div className="container">

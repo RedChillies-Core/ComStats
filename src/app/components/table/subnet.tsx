@@ -131,7 +131,9 @@ const SubnetTable = ({
                     }),
                   )}
                 </div>
-                <div className="">{Number(validator.apy.toFixed(2))}%</div>
+                <div className="">
+                  {validator.type === "miner" ? "-" : `${validator.apy?.toFixed(2)} %`}
+                </div>
                 <div className="">{validator.delegation_fee}%</div>
                 <div className="">
                   <Link
