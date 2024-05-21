@@ -142,7 +142,7 @@ const ValidatorTable = () => {
                 <tr
                   className={`text-sm font-medium   ${
                     index === array.length - 1 ? "" : "border-b-2 bottom-shadow"
-                  } `}
+                  } hover:bg-gray-100 hover:cursor-pointer`}
                   key={validator.key}
                 >
                   <td className="py-3 pl-3">{index + 1 + (page - 1) * 50}</td>
