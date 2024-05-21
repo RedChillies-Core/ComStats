@@ -20,14 +20,11 @@ const Subnets = () => {
     refetch()
   }
   const nonVerifiedValidators = subnetValidators
-  const verifiedValidators = subnetValidators?.filter(
-    (validator) => validator.isVerified,
-  )
 
   return (
     <div className="container">
-     {!isLoading && (
-        <div className="py-3 flex flex-wrap gap-2 items-center">
+      {!isLoading && (
+        <div className="py-3 flex flex-wrap gap-2 items-center mt-3">
           {data?.map((item) => (
             <button
               className={`border px-5 py-1  w-fit flex items-center justify-center rounded-3xl gap-x-2 ${
@@ -44,7 +41,7 @@ const Subnets = () => {
           ))}
         </div>
       )}
-     {isLoading && (
+      {isLoading && (
         <div className="flex flex-wrap gap-2 items-center w-full py-10">
           {new Array(30).fill(0).map((_, index) => (
             <Skeleton
@@ -55,7 +52,7 @@ const Subnets = () => {
           ))}
         </div>
       )}
-      <div className="flex flex-nowrap gap-x-3 mb-3 overflow-scroll w-[100%] md:flex-wrap hide-scrollbar">
+      {/* <div className="flex flex-nowrap gap-x-3 mb-3 overflow-scroll w-[100%] md:flex-wrap hide-scrollbar">
         {verifiedValidators?.map((item, key) => (
           <Link href={`/validator/${item.subnet_id}/${item.key}`} key={key}>
             <div className="p-3 border-[1px] flex rounded-2xl gap-x-1 items-center my-1 text-sm">
@@ -64,9 +61,7 @@ const Subnets = () => {
             </div>
           </Link>
         ))}
-      </div>
-       
-     
+      </div> */}
 
       <SubnetTable
         subnet={nonVerifiedValidators || []}
