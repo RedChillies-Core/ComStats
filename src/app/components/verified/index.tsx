@@ -6,7 +6,7 @@ function Verified({ isGold = false, isOfComStats = false }: { isGold?: boolean, 
     <div
       data-tooltip-id="verified-tooltip"
       data-tooltip-content={`${
-        isGold ? `${isOfComStats ? "Comstats": "Golden"} Bagde` : "Verified Badge"
+        isGold ? `${isOfComStats ? "Comstats": "Golden"} Badge` : "Verified Badge"
       }`}
       data-tooltip-place="top"
     >
