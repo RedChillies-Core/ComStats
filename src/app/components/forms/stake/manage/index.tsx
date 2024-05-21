@@ -3,7 +3,10 @@ import SelectComp from "@/app/components/select"
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import { usePolkadot } from "@/context"
-import { useGetValidatorsQuery } from "@/store/api/statsApi"
+import {
+  useGetAllValidatorsQuery,
+  useGetValidatorsQuery,
+} from "@/store/api/statsApi"
 import StakingModal from "@/app/components/modal/stake"
 
 const ManageStakingForm = () => {
@@ -19,7 +22,7 @@ const ManageStakingForm = () => {
   const [validatorId, setValidatorId] = useState("")
   const [subnetId, setSubnetId] = useState(0)
   const [open, setOpen] = useState(false)
-  const { data: validatorData } = useGetValidatorsQuery()
+  const { data: validatorData } = useGetAllValidatorsQuery()
 
   const onSubmit = (data: any) => {
     setValidatorId(data.validator.value)
@@ -56,11 +59,11 @@ const ManageStakingForm = () => {
           Select a Validator
         </Button>
       </div>
-      <StakingModal 
-        open={open} 
-        setOpen={setOpen} 
-        validatorId={validatorId} 
-        subnet_id={subnetId}  
+      <StakingModal
+        open={open}
+        setOpen={setOpen}
+        validatorId={validatorId}
+        subnet_id={subnetId}
       />
     </form>
   )

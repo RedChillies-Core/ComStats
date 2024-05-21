@@ -6,7 +6,11 @@ import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
 import { ValidatorType } from "@/types"
-import { useGetBalanceQuery, useGetValidatorsQuery } from "@/store/api/statsApi"
+import {
+  useGetAllValidatorsQuery,
+  useGetBalanceQuery,
+  useGetValidatorsQuery,
+} from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
 import { errorToast } from "@/app/components/toast"
 
@@ -28,7 +32,7 @@ const TransferStakingForm = ({
   })
   const { transferStake, selectedAccount } = usePolkadot()
 
-  const { data: validatorData } = useGetValidatorsQuery()
+  const { data: validatorData } = useGetAllValidatorsQuery()
   const { data: balanceData } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
@@ -94,7 +98,7 @@ const TransferStakingForm = ({
               "stakeAmount",
               formatTokenPrice({
                 amount: amount < 0 ? 0 : amount,
-                 
+
                 precision: 9,
               }),
             )

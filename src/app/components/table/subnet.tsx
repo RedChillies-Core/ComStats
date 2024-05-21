@@ -15,10 +15,10 @@ const SubnetTable = ({
   isLoading: boolean
 }) => {
   return (
-    <div className="max-w-full overflow-x-hidden">
+    <div className="max-w-full overflow-x-hidden mt-3">
       <div className="shadow-md rounded-lg">
         <div className="bg-gray-100 p-3 hidden md:block !uppercase">
-          <div className="grid grid-cols-[5%_25%_10%_15%_10%_10%_10%_10%] gap-3">
+          <div className="grid grid-cols-[5%_25%_10%_15%_15%_10%_5%_5%] gap-3">
             <div>
               <p className="text-xs text-gray-500 font-semibold">S.N</p>
             </div>
@@ -34,7 +34,9 @@ const SubnetTable = ({
               <p className="text-xs text-gray-500 font-semibold">Total Stake</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 font-semibold">EMISSION (COMAI per 100 blocks)</p>
+              <p className="text-xs text-gray-500 font-semibold">
+                EMISSION (100 blocks)
+              </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 font-semibold">Net APY</p>
@@ -43,11 +45,13 @@ const SubnetTable = ({
               <p className="text-xs text-gray-500 font-semibold">Fee</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 font-semibold">Action</p>
+              <p className="text-xs text-gray-500 font-semibold text-right">
+                Action
+              </p>
             </div>
           </div>
         </div>
-        <div className="p-3">
+        <div className="">
           {isLoading &&
             new Array(10).fill(0).map((_, index) => (
               <div
@@ -85,7 +89,7 @@ const SubnetTable = ({
             subnet.map((validator, index) => (
               <div
                 key={index}
-                className={`grid grid-cols-1 md:grid-cols-[5%_25%_10%_15%_10%_10%_10%_10%] gap-3 items-center py-3 border-b ${
+                className={`grid grid-cols-1 md:grid-cols-[5%_25%_10%_15%_15%_10%_5%_5%] gap-3 items-center py-1 border-b ${
                   index === subnet.length - 1 ? "border-0" : ""
                 }`}
               >
@@ -132,10 +136,12 @@ const SubnetTable = ({
                   )}
                 </div>
                 <div className="">
-                  {validator.type === "miner" ? "-" : `${validator.apy?.toFixed(2)} %`}
+                  {validator.type === "miner"
+                    ? "-"
+                    : `${validator.apy?.toFixed(2)} %`}
                 </div>
                 <div className="">{validator.delegation_fee}%</div>
-                <div className="">
+                <div className="text-right">
                   <Link
                     href={`/validator/${validator.subnet_id}/${validator.key}`}
                     className="flex items-center gap-x-1 "

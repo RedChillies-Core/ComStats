@@ -22,7 +22,12 @@ type IVerifyModal = {
   validatorId: string
   subnet_id: number
 }
-const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) => {
+const VerifyModal = ({
+  open,
+  setOpen,
+  validatorId,
+  subnet_id,
+}: IVerifyModal) => {
   const { selectedAccount } = usePolkadot()
   const {
     data: validatorData,
@@ -42,8 +47,18 @@ const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) =>
   )
 
   return (
-    <Modal open={open} onClose={() => setOpen(false)} center>
-      <h1 className="text-lg font-semibold leading-8">Verify {validatorData?.type}</h1>
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      center
+      classNames={{
+        modal:
+          "md:!max-w-[800px] !max-w-[95vw] md:!min-w-[500px] !min-w-[90vw] bg-white rounded-xl shadow-md",
+      }}
+    >
+      <h1 className="text-lg font-semibold leading-8">
+        Verify {validatorData?.type}
+      </h1>
       <hr />
       <div className="w-full">
         <div className="my-3">
@@ -63,12 +78,8 @@ const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) =>
                     <h1 className="font-normal">{validatorData?.name}</h1>
                     {validatorData?.isVerified && (
                       <Verified
-                        isGold={
-                          validatorData?.verified_type === "golden"
-                        }
-                        isOfComStats={
-                          validatorData?.expire_at === -1
-                        }
+                        isGold={validatorData?.verified_type === "golden"}
+                        isOfComStats={validatorData?.expire_at === -1}
                       />
                     )}
                   </div>
@@ -93,9 +104,13 @@ const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) =>
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
-                  <h6 className="font-normal w-1/2 tracking-tighter">Net APY </h6>
+                  <h6 className="font-normal w-1/2 tracking-tighter">
+                    Net APY{" "}
+                  </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.type === "miner" ? "-" : `${validatorData?.apy?.toFixed(2)} %`}
+                    {validatorData?.type === "miner"
+                      ? "-"
+                      : `${validatorData?.apy?.toFixed(2)} %`}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -109,18 +124,16 @@ const VerifyModal = ({ open, setOpen, validatorId, subnet_id }: IVerifyModal) =>
           )}
         </div>
         <div className="pt-4">
-            <VerifyModuleForm
-              validator={validatorData}
-              callback={() => {
-                setOpen(false)
-                setTimeout(() => {
-                  refetchBalance()
-                  validatorRefetch()
-                }, 8000)
-              }}
-            />
-        
-          
+          <VerifyModuleForm
+            validator={validatorData}
+            callback={() => {
+              setOpen(false)
+              setTimeout(() => {
+                refetchBalance()
+                validatorRefetch()
+              }, 8000)
+            }}
+          />
         </div>
       </div>
     </Modal>
