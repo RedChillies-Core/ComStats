@@ -1,24 +1,25 @@
-import Button from "@/app/components/button";
-import { Input } from "@/app/components/input";
-import SelectComp from "@/app/components/select";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { usePolkadot } from "@/context";
-import { ValidatorType } from "@/types";
+import Button from "@/app/components/button"
+import { Input } from "@/app/components/input"
+import SelectComp from "@/app/components/select"
+import React from "react"
+import { useForm } from "react-hook-form"
+import { usePolkadot } from "@/context"
+import { ValidatorType } from "@/types"
 import {
+  useGetAllValidatorsQuery,
   useGetBalanceQuery,
   useGetValidatorsQuery,
-} from "@/store/api/statsApi";
-import { formatTokenPrice } from "@/utils";
-import { getVerificationAmount } from "@/utils/getVerificationAmount";
-import { errorToast } from "../../toast";
+} from "@/store/api/statsApi"
+import { formatTokenPrice } from "@/utils"
+import { getVerificationAmount } from "@/utils/getVerificationAmount"
+import { errorToast } from "../../toast"
 
 const VerifyModuleForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined;
-  callback?: () => void;
+  validator: ValidatorType | undefined
+  callback?: () => void
 }) => {
   const {
     register,
@@ -30,26 +31,28 @@ const VerifyModuleForm = ({
     formState: { errors },
   } = useForm({
     mode: "all",
-  });
-  const { verifyModule, selectedAccount } = usePolkadot();
+  })
+  const { verifyModule, selectedAccount } = usePolkadot()
 
-  const { data: validatorData } = useGetValidatorsQuery();
+  const { data: validatorData } = useGetAllValidatorsQuery()
   const { data: balanceData } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
       skip: !selectedAccount,
-    }
-  );
+    },
+  )
 
   const onSubmit = (data: any) => {
-    console.log(balanceData?.balance);
-    if( (balanceData?.balance ?? 0)/1e9 <
-    getVerificationAmount(
-      getValues().type?.value,
-      getValues().duration?.value
-    )){
-        errorToast("Insufficient balance")
-        return
+    console.log(balanceData?.balance)
+    if (
+      (balanceData?.balance ?? 0) / 1e9 <
+      getVerificationAmount(
+        getValues().type?.value,
+        getValues().duration?.value,
+      )
+    ) {
+      errorToast("Insufficient balance")
+      return
     }
     verifyModule({
       verificationType: data.type.value,
@@ -57,8 +60,8 @@ const VerifyModuleForm = ({
       key: String(validator?.key),
       subnetId: validator?.subnet_id ?? 0,
       callback,
-    });
-  };
+    })
+  }
 
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -85,7 +88,7 @@ const VerifyModuleForm = ({
         errors={errors["type"]}
         rules={{ required: "Type is required" }}
         valueChange={(e) => {
-          trigger("type");
+          trigger("type")
         }}
       />
       <div className="pt-3">
@@ -111,7 +114,7 @@ const VerifyModuleForm = ({
           control={control}
           errors={errors["duration"]}
           valueChange={(e) => {
-            trigger("duration");
+            trigger("duration")
           }}
           rules={{ required: "Duration is required" }}
         />
@@ -120,24 +123,27 @@ const VerifyModuleForm = ({
         Cost for Verification:{" "}
         {getVerificationAmount(
           getValues().type?.value,
-          getValues().duration?.value
+          getValues().duration?.value,
         )}{" "}
         $COMAI
       </div>
       <div>
-        Wallet Balance:{" "}
-        {((balanceData?.balance ?? 0)/1e9).toFixed(3)} $COMAI
+        Wallet Balance: {((balanceData?.balance ?? 0) / 1e9).toFixed(3)} $COMAI
       </div>
       <div className="text-red-400">
-        {(balanceData?.balance ?? 0)/1e9 <
+        {(balanceData?.balance ?? 0) / 1e9 <
           getVerificationAmount(
             getValues().type?.value,
-            getValues().duration?.value
-          ) && `Insufficient balance, additional ${(getVerificationAmount(
-            getValues().type?.value,
-            getValues().duration?.value
-          ) - (balanceData?.balance ?? 0)/1e9 + 1).toFixed(3)} $COMAI required`
-          }
+            getValues().duration?.value,
+          ) &&
+          `Insufficient balance, additional ${(
+            getVerificationAmount(
+              getValues().type?.value,
+              getValues().duration?.value,
+            ) -
+            (balanceData?.balance ?? 0) / 1e9 +
+            1
+          ).toFixed(3)} $COMAI required`}
       </div>
       <Button
         size="large"
@@ -145,17 +151,17 @@ const VerifyModuleForm = ({
         className="w-full justify-center"
         onClick={() => {}}
         isDisabled={
-          (balanceData?.balance ?? 0)/1e9 <
+          (balanceData?.balance ?? 0) / 1e9 <
           getVerificationAmount(
             getValues().type?.value,
-            getValues().duration?.value
+            getValues().duration?.value,
           )
         }
       >
         Verify Module
       </Button>
     </form>
-  );
-};
+  )
+}
 
-export default VerifyModuleForm;
+export default VerifyModuleForm
