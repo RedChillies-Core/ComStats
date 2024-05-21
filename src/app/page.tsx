@@ -11,7 +11,11 @@ import Footer from "@/app/components/footer"
 import { useState } from "react"
 import TransferModal from "@/app/components/modal/transfer"
 import { useGetValidatorsByIdQuery } from "@/store/api/statsApi"
-import { formatTokenPrice, truncateWalletAddress } from "@/utils"
+import {
+  convertNumberToLetter,
+  formatTokenPrice,
+  truncateWalletAddress,
+} from "@/utils"
 import SearchWalletForm from "@/app/components/forms/search"
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
@@ -109,13 +113,17 @@ export default function Home() {
       statsName: "Total Circulation",
       icon: <RiStockLine size={40} />,
       value:
-        numberWithCommas(onChainData?.circulating_supply?.toFixed(2)) ?? "0",
+        convertNumberToLetter(
+          Number(onChainData?.circulating_supply?.toFixed(2)),
+        ) ?? "0",
     },
     {
       id: 3,
       statsName: "Total Market Cap",
       icon: <CiCoinInsert size={40} />,
-      value: `$${numberWithCommas((onChainData?.marketcap ?? 0)?.toFixed(2))}`,
+      value: `${convertNumberToLetter(
+        Number((onChainData?.marketcap ?? 0)?.toFixed(2)),
+      )}`,
     },
     {
       id: 4,
@@ -133,7 +141,9 @@ export default function Home() {
       id: 6,
       statsName: "Total Staked",
       icon: <PiUsersThreeBold size={40} />,
-      value: `${numberWithCommas(onChainData?.total_stake?.toFixed(2))}~(${(
+      value: `${convertNumberToLetter(
+        Number(onChainData?.total_stake?.toFixed(2)),
+      )} ~ (${(
         (Number(onChainData?.total_stake) /
           Number(onChainData?.circulating_supply)) *
         100

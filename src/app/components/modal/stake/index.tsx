@@ -21,7 +21,12 @@ type IStakingModal = {
   validatorId: string
   subnet_id: number
 }
-const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) => {
+const StakingModal = ({
+  open,
+  setOpen,
+  validatorId,
+  subnet_id,
+}: IStakingModal) => {
   const [selectedOperation, setSelectedOperation] = useState("add")
   const { selectedAccount } = usePolkadot()
   const {
@@ -48,16 +53,26 @@ const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) 
   }, [open])
 
   return (
-    <Modal open={open} onClose={() => setOpen(false)} center>
-      <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
-      <hr />
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      center
+      classNames={{
+        modal:
+          "w-full max-w-md md:max-w-2xl p-4 md:p-6 bg-white rounded-xl shadow-md",
+      }}
+    >
+      <h1 className="text-lg md:text-xl font-semibold leading-8 mb-4">
+        Manage Stake
+      </h1>
+      <hr className="mb-4" />
       <div className="w-full">
         <div className="my-3">
           {validatorLoading && <FaSpinner className="spinner" />}
           {!validatorLoading && (
-            <div className="border-[2px] my-5 p-4 text-sm rounded-lg shadow-card">
-              <div className="flex justify-between">
-                <h6 className=" text-base tracking-tight font-semibold flex items-center">
+            <div className="border-2 my-5 p-4 text-sm rounded-lg shadow-card">
+              <div className="flex justify-between items-center">
+                <h6 className="text-base tracking-tight font-semibold flex items-center">
                   <LiaCubesSolid size={40} /> Module Details
                 </h6>
               </div>
@@ -69,19 +84,15 @@ const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) 
                     <h1 className="font-normal">{validatorData?.name}</h1>
                     {validatorData?.isVerified && (
                       <Verified
-                        isGold={
-                          validatorData?.verified_type === 'golden'
-                        }
-                        isOfComStats={
-                          validatorData?.expire_at === -1
-                        }
+                        isGold={validatorData?.verified_type === "golden"}
+                        isOfComStats={validatorData?.expire_at === -1}
                       />
                     )}
                   </div>
                 </li>
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">
-                    Total Staked{" "}
+                    Total Staked
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
                     {numberWithCommas(
@@ -92,16 +103,18 @@ const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) 
                 </li>
                 <li className="flex gap-x-2 pb-1">
                   <h6 className="font-normal w-1/2 tracking-tighter">
-                    Total Stakers{" "}
+                    Total Stakers
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
                     {numberWithCommas(validatorData?.total_stakers)}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
-                  <h6 className="font-normal w-1/2 tracking-tighter">APY </h6>
+                  <h6 className="font-normal w-1/2 tracking-tighter">APY</h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.type == "miner" ? '-': `${validatorData?.apy?.toFixed(2)} %`}
+                    {validatorData?.type === "miner"
+                      ? "-"
+                      : `${validatorData?.apy?.toFixed(2)} %`}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -126,7 +139,7 @@ const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) 
             </div>
           )}
         </div>
-        <div className="flex py-2 flex-col gap-y-3  justify-between sm:flex-row sm:gap-x-3">
+        <div className="flex flex-col sm:flex-row gap-3 py-2 justify-between">
           <Button
             variant="outlined"
             prefix={<FaMoneyBillTransfer />}
@@ -178,7 +191,6 @@ const StakingModal = ({ open, setOpen, validatorId, subnet_id }: IStakingModal) 
               }}
             />
           )}
-
           {selectedOperation === "transfer" && (
             <TransferStakingForm
               validator={validatorData}

@@ -1,19 +1,20 @@
-import Button from "@/app/components/button";
-import { Input } from "@/app/components/input";
-import SelectComp from "@/app/components/select";
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { usePolkadot } from "@/context";
-import { ValidatorType } from "@/types";
+import Button from "@/app/components/button"
+import { Input } from "@/app/components/input"
+import SelectComp from "@/app/components/select"
+import React, { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { usePolkadot } from "@/context"
+import { ValidatorType } from "@/types"
 import {
+  useGetAllValidatorsQuery,
   useGetBalanceQuery,
   useGetValidatorsQuery,
-} from "@/store/api/statsApi";
-import { formatTokenPrice } from "@/utils";
-import { getVerificationAmount } from "@/utils/getVerificationAmount";
-import { errorToast } from "../../toast";
-import { api } from "@/store/api/api";
-import { toast } from "react-toastify";
+} from "@/store/api/statsApi"
+import { formatTokenPrice } from "@/utils"
+import { getVerificationAmount } from "@/utils/getVerificationAmount"
+import { errorToast } from "../../toast"
+import { api } from "@/store/api/api"
+import { toast } from "react-toastify"
 
 type ValidatorDetails = {
   /**
@@ -21,19 +22,19 @@ type ValidatorDetails = {
    */
   // key: string;
   // name: string;
-  description: string;
-  twitter?: string;
-  discord?: string;
-  website?: string;
-  image?: FileList;
-};
+  description: string
+  twitter?: string
+  discord?: string
+  website?: string
+  image?: FileList
+}
 
 const UpdateDetailsForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined;
-  callback?: () => void;
+  validator: ValidatorType | undefined
+  callback?: () => void
 }) => {
   // const {selectedAccount, setExtensionSelected} = usePolkadot();
   const {
@@ -53,31 +54,31 @@ const UpdateDetailsForm = ({
       website: validator?.website || "",
       // image: validator?.image || "",
     },
-  });
-  const { verifyModule, selectedAccount, extensionSelected } = usePolkadot();
+  })
+  const { verifyModule, selectedAccount, extensionSelected } = usePolkadot()
 
-  const { data: validatorData } = useGetValidatorsQuery();
+  const { data: validatorData } = useGetAllValidatorsQuery()
   const { data: balanceData } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
       skip: !selectedAccount,
-    }
-  );
+    },
+  )
 
   const onSubmit = async (data: any) => {
-    console.log("data", data);
+    console.log("data", data)
     try {
       if (!data.image) {
-        toast.error("Image is required");
-        return;
+        toast.error("Image is required")
+        return
       }
       if (!data.description) {
-        toast.error("Description is required");
-        return;
+        toast.error("Description is required")
+        return
       }
       if (data.description.length > 1000) {
-        toast.error("Description is too long");
-        return;
+        toast.error("Description is too long")
+        return
       }
       if (
         !selectedAccount?.address ||
@@ -86,29 +87,29 @@ const UpdateDetailsForm = ({
         !validator ||
         selectedAccount?.address !== validator?.key
       ) {
-        errorToast("You are not allowed to update this module");
-        return;
+        errorToast("You are not allowed to update this module")
+        return
       }
       const message = `Please sign this message with nonce ${Math.floor(
-        new Date().getTime() / 1000
-      )} to update the details of the module ${validator?.name} on ComStats`;
+        new Date().getTime() / 1000,
+      )} to update the details of the module ${validator?.name} on ComStats`
       if (!extensionSelected?.signer || !extensionSelected.signer?.signRaw)
-        return;
+        return
       const { signature } = await extensionSelected.signer.signRaw({
         address: selectedAccount?.address,
         data: message,
         type: "payload",
-      });
-      const formData = new FormData();
-      formData.append("description", data.description);
-      formData.append("twitter", data.twitter);
-      formData.append("discord", data.discord);
-      formData.append("website", data.website);
+      })
+      const formData = new FormData()
+      formData.append("description", data.description)
+      formData.append("twitter", data.twitter)
+      formData.append("discord", data.discord)
+      formData.append("website", data.website)
       if (data.image && data.image.length > 0) {
-        formData.append("image", data.image[0]);
+        formData.append("image", data.image[0])
       }
-      formData.append("message", message);
-      formData.append("signature", signature);
+      formData.append("message", message)
+      formData.append("signature", signature)
       await api.post(
         `v2/metadata/${validator?.subnet_id}/${validator?.key}`,
         formData,
@@ -116,13 +117,13 @@ const UpdateDetailsForm = ({
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
-      );
-      callback && callback();
+        },
+      )
+      callback && callback()
     } catch (error) {
-      errorToast("Failed to update module details");
+      errorToast("Failed to update module details")
     }
-  };
+  }
 
   return (
     <form className="space-y-1 w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -197,18 +198,18 @@ const UpdateDetailsForm = ({
                   if (value && value?.length > 0) {
                     return (
                       value[0].type.includes("image") || "Invalid file format"
-                    );
+                    )
                   }
-                  return true;
+                  return true
                 },
                 fileSize: (value) => {
                   if (value && value?.length > 0) {
                     return (
                       value[0].size < 5000000 ||
                       "Image size should be less than 5MB"
-                    );
+                    )
                   }
-                  return true;
+                  return true
                 },
               },
             })}
@@ -244,7 +245,7 @@ const UpdateDetailsForm = ({
         Update Module
       </Button>
     </form>
-  );
-};
+  )
+}
 
-export default UpdateDetailsForm;
+export default UpdateDetailsForm

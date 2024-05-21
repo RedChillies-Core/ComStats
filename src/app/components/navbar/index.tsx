@@ -6,13 +6,15 @@ import Button from "../button"
 import Image from "next/image"
 import { usePolkadot } from "@/context"
 import { truncateWalletAddress } from "@/utils"
-import { FaSpinner } from "react-icons/fa6"
+import { FaBars, FaSpinner } from "react-icons/fa6"
 import { GrDashboard } from "react-icons/gr"
 import Link from "next/link"
 import { FaCubesStacked } from "react-icons/fa6"
+import { FaTimes } from "react-icons/fa"
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const { isInitialized, handleConnect, selectedAccount } = usePolkadot()
   const scrollToTop = () => {
     window.scrollTo({
@@ -37,9 +39,13 @@ const Navbar = () => {
     }
   }, [])
 
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen)
+  }
+
   return (
-    <div className="px-3 sticky z-40 top-0  transition-all duration-100 ease-in-out py-0 bg-white shadow-sm sm:px-5">
-      <div className="container flex justify-between items-center py-3">
+    <div className="relative top-0 z-40 px-3 py-0 bg-white shadow-sm transition-all duration-100 ease-in-out sm:px-5">
+      <div className="container flex items-center justify-between py-3">
         <Link href="/">
           <div>
             <Image
@@ -50,26 +56,42 @@ const Navbar = () => {
             />
           </div>
         </Link>
-        <div className="flex items-center gap-x-2">
-          <a href="https://comsolbridge.com" target="_blank">
-            <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
-              <AiOutlineTransaction /> Comsol Bridge
-            </div>
+
+        <div className="md:hidden">
+          <button onClick={toggleMenu} className="text-xl">
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
+
+        <div
+          className={`md:flex items-center gap-x-2 ${
+            menuOpen
+              ? "block absolute top-16 left-0 bg-gray-100 w-screen"
+              : "hidden"
+          } md:block`}
+        >
+          <a
+            href="https://comsolbridge.com"
+            target="_blank"
+            className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
+          >
+            <AiOutlineTransaction /> Comsol Bridge
           </a>
-          <Link href="/subnets">
-            <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
-              <FaCubesStacked /> Subnets
-            </div>
+          <Link
+            href="/subnets"
+            className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
+          >
+            <FaCubesStacked /> Subnets
           </Link>
           {isInitialized && selectedAccount ? (
             <Fragment>
-              <Link href="/portfolio">
-                <div className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative">
-                  <GrDashboard /> Portfolio
-                </div>
+              <Link
+                href="/portfolio"
+                className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
+              >
+                <GrDashboard /> Portfolio
               </Link>
-
-              <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2">
+              <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2 my-2 md:my-0">
                 <button
                   className="flex items-center cursor-pointer"
                   onClick={handleConnect}
@@ -88,8 +110,8 @@ const Navbar = () => {
                 variant="primary"
                 onClick={handleConnect}
                 isDisabled={!isInitialized}
+                className="my-2 md:my-0"
               >
-                {" "}
                 {!isInitialized ? (
                   <FaSpinner className="spinner" />
                 ) : (

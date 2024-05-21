@@ -1,4 +1,4 @@
-import React, {  } from "react"
+import React from "react"
 import { LiaCubesSolid } from "react-icons/lia"
 import Modal from "react-responsive-modal"
 import { FaSpinner } from "react-icons/fa6"
@@ -18,7 +18,12 @@ type IUpdateDetailsModal = {
   validatorId: string
   subnet_id: number
 }
-const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDetailsModal) => {
+const UpdateDetailsModal = ({
+  open,
+  setOpen,
+  validatorId,
+  subnet_id,
+}: IUpdateDetailsModal) => {
   const { selectedAccount } = usePolkadot()
   const {
     data: validatorData,
@@ -36,10 +41,20 @@ const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDe
       skip: !selectedAccount,
     },
   )
-  
+
   return (
-    <Modal open={open} onClose={() => setOpen(false)} center>
-      <h1 className="text-lg font-semibold leading-8">Update {validatorData?.type} details</h1>
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      center
+      classNames={{
+        modal:
+          "md:!max-w-[800px] !max-w-[95vw] md:!min-w-[500px] !min-w-[90vw] bg-white rounded-xl shadow-md",
+      }}
+    >
+      <h1 className="text-lg font-semibold leading-8">
+        Update {validatorData?.type} details
+      </h1>
       <hr />
       <div className="w-full">
         <div className="my-3">
@@ -59,12 +74,8 @@ const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDe
                     <h1 className="font-normal">{validatorData?.name}</h1>
                     {validatorData?.isVerified && (
                       <Verified
-                        isGold={
-                          validatorData?.verified_type === "golden"
-                        }
-                        isOfComStats={
-                          validatorData?.expire_at === -1
-                        }
+                        isGold={validatorData?.verified_type === "golden"}
+                        isOfComStats={validatorData?.expire_at === -1}
                       />
                     )}
                   </div>
@@ -89,9 +100,13 @@ const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDe
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
-                  <h6 className="font-normal w-1/2 tracking-tighter">Net APY </h6>
+                  <h6 className="font-normal w-1/2 tracking-tighter">
+                    Net APY{" "}
+                  </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
-                    {validatorData?.type === 'miner' ? '-' : `${validatorData?.apy?.toFixed(2)} %`}
+                    {validatorData?.type === "miner"
+                      ? "-"
+                      : `${validatorData?.apy?.toFixed(2)} %`}
                   </h1>
                 </li>
                 <li className="flex gap-x-2 pb-1">
@@ -105,19 +120,17 @@ const UpdateDetailsModal = ({ open, setOpen, validatorId, subnet_id }: IUpdateDe
           )}
         </div>
         <div className="pt-4">
-            <UpdateDetailsForm
-              validator={validatorData}
-              callback={() => {
-                successToast("Details updated successfully")
-                setOpen(false)
-                setTimeout(() => {
-                  refetchBalance()
-                  validatorRefetch()
-                }, 8000)
-              }}
-            />
-        
-          
+          <UpdateDetailsForm
+            validator={validatorData}
+            callback={() => {
+              successToast("Details updated successfully")
+              setOpen(false)
+              setTimeout(() => {
+                refetchBalance()
+                validatorRefetch()
+              }, 8000)
+            }}
+          />
         </div>
       </div>
     </Modal>

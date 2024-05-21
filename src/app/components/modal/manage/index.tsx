@@ -7,14 +7,27 @@ type IStakingModal = {
   open: boolean
   setOpen: (arg: boolean) => void
 }
+
 const ManageStakingModal = ({ open, setOpen }: IStakingModal) => {
   return (
-    <Modal open={open} onClose={() => setOpen(false)} center>
-      <h1 className="text-lg font-semibold leading-8">Manage Stake</h1>
-      <hr />
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      center
+      classNames={{
+        modal:
+          "md:!max-w-[800px] !max-w-[95vw] md:!min-w-[500px] !min-w-[90vw] bg-white rounded-xl shadow-md",
+      }}
+    >
+      <h1 className="text-lg md:text-xl font-semibold leading-8 mb-4">
+        Manage Stake
+      </h1>
+      <hr className="mb-4" />
       <ManageStakingForm />
-      <Link href="/portfolio" className="text-center">
-        <p className="underline">Looking for your stakes? Check here.</p>
+      <Link href="/portfolio" className="block mt-4 text-center">
+        <p className="underline text-sm md:text-base">
+          Looking for your stakes? Check here.
+        </p>
       </Link>
     </Modal>
   )

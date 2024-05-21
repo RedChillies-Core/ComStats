@@ -8,7 +8,6 @@ import {
   SubnetInterface,
   ValidatorType,
 } from "@/types"
-import verifiedValidators from "../../../validators.json"
 export const statsApi = createApi({
   reducerPath: "statsApi",
   baseQuery: apiWrapper,
@@ -18,28 +17,41 @@ export const statsApi = createApi({
     "SingleValidator",
     "SubnetsList",
     "SingleSubnet",
+    "AllValidatorsList",
   ],
   endpoints: (builder) => ({
-    getValidators: builder.query<ValidatorType[], void>({
-      query: () => "/validators/",
+    getValidators: builder.query<
+      InterfacePagination<ValidatorType[]>,
+      { page: number; search?: string; type?: string }
+    >({
+      query: ({ page, search, type }) => {
+        let url = `/validators/?page=${page}&limit=50`
+        if (search && search !== undefined && search !== "") {
+          url += `&search=${search}`
+        }
+        if (type && type !== undefined && type !== "") {
+          url += `&type=${type}`
+        }
+        return url
+      },
       providesTags: ["ValidatorsList"],
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
-        const validatedResponse: ValidatorType[] = response.validators.map(
-          (validator) => {
-            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()/1000
-            return validator
-          },
-        )
-        return validatedResponse.toSorted((a, b) =>
-          a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1,
-        )
+        console.log("HERE", response)
+        return response
+      },
+    }),
+    getAllValidators: builder.query<ValidatorType[], void>({
+      query: () => `/validators/`,
+      providesTags: ["AllValidatorsList"],
+      transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
+        return response.validators
       },
     }),
     getValidatorsById: builder.query<
       ValidatorType,
-      { key: string; wallet: string, subnet_id?: number } 
+      { key: string; wallet: string; subnet_id?: number }
     >({
-      query: ({ key, wallet, subnet_id = 0  }) => {
+      query: ({ key, wallet, subnet_id = 0 }) => {
         let url = `/validators/${key}?subnet_id=${subnet_id}`
         if (wallet && wallet !== undefined) {
           url += `&wallet=${wallet}`
@@ -50,7 +62,9 @@ export const statsApi = createApi({
       transformResponse: (response: ValidatorType) => {
         const validatedResponse: ValidatorType = {
           ...response,
-          isVerified:  response.expire_at === -1 || (response.expire_at || 0) > Date.now()/1000,
+          isVerified:
+            response.expire_at === -1 ||
+            (response.expire_at || 0) > Date.now() / 1000,
         }
         console.log(validatedResponse)
         validatedResponse.stake_from = validatedResponse?.stake_from?.sort(
@@ -65,19 +79,6 @@ export const statsApi = createApi({
       transformResponse: (
         response: InterfacePaginationSubnet<SubnetInterface[]>,
       ) => {
-        // const validatedResponse: ValidatorType[] = response.validators.map(
-        //   (validator) => {
-        //     if (verifiedValidators.some((v) => v.key === validator.key)) {
-        //       validator.isVerified = true
-        //     } else {
-        //       validator.isVerified = false
-        //     }
-        //     return validator
-        //   },
-        // )
-        // return validatedResponse.toSorted((a, b) =>
-        //   a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1,
-        // )
         return response.subnets
       },
     }),
@@ -87,7 +88,9 @@ export const statsApi = createApi({
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
         const validatedResponse: ValidatorType[] = response.validators.map(
           (validator) => {
-            validator.isVerified = validator.expire_at === -1 || (validator.expire_at || 0) > Date.now()/1000
+            validator.isVerified =
+              validator.expire_at === -1 ||
+              (validator.expire_at || 0) > Date.now() / 1000
             return validator
           },
         )
@@ -121,6 +124,7 @@ export const statsApi = createApi({
 
 export const {
   useGetValidatorsQuery,
+  useGetAllValidatorsQuery,
   useGetBalanceQuery,
   useGetTotalStatsQuery,
   useSearchBalanceMutation,
