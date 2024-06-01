@@ -10,7 +10,7 @@ import { FaBars, FaSpinner } from "react-icons/fa6"
 import { GrDashboard } from "react-icons/gr"
 import Link from "next/link"
 import { FaCubesStacked } from "react-icons/fa6"
-import { FaTimes } from "react-icons/fa"
+import { FaTimes, FaVoteYea } from "react-icons/fa"
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -85,6 +85,12 @@ const Navbar = () => {
           </Link>
           {isInitialized && selectedAccount ? (
             <Fragment>
+              <Link
+                href="/vote"
+                className="  text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
+              >
+                <FaVoteYea /> Voting{" "}
+              </Link>
               <Link
                 href="/portfolio"
                 className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
