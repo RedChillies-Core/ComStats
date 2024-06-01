@@ -1,12 +1,20 @@
 import React from "react"
 import { Tooltip } from "react-tooltip"
 
-function Verified({ isGold = false, isOfComStats = false }: { isGold?: boolean, isOfComStats?: boolean}) {
+function Verified({
+  isGold = false,
+  isOfComStats = false,
+}: {
+  isGold?: boolean
+  isOfComStats?: boolean
+}) {
   return (
     <div
       data-tooltip-id="verified-tooltip"
       data-tooltip-content={`${
-        isGold ? `${isOfComStats ? "Comstats": "Golden"} Badge` : "Verified Badge"
+        isGold
+          ? `${isOfComStats ? "Comstats" : "Golden"} Badge`
+          : "Verified Badge"
       }`}
       data-tooltip-place="top"
     >

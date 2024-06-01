@@ -91,7 +91,7 @@ const SubnetTable = ({
                 key={index}
                 className={`grid grid-cols-1 md:grid-cols-[5%_25%_10%_15%_15%_10%_5%_5%] gap-3 items-center py-1 border-b ${
                   index === subnet.length - 1 ? "border-0" : ""
-                }`}
+                } hover:bg-gray-100 hover:cursor-pointer`}
               >
                 <div className="text-sm text-gray-800">{index + 1}</div>
                 <div className="flex items-center space-x-3">
