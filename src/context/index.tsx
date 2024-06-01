@@ -89,6 +89,12 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     const newApi = await ApiPromise.create({ provider })
     setApi(newApi)
     setIsInitialized(true)
+
+    console.log("api", newApi.query.subspaceModule)
+    newApi.query.subspaceModule.stakeTo(0, "5GuXaUtQdUhmy1tzM6vBmxqyjgYwrUaLxybeQc4gfWvZw9y7")
+    .then((res) => {
+      console.log("api stakeFrom", res.toHuman())
+    })
   }
   useEffect(() => {
     async function init() {
@@ -215,7 +221,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     }
     const tx = api.tx.utility.batchAll([
       api.tx.subspaceModule.addStake(subnetId, validator, amt),
-      api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
+      api.tx.balances.transferKeepAlive(transactionFeeCollector, 2 * 10 ** 8),
     ])
     await completeTransaction(tx, callback)
   }
@@ -336,8 +342,8 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
       return;
     }
     const tx = api.tx.utility.batchAll([
-      api.tx.balances.transfer(to, amt),
-      // api.tx.balances.transfer(transactionFeeCollector, 2 * 10 ** 8),
+      api.tx.balances.transferKeepAlive(to, amt),
+      api.tx.balances.transferKeepAlive(transactionFeeCollector, 2 * 10 ** 8),
     ])
 
     await completeTransaction(tx, callback)
@@ -355,7 +361,7 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     const amount = getVerificationAmount(verificationType, duration);
     const amt = Math.floor(Number(amount) * 10 ** 9);
     const tx = api.tx.utility.batchAll([
-      api.tx.balances.transfer(
+      api.tx.balances.transferKeepAlive(
         "5CVUUEQme5fWXD1zkMwZ9iSvR2PXNBsjnN6CX4dWMjc81fsD",
         amt,
       ),
