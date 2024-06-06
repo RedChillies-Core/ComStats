@@ -8,6 +8,8 @@ import { useGetBalanceQuery } from "@/store/api/statsApi"
 import { ValidatorType } from "@/types"
 import { formatTokenPrice } from "@/utils"
 import { errorToast, infoToast } from "@/app/components/toast"
+import { useUserStats } from "@/app/hooks/useUserStats"
+import { useBalance } from "@/context/balanceContext"
 
 const AddStakingForm = ({
   validator,
@@ -26,12 +28,13 @@ const AddStakingForm = ({
   })
 
   const { addStake, selectedAccount } = usePolkadot()
-  const { data: balanceData } = useGetBalanceQuery(
-    { wallet: String(selectedAccount?.address) },
-    {
-      skip: !selectedAccount,
-    },
-  )
+  const { userBalance: balanceData} = useBalance()
+  // const { data: balanceData } = useGetBalanceQuery(
+  //   { wallet: String(selectedAccount?.address) },
+  //   {
+  //     skip: !selectedAccount,
+  //   },
+  // )
   const onSubmit = (data: any) => {
     if (Number(balanceData?.balance) / 10 ** 9 < Number(data.stakeAmount)) {
       infoToast("Insufficient Balance")

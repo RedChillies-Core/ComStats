@@ -16,6 +16,7 @@ import {
 } from "react-icons/ai"
 import { BiAnalyse, BiCube } from "react-icons/bi"
 import { statsApi } from "@/store/api/statsApi"
+import { useBalance } from "@/context/balanceContext"
 
 interface NonTransferEvent {
   section: string
@@ -25,7 +26,7 @@ interface NonTransferEvent {
 
 const Portfolio = () => {
   const { selectedAccount, isConnected, api } = usePolkadot()
-  const { userBalance, userBalanceDollar, userStakedDollar, refetchSearch } = useUserStats()
+  const { userBalance, userBalanceDollar, userStakedDollar, fetchUserStats:refetchSearch } = useBalance()
   const { data: subnetsData, isLoading } = statsApi.useGetSubnetsQuery()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -34,7 +35,7 @@ const Portfolio = () => {
 
   useEffect(() => {
     const fetchBalance = async () => {
-      refetchSearch()
+      refetchSearch?.()
     }
     const interval = setInterval(() => {
       fetchBalance()

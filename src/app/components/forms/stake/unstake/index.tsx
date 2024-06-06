@@ -7,6 +7,8 @@ import { ValidatorType } from "@/types"
 import { usePolkadot } from "@/context"
 import { formatTokenPrice } from "@/utils"
 import { useGetBalanceQuery } from "@/store/api/statsApi"
+import { useUserStats } from "@/app/hooks/useUserStats"
+import { useBalance } from "@/context/balanceContext"
 
 const UnstakingForm = ({
   validator,
@@ -25,12 +27,13 @@ const UnstakingForm = ({
   })
 
   const { selectedAccount, removeStake, api } = usePolkadot()
-  const { data: balanceData } = useGetBalanceQuery(
-    { wallet: String(selectedAccount?.address) },
-    {
-      skip: !selectedAccount,
-    },
-  )
+  const { userBalance: balanceData } = useBalance()
+  // const { data: balanceData } = useGetBalanceQuery(
+  //   { wallet: String(selectedAccount?.address) },
+  //   {
+  //     skip: !selectedAccount,
+  //   },
+  // )
   const onSubmit = (data: any) => {
     removeStake({
       subnetId: Number(validator?.subnet_id) || 0,
@@ -75,7 +78,7 @@ const UnstakingForm = ({
               formatTokenPrice({
                 amount: Number(
                   balanceData?.stakes?.find(
-                    (item) => item.validator.key === validator?.key,
+                    (item) => item.validator.key === validator?.key && item.validator.subnet_id === validator?.subnet_id,
                   )?.amount,
                 ),
                 precision: 9,

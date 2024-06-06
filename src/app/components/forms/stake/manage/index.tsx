@@ -8,6 +8,7 @@ import {
   useGetValidatorsQuery,
 } from "@/store/api/statsApi"
 import StakingModal from "@/app/components/modal/stake"
+import { useUserStats } from "@/app/hooks/useUserStats"
 
 const ManageStakingForm = () => {
   const {

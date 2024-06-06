@@ -77,18 +77,22 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     web3FromAddress: null,
   })
   async function loadPolkadotApi() {
-    const { web3Accounts, web3Enable, web3FromAddress } = await import(
-      "@polkadot/extension-dapp"
-    )
-    setPolkadotApi({
-      web3Accounts,
-      web3Enable,
-      web3FromAddress,
-    })
-    const provider = new WsProvider(wsEndpoint)
-    const newApi = await ApiPromise.create({ provider })
-    setApi(newApi)
-    setIsInitialized(true)
+    try{
+      const { web3Accounts, web3Enable, web3FromAddress } = await import(
+        "@polkadot/extension-dapp"
+      )
+      setPolkadotApi({
+        web3Accounts,
+        web3Enable,
+        web3FromAddress,
+      })
+      const provider = new WsProvider(wsEndpoint)
+      const newApi = await ApiPromise.create({ provider })
+      setApi(newApi)
+      setIsInitialized(true)
+    } catch (error) {
+      console.error(error)
+    }
   }
   useEffect(() => {
     async function init() {
@@ -226,6 +230,14 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
   ) {
     if(selectedAccount === undefined) return;
     if(extensionSelected === null || !extensionSelected.signer) return;
+
+    const balance: any =  await api?.query.system.account(selectedAccount.address);
+    console.log("balance", balance)
+    const freeBalance = balance.data.free.toNumber();
+    if (freeBalance === 0) {
+      errorToast("You need to have certain amount of $COMAI to perform this transaction");
+      return;
+    }
     // check if meta update is needed
     extensionSelected.metadata
     let timeoutOut: any;

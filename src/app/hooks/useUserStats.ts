@@ -1,133 +1,104 @@
 import { usePolkadot } from "@/context"
 import { statsApi, useGetBalanceQuery, useGetTotalStatsQuery, useGetValidatorsQuery } from "@/store/api/statsApi"
-import { SubnetInterface, ValidatorType } from "@/types"
+import { SubnetInterface, ValidatorType, IStats } from "@/types"
 import axios from "axios"
 import { useEffect, useState } from "react"
 
-// create a type with dynamic key and number value
-type Stakes = {
-  subnet: number
-  module: string
-  amount: number
-}
 
-type ValiStakes = {
-  amount: number
-  validator: ValidatorType
-}
+const backendApi = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API,
+})
 
-export const useUserStats = () => {
+export const useUserStats = ({
+  onChainData,
+}: {
+  onChainData?: IStats
+}) => {
   const [walletAddress, setWalletAddress] = useState("")
+  const [searchFetching, setSearchFetching] = useState(false)
   const { isConnected, selectedAccount, api } = usePolkadot()
-  const [userAvailableBalance, setUserAvailableBalance] = useState(0)
-  const [userStakedBalance, setUserStakedBalance] = useState(0)
-  const [userStakes, setUserStakes] = useState<ValiStakes[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const { data: subnetsData, isLoading: subnetLoading } = statsApi.useGetSubnetsQuery()
-  const { data: onChainData, isLoading: chainLoading } = useGetTotalStatsQuery(
-    undefined,
-    {
-      pollingInterval: 8000,
-    },
-  )
-  const {
-    data: userBalance,
-    isFetching,
-    // refetch: refetchSearch,
-  } = useGetBalanceQuery(
-    { wallet: walletAddress },
-    {
-      skip: !walletAddress && walletAddress === "",
-    },
-  )
+
+  const [userBalance, setUserBalance] = useState({
+    balance: 0,
+    staked: 0,
+    // stakes: [],
+    daily_reward: 0,
+  })
+
+  const userStakedDollar = (onChainData?.price || 0) * userBalance.staked / 10 ** 9
+
+  const userBalanceDollar = (onChainData?.price || 0) * userBalance.balance / 10 ** 9
+
+  const fetchBalance = async (address?: string) => {
+    const wallet = address || walletAddress || selectedAccount?.address
+    if (!wallet) return
+    const balance: any = await api?.query.system.account(wallet)
+    return balance?.data?.free.toNumber() || 0
+  }
+
+  const fetchStakes = async (wallet?: string) => {
+    setSearchFetching(true)
+    console.log("fetching stakes")
+    const { data: subnetsData } = await backendApi.get("/subnets/")
+    const address = wallet ||  walletAddress || selectedAccount?.address
+    console.log("address", address)
+    if (!address || !api) return
+    console.log("fetching balance")
+    const balance = await fetchBalance(address)
+    console.log("balance", balance)
+    const subnets =
+      subnetsData?.subnets?.map((each: SubnetInterface) => each.subnet_id) ??
+      [];
+    let stakes: any[] = [];
+    while (subnets.length > 0) {
+      const subnetChunk = subnets.splice(0, 8);
+      const chunkStakes = await Promise.all(
+        subnetChunk.map(async (subnet: any) => {
+          return api.query.subspaceModule
+            .stakeTo(subnet, address)
+            .then((res) => {
+              const data = res.toJSON() as any;
+              if (Object.keys(data).length === 0) return [];
+              return Object.keys(data).map((key) => ({
+                subnet: subnet,
+                module: key,
+                amount: data[key],
+              }));
+            });
+        })
+      );
+      stakes = [...stakes, ...chunkStakes.flat()];
+
+      const totalStaked = stakes.reduce((acc, stake) => acc + stake.amount, 0);
+
+      setUserBalance({
+        balance,
+        staked: totalStaked,
+        // stakes,
+        daily_reward: 0,
+      })
+      setSearchFetching(false)
+    }
+  }
+
+
 
   useEffect(() => {
-    if (isConnected && !subnetLoading) {
-      setIsLoading(true)
-      setWalletAddress(String(selectedAccount?.address))
-      fetchBalance(String(selectedAccount?.address))
-      .then(() => fetchUsersStake(subnetsData?.map((each) => each.subnet_id) ?? []))
-      // fetchUsersStake(subnetsData?.map((each) => each.subnet_id) ?? [])
+    if (selectedAccount?.address) {
+      setWalletAddress(selectedAccount?.address)
+      setSearchFetching(true)
+      fetchStakes(selectedAccount?.address)
     }
-  }, [isConnected, selectedAccount, subnetLoading])
+  }, [selectedAccount])
 
-  const fetchBalance = async (wallet?: string) => {
-    api?.query.system.account(wallet ?? walletAddress).then((res) => {
-      const data = res.toJSON() as any
-      setUserAvailableBalance(data?.data?.free || 0 / 1e9)
-      // setUserBalance(res.toJSON()?.data?.free)
-    })
-  }
-  const fetchUsersStake = async (sub: number[]) => {
-    const {data: sub1} = await axios.get("https://api.comstats.org/subnets/")
-    console.log('fetching stakes on subnets', sub1)
-    const startTime = Date.now()
-    const subnets = sub1?.subnets.map((each: SubnetInterface) => each.subnet_id as number)
-    console.log('fetching stakes on subnets', subnets)
-    let stakes: any[] = [];
-    console.log('walletAddress', walletAddress)
-    while (subnets.length) {
-      const subnetChunk = subnets.splice(0, 8);
-      const chunkStakes = await Promise.all(subnetChunk.map(async (subnet: any) => {
-        return api?.query.subspaceModule.stakeTo(subnet, walletAddress !== "" ? walletAddress : selectedAccount?.address).then((res) => {
-          const data = res.toJSON() as any
-          if(Object.keys(data).length === 0) return []
-          return Object.keys(data).map((key)=>({
-            subnet: subnet,
-            module: key,
-            amount: data[key]
-          }));
-        })
-      }));
-      console.log('chunkStakes', chunkStakes)
-      stakes = [...stakes, ...chunkStakes.filter((item) => item.length > 0)]
-    }
-    stakes = stakes.flat()
-    console.log('stakes', stakes)
-    const endTime = Date.now()
-    setUserStakedBalance(
-      stakes.reduce((acc, item) => {
-        return acc + item.amount
-      }, 0)
-    )
 
-    const {data: validatorsData} = await axios.get("https://api.comstats.org/validators/", {
-      params: {
-        vali_keys: stakes.map((item) => item.module).join(",")
-      },
-    })
-    console.log('validatorsData', validatorsData)
-    const userStakes = stakes.map((item) => {
-      const validator = validatorsData?.validators.find((vali: ValidatorType) => vali.key === item.module && vali.subnet_id === item.subnet)
-      return {
-        amount: item.amount,
-        validator: validator
-      }
-    })
-    setUserStakes(userStakes)
-    setIsLoading(false)
-    console.log(`Time taken: $(${(endTime-startTime)/(1000)}) sec`)
-  }
-  const userBalanceDollar =
-    ((userAvailableBalance ?? 0) * (onChainData?.price ?? 0)) / 10 ** 9
-  const userStakedDollar =
-    ((userStakedBalance ?? 0) * (onChainData?.price ?? 0)) / 10 ** 9
   return {
     walletAddress,
-    searchFetching: isFetching || isLoading || subnetLoading || chainLoading,
-    userBalance: {
-      ...userBalance,
-      balance: userAvailableBalance,
-      staked: userStakedBalance,
-      stakes: userStakes,
-    },
-    userBalanceDollar,
-    userStakedDollar,
-    onChainData,
-    refetchSearch: () => {
-      fetchBalance()
-      .then(() => fetchUsersStake(subnetsData?.map((each) => each.subnet_id) ?? []))
-    },
     setWalletAddress,
+    searchFetching,
+    userBalance,
+    userStakedDollar,
+    userBalanceDollar,
+    refetchSearch: fetchStakes,
   }
 }

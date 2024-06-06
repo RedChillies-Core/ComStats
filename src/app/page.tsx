@@ -22,6 +22,7 @@ import { numberWithCommas } from "@/utils/numberWithCommas"
 import { useUserStats } from "@/app/hooks/useUserStats"
 import ValidatorTable from "@/app/components/table"
 import ManageStakingModal from "./components/modal/manage"
+import { useBalance } from "@/context/balanceContext"
 
 export default function Home() {
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -33,16 +34,18 @@ export default function Home() {
       wallet: "",
       subnet_id: 0,
     })
+  const { onChainData} = useBalance()
   const {
     walletAddress,
     searchFetching,
     userBalance,
     userStakedDollar,
     userBalanceDollar,
-    onChainData,
     refetchSearch,
     setWalletAddress,
-  } = useUserStats()
+  } = useUserStats({
+    onChainData
+  })
 
   const comswapStats = [
     {

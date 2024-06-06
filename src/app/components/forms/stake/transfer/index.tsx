@@ -13,6 +13,8 @@ import {
 } from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
 import { errorToast } from "@/app/components/toast"
+import { useUserStats } from "@/app/hooks/useUserStats"
+import { useBalance } from "@/context/balanceContext"
 
 const TransferStakingForm = ({
   validator,
@@ -33,12 +35,7 @@ const TransferStakingForm = ({
   const { transferStake, selectedAccount } = usePolkadot()
 
   const { data: validatorData } = useGetAllValidatorsQuery()
-  const { data: balanceData } = useGetBalanceQuery(
-    { wallet: String(selectedAccount?.address) },
-    {
-      skip: !selectedAccount,
-    },
-  )
+  const { userBalance: balanceData } = useBalance()
 
   const onSubmit = (data: any) => {
     transferStake({
@@ -61,7 +58,7 @@ const TransferStakingForm = ({
           label: "vali::comstats",
           value: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX",
         }}
-        options={validatorData?.map((d) => ({
+        options={validatorData?.filter(each=>each.subnet_id === validator?.subnet_id)?.map((d) => ({
           label: d.name,
           value: d.key,
         }))}
@@ -91,7 +88,7 @@ const TransferStakingForm = ({
             e.preventDefault()
             const amount = Number(
               balanceData?.stakes?.find(
-                (item) => item.validator.key === validator?.key,
+                (item) => item.validator.key === validator?.key && item.validator.subnet_id === validator?.subnet_id,
               )?.amount ?? 0,
             )
             setValue(

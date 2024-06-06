@@ -6,6 +6,8 @@ import { formatTokenPrice } from "@/utils"
 import React from "react"
 import { useForm } from "react-hook-form"
 import { errorToast } from "../../toast"
+import { useUserStats } from "@/app/hooks/useUserStats"
+import { useBalance } from "@/context/balanceContext"
 
 const TransferForm = () => {
   const {
@@ -18,6 +20,7 @@ const TransferForm = () => {
     mode: "all",
   })
   const { transfer, selectedAccount } = usePolkadot()
+  const {userBalance: balanceData, fetchUserStats:refetchSearch} = useBalance()
   const onSubmit = (data: any) => {
     transfer({
       amount: data.amount,
@@ -25,17 +28,12 @@ const TransferForm = () => {
       callback: () => {
         reset()
         setTimeout(() => {
-          balanceRefetch()
+          refetchSearch?.()
         }, 8000)
       },
     })
   }
-  const { data: balanceData, refetch: balanceRefetch } = useGetBalanceQuery(
-    { wallet: String(selectedAccount?.address) },
-    {
-      skip: !selectedAccount,
-    },
-  )
+ 
   return (
     <form className="space-y-2 w-full" onSubmit={handleSubmit(onSubmit)}>
       <Input
