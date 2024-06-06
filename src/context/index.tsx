@@ -89,12 +89,6 @@ export const PolkadotProvider: React.FC<PolkadotProviderProps> = ({
     const newApi = await ApiPromise.create({ provider })
     setApi(newApi)
     setIsInitialized(true)
-
-    console.log("api", newApi.query.subspaceModule)
-    newApi.query.subspaceModule.stakeTo(0, "5GuXaUtQdUhmy1tzM6vBmxqyjgYwrUaLxybeQc4gfWvZw9y7")
-    .then((res) => {
-      console.log("api stakeFrom", res.toHuman())
-    })
   }
   useEffect(() => {
     async function init() {

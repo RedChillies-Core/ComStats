@@ -1,6 +1,6 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
-import React from "react"
+import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { ValidatorType } from "@/types"
@@ -24,7 +24,7 @@ const UnstakingForm = ({
     mode: "all",
   })
 
-  const { selectedAccount, removeStake } = usePolkadot()
+  const { selectedAccount, removeStake, api } = usePolkadot()
   const { data: balanceData } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
@@ -39,6 +39,15 @@ const UnstakingForm = ({
       callback,
     })
   }
+  // useEffect(() => {
+  //   console.log('vali, selectedAccount', selectedAccount)
+  //   if (selectedAccount?.address && api && validator?.subnet_id) {
+  //     console.log("fetching stakeTo")
+  //     api?.query.subspaceModule.stakeTo(validator?.subnet_id, selectedAccount?.address).then((res) => {
+  //       console.log('vali, stakeTo', res.toJSON())
+  //     })
+  //   }
+  // }, [validator?.subnet_id, selectedAccount?.address, api])
   return (
     <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
       <div>

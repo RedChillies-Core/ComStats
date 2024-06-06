@@ -13,10 +13,9 @@ import StakingModal from "../components/modal/stake"
 import {
   AiFillGift,
   AiFillMoneyCollect,
-  AiOutlineAccountBook,
 } from "react-icons/ai"
-import { LuAlignVerticalDistributeStart } from "react-icons/lu"
 import { BiAnalyse, BiCube } from "react-icons/bi"
+import { statsApi } from "@/store/api/statsApi"
 
 interface NonTransferEvent {
   section: string
@@ -26,11 +25,46 @@ interface NonTransferEvent {
 
 const Portfolio = () => {
   const { selectedAccount, isConnected, api } = usePolkadot()
-  const { userBalance, userBalanceDollar, userStakedDollar } = useUserStats()
+  const { userBalance, userBalanceDollar, userStakedDollar, refetchSearch } = useUserStats()
+  const { data: subnetsData, isLoading } = statsApi.useGetSubnetsQuery()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
   const [validatorId, setValidatorId] = useState("")
   const [subnetId, setSubnetId] = useState(0)
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      refetchSearch()
+    }
+    const interval = setInterval(() => {
+      fetchBalance()
+     
+    }, 30000)
+    return () => clearInterval(interval)
+  }, [selectedAccount])
+
+  const fetchUsersStake = async (subnets: number[]) => {
+    console.log('fetching stakes on subnets', subnets)
+    let stakes: any[] = [];      
+    while (subnets.length) {
+      const subnetChunk = subnets.splice(0, 8);
+      const chunkStakes = await Promise.all(subnetChunk.map(async (subnet) => {
+        return api?.query.subspaceModule.stakeTo(subnet, selectedAccount?.address).then((res) => {
+          console.log('vali, stakeTo', res.toJSON())
+          const data = res.toJSON() as any
+          return data;
+        })
+      }));
+      console.log('chunkStakes', subnetChunk, chunkStakes)
+      stakes =[...stakes, ...chunkStakes.filter((item)=> Object.keys(item).length > 0)]
+    }
+    console.log('stakes', stakes) 
+  }
+
+  useEffect(() => {
+    let subnets = subnetsData?.map((subnet) => subnet.subnet_id) || []
+    fetchUsersStake(subnets)
+  }, [subnetsData])
 
   return (
     <div className="container p-2 md:p-0">
@@ -150,7 +184,7 @@ const Portfolio = () => {
               </div>
               <h1 className="heading my-8">Your Stakes</h1>
               <div className="flex flex-wrap gap-y-8">
-                {userBalance?.stakes.map((stake) => (
+                {userBalance?.stakes?.map((stake) => (
                   <div
                     key={stake.validator.key}
                     className=" bg-blue-50  p-6 rounded-xl flex sm:m-0 flex-wrap max-w-80 flex-col gap-y-1 items-start md:p-8 md:mx-4"
