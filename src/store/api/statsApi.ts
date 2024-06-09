@@ -86,7 +86,7 @@ export const statsApi = createApi({
       },
     }),
     getRichList: builder.query<RichListType[], void>({
-      query: () => "/holders/?limit=50",
+      query: () => "/holders/?limit=100",
       providesTags: ["RichList"],
       transformResponse: (response: InterfacePaginatedUsers<RichListType[]>) => {
         return response.holders.map((holder, index) => ({
