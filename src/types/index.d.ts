@@ -40,6 +40,13 @@ export interface InterfacePaginationSubnet<Data> {
   subnets: Data
 }
 
+export interface InterfacePaginatedUsers<Data> {
+  total: number
+  page: number
+  limit: number
+  holders: Data
+}
+
 export type IAddStaking = {
   subnetId: number
   validator: string
@@ -95,4 +102,12 @@ export interface IVerifyModule {
   duration: 'monthly' | 'yearly'
   subnetId: number
   callback?: () => void
+}
+
+export type RichListType = {
+  rank: number
+  address: string
+  balance: number
+  stake: number
+  total: number
 }

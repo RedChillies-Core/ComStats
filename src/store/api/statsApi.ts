@@ -3,8 +3,10 @@ import apiWrapper from "@/store/api/wrapper/apiWrapper"
 import {
   IBalanceType,
   IStats,
+  InterfacePaginatedUsers,
   InterfacePagination,
   InterfacePaginationSubnet,
+  RichListType,
   SubnetInterface,
   ValidatorType,
 } from "@/types"
@@ -13,6 +15,7 @@ export const statsApi = createApi({
   baseQuery: apiWrapper,
   tagTypes: [
     "ValidatorsList",
+    "RichList",
     "CommuneStats",
     "SingleValidator",
     "SubnetsList",
@@ -82,6 +85,16 @@ export const statsApi = createApi({
         return response.subnets
       },
     }),
+    getRichList: builder.query<RichListType[], void>({
+      query: () => "/holders/?limit=50",
+      providesTags: ["RichList"],
+      transformResponse: (response: InterfacePaginatedUsers<RichListType[]>) => {
+        return response.holders.map((holder, index) => ({
+          ...holder,
+          rank: index + 1,
+        }))
+      },
+    }),
     getSubnetById: builder.query<ValidatorType[], string>({
       query: (id) => `/validators/?subnet_id=${id}`,
       providesTags: (_, __, id) => [{ type: "SingleSubnet", id: id }],
@@ -129,4 +142,5 @@ export const {
   useGetTotalStatsQuery,
   useSearchBalanceMutation,
   useGetValidatorsByIdQuery,
+  useGetRichListQuery,
 } = statsApi

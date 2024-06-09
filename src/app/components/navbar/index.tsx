@@ -11,6 +11,7 @@ import { GrDashboard } from "react-icons/gr"
 import Link from "next/link"
 import { FaCubesStacked } from "react-icons/fa6"
 import { FaTimes, FaVoteYea } from "react-icons/fa"
+import { CiCoins1 } from "react-icons/ci"
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -96,6 +97,12 @@ const Navbar = () => {
                 className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
               >
                 <GrDashboard /> Portfolio
+              </Link>
+              <Link
+                href="/rich-list"
+                className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
+              >
+                <CiCoins1 /> Rich List
               </Link>
               <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2 my-2 md:my-0">
                 <button
