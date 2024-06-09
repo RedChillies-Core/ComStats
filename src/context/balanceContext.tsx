@@ -76,7 +76,7 @@ export const BalanceProvider: React.FC<{
 
   const fetchStakes = useCallback(async () => {
     const { data: subnetsData } = await axios.get(
-      "https://api.comstats.org/subnets/"
+      "https://api.comstats.org/v2/subnets/"
     );
     if (!selectedAccount || !api) return;
     const address = selectedAccount.address;
@@ -104,7 +104,7 @@ export const BalanceProvider: React.FC<{
       stakes = [...stakes, ...chunkStakes.flat()];
     }
     const { data: validatorsData } = await axios.get(
-      "https://api.comstats.org/validators/",
+      "https://api.comstats.org/v2/validators/",
       {
         params: {
           vali_keys: stakes.map((item) => item.module).join(","),
