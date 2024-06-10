@@ -84,6 +84,12 @@ const Navbar = () => {
           >
             <FaCubesStacked /> Subnets
           </Link>
+          <Link
+                href="/rich-list"
+                className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
+              >
+                <CiCoins1 /> Rich List
+              </Link>
           {isInitialized && selectedAccount ? (
             <Fragment>
               <Link
@@ -98,12 +104,7 @@ const Navbar = () => {
               >
                 <GrDashboard /> Portfolio
               </Link>
-              <Link
-                href="/rich-list"
-                className="text-base mx-3 font-medium flex items-center gap-x-2 cursor-pointer relative my-2 md:my-0"
-              >
-                <CiCoins1 /> Rich List
-              </Link>
+            
               <div className="relative flex items-center bg-white rounded-full shadow px-4 py-2 my-2 md:my-0">
                 <button
                   className="flex items-center cursor-pointer"
