@@ -55,15 +55,7 @@ const UpdateDetailsForm = ({
       // image: validator?.image || "",
     },
   })
-  const { verifyModule, selectedAccount, extensionSelected } = usePolkadot()
-
-  const { data: validatorData } = useGetAllValidatorsQuery()
-  const { data: balanceData } = useGetBalanceQuery(
-    { wallet: String(selectedAccount?.address) },
-    {
-      skip: !selectedAccount,
-    },
-  )
+  const { selectedAccount, extensionSelected } = usePolkadot()
 
   const onSubmit = async (data: any) => {
     console.log("data", data)

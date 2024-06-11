@@ -13,6 +13,8 @@ import {
 import { formatTokenPrice } from "@/utils"
 import { getVerificationAmount } from "@/utils/getVerificationAmount"
 import { errorToast } from "../../toast"
+import { useUserStats } from "@/app/hooks/useUserStats"
+import { useBalance } from "@/context/balanceContext"
 
 const VerifyModuleForm = ({
   validator,
@@ -35,12 +37,7 @@ const VerifyModuleForm = ({
   const { verifyModule, selectedAccount } = usePolkadot()
 
   const { data: validatorData } = useGetAllValidatorsQuery()
-  const { data: balanceData } = useGetBalanceQuery(
-    { wallet: String(selectedAccount?.address) },
-    {
-      skip: !selectedAccount,
-    },
-  )
+  const { userBalance: balanceData } = useBalance()
 
   const onSubmit = (data: any) => {
     console.log(balanceData?.balance)

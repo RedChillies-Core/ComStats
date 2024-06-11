@@ -8,7 +8,6 @@ import { useGetBalanceQuery } from "@/store/api/statsApi"
 import { ValidatorType } from "@/types"
 import { formatTokenPrice } from "@/utils"
 import { errorToast, infoToast } from "@/app/components/toast"
-import { useUserStats } from "@/app/hooks/useUserStats"
 import { useBalance } from "@/context/balanceContext"
 
 const AddStakingForm = ({
