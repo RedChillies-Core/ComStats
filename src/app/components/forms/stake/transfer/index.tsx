@@ -39,7 +39,6 @@ const TransferStakingForm = ({
 
   const onSubmit = (data: any) => {
     transferStake({
-      subnetId: Number(validator?.subnet_id) || 0,
       amount: String(data.stakeAmount),
       validatorFrom: String(validator?.key),
       validatorTo: String(data.validator.value),
@@ -58,7 +57,7 @@ const TransferStakingForm = ({
           label: "vali::comstats",
           value: "5H9YPS9FJX6nbFXkm9zVhoySJBX9RRfWF36abisNz5Ps9YaX",
         }}
-        options={validatorData?.filter(each=>each.subnet_id === validator?.subnet_id)?.map((d) => ({
+        options={validatorData?.map((d) => ({
           label: d.name,
           value: d.key,
         }))}

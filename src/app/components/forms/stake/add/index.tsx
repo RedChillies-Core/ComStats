@@ -26,21 +26,15 @@ const AddStakingForm = ({
     mode: "all",
   })
 
-  const { addStake, selectedAccount } = usePolkadot()
+  const { addStake } = usePolkadot()
   const { userBalance: balanceData} = useBalance()
-  // const { data: balanceData } = useGetBalanceQuery(
-  //   { wallet: String(selectedAccount?.address) },
-  //   {
-  //     skip: !selectedAccount,
-  //   },
-  // )
+
   const onSubmit = (data: any) => {
     if (Number(balanceData?.balance) / 10 ** 9 < Number(data.stakeAmount)) {
       infoToast("Insufficient Balance")
       return
     }
     addStake({
-      subnetId: validator?.subnet_id || 0,
       validator:
         validator?.key || String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR),
       amount: data.stakeAmount,
