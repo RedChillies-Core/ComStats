@@ -32,9 +32,9 @@ export default function Home() {
     useGetValidatorsByIdQuery({
       key: String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR),
       wallet: "",
-      subnet_id: 0,
+      subnet_id: 2,
     })
-  const { onChainData} = useBalance()
+  const { onChainData } = useBalance()
   const {
     walletAddress,
     searchFetching,
@@ -44,7 +44,7 @@ export default function Home() {
     refetchSearch,
     setWalletAddress,
   } = useUserStats({
-    onChainData
+    onChainData,
   })
 
   const comswapStats = [
@@ -53,7 +53,7 @@ export default function Home() {
       statsName: "Validator",
       icon: <LiaCubesSolid size={40} />,
       value: truncateWalletAddress(
-        String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR),
+        String(process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR)
       ),
       description: (
         <div className="flex gap-x-1 items-center">{comStatsData?.name}</div>
@@ -83,7 +83,7 @@ export default function Home() {
         numberWithCommas(
           formatTokenPrice({
             amount: Number(comStatsData?.stake),
-          }),
+          })
         ) ?? "0",
       description: (
         <p>
@@ -117,7 +117,7 @@ export default function Home() {
       icon: <RiStockLine size={40} />,
       value:
         convertNumberToLetter(
-          Number(onChainData?.circulating_supply?.toFixed(2)),
+          Number(onChainData?.circulating_supply?.toFixed(2))
         ) ?? "0",
     },
     {
@@ -125,7 +125,7 @@ export default function Home() {
       statsName: "Total Market Cap",
       icon: <CiCoinInsert size={40} />,
       value: `${convertNumberToLetter(
-        Number((onChainData?.marketcap ?? 0)?.toFixed(2)),
+        Number((onChainData?.marketcap ?? 0)?.toFixed(2))
       )}`,
     },
     {
@@ -145,7 +145,7 @@ export default function Home() {
       statsName: "Total Staked",
       icon: <PiUsersThreeBold size={40} />,
       value: `${convertNumberToLetter(
-        Number(onChainData?.total_stake?.toFixed(2)),
+        Number(onChainData?.total_stake?.toFixed(2))
       )} ~ (${(
         (Number(onChainData?.total_stake) /
           Number(onChainData?.circulating_supply)) *
@@ -260,14 +260,14 @@ export default function Home() {
           <div>
             Balance:{" "}
             {numberWithCommas(
-              Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2)),
+              Number(((userBalance?.balance || 0) / 10 ** 9).toFixed(2))
             )}{" "}
             COMAI (${numberWithCommas(Number(userBalanceDollar.toFixed(2)))})
           </div>
           <div>
             Staked:{" "}
             {numberWithCommas(
-              Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2)),
+              Number(((userBalance?.staked || 0) / 10 ** 9).toFixed(2))
             )}{" "}
             COMAI (${numberWithCommas(Number(userStakedDollar.toFixed(2)))})
           </div>
