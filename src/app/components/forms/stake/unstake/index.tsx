@@ -36,21 +36,12 @@ const UnstakingForm = ({
   // )
   const onSubmit = (data: any) => {
     removeStake({
-      subnetId: Number(validator?.subnet_id) || 0,
       amount: String(data.stakeAmount),
       validator: String(validator?.key),
       callback,
     })
   }
-  // useEffect(() => {
-  //   console.log('vali, selectedAccount', selectedAccount)
-  //   if (selectedAccount?.address && api && validator?.subnet_id) {
-  //     console.log("fetching stakeTo")
-  //     api?.query.subspaceModule.stakeTo(validator?.subnet_id, selectedAccount?.address).then((res) => {
-  //       console.log('vali, stakeTo', res.toJSON())
-  //     })
-  //   }
-  // }, [validator?.subnet_id, selectedAccount?.address, api])
+
   return (
     <form className="space-y-4 w-full" onSubmit={handleSubmit(onSubmit)}>
       <div>

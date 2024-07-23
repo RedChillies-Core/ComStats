@@ -1,19 +1,14 @@
 "use client"
-
 import { usePolkadot } from "@/context"
 import { formatTokenPrice, truncateWalletAddress } from "@/utils"
 import Image from "next/image"
-import React, { useEffect, useState } from "react"
-import { useUserStats } from "@/app/hooks/useUserStats"
+import { useEffect, useState } from "react"
 import { FaArrowLeft } from "react-icons/fa6"
 import { useRouter } from "next/navigation"
 import Button from "../components/button"
 import Link from "next/link"
 import StakingModal from "../components/modal/stake"
-import {
-  AiFillGift,
-  AiFillMoneyCollect,
-} from "react-icons/ai"
+import { AiFillGift, AiFillMoneyCollect } from "react-icons/ai"
 import { BiAnalyse, BiCube } from "react-icons/bi"
 import { statsApi } from "@/store/api/statsApi"
 import { useBalance } from "@/context/balanceContext"
@@ -26,7 +21,12 @@ interface NonTransferEvent {
 
 const Portfolio = () => {
   const { selectedAccount, isConnected, api } = usePolkadot()
-  const { userBalance, userBalanceDollar, userStakedDollar, fetchUserStats:refetchSearch } = useBalance()
+  const {
+    userBalance,
+    userBalanceDollar,
+    userStakedDollar,
+    fetchUserStats: refetchSearch,
+  } = useBalance()
   const { data: subnetsData, isLoading } = statsApi.useGetSubnetsQuery()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
@@ -39,33 +39,9 @@ const Portfolio = () => {
     }
     const interval = setInterval(() => {
       fetchBalance()
-     
     }, 30000)
     return () => clearInterval(interval)
   }, [selectedAccount])
-
-  const fetchUsersStake = async (subnets: number[]) => {
-    console.log('fetching stakes on subnets', subnets)
-    let stakes: any[] = [];      
-    while (subnets.length) {
-      const subnetChunk = subnets.splice(0, 8);
-      const chunkStakes = await Promise.all(subnetChunk.map(async (subnet) => {
-        return api?.query.subspaceModule.stakeTo(subnet, selectedAccount?.address).then((res) => {
-          console.log('vali, stakeTo', res.toJSON())
-          const data = res.toJSON() as any
-          return data;
-        })
-      }));
-      console.log('chunkStakes', subnetChunk, chunkStakes)
-      stakes =[...stakes, ...chunkStakes.filter((item)=> Object.keys(item).length > 0)]
-    }
-    console.log('stakes', stakes) 
-  }
-
-  useEffect(() => {
-    let subnets = subnetsData?.map((subnet) => subnet.subnet_id) || []
-    fetchUsersStake(subnets)
-  }, [subnetsData])
 
   return (
     <div className="container p-2 md:p-0">
@@ -225,7 +201,9 @@ const Portfolio = () => {
                       >
                         Manage Stake
                       </Button>
-                      <Link href={`/validator/${stake.validator.subnet_id}/${stake.validator.key}`}>
+                      <Link
+                        href={`/validator/${stake.validator.subnet_id}/${stake.validator.key}`}
+                      >
                         <Button variant="outlined" size="large">
                           View Details
                         </Button>
