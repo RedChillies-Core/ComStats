@@ -1,38 +1,36 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { AiFillInfoCircle, AiOutlineClear } from "react-icons/ai";
-import { LiaCubesSolid } from "react-icons/lia";
-import Modal from "react-responsive-modal";
-import Button from "../../button";
-import { FaMoneyBillTransfer, FaSpinner } from "react-icons/fa6";
-import AddStakingForm from "../../forms/stake/add";
-import TransferStakingForm from "../../forms/stake/transfer";
-import UnstakingForm from "../../forms/stake/unstake";
+import React, { useEffect, useMemo, useState } from "react"
+import { AiFillInfoCircle, AiOutlineClear } from "react-icons/ai"
+import { LiaCubesSolid } from "react-icons/lia"
+import Modal from "react-responsive-modal"
+import Button from "../../button"
+import { FaMoneyBillTransfer, FaSpinner } from "react-icons/fa6"
+import AddStakingForm from "../../forms/stake/add"
+import TransferStakingForm from "../../forms/stake/transfer"
+import UnstakingForm from "../../forms/stake/unstake"
 import {
   useGetBalanceQuery,
   useGetValidatorsByIdQuery,
-} from "@/store/api/statsApi";
-import { usePolkadot } from "@/context";
-import { numberWithCommas } from "@/utils/numberWithCommas";
-import Verified from "../../verified";
-import { useUserStats } from "@/app/hooks/useUserStats";
-import { useBalance } from "@/context/balanceContext";
+} from "@/store/api/statsApi"
+import { usePolkadot } from "@/context"
+import { numberWithCommas } from "@/utils/numberWithCommas"
+import Verified from "../../verified"
+import { useUserStats } from "@/app/hooks/useUserStats"
+import { useBalance } from "@/context/balanceContext"
 
 type IStakingModal = {
-  open: boolean;
-  setOpen: (arg: boolean) => void;
-  validatorId: string;
-  subnet_id: number;
-  callback?: () => void;
-};
+  open: boolean
+  setOpen: (arg: boolean) => void
+  validatorId: string
+  callback?: () => void
+}
 const StakingModal = ({
   open,
   setOpen,
   validatorId,
-  subnet_id,
   callback,
 }: IStakingModal) => {
-  const [selectedOperation, setSelectedOperation] = useState("add");
-  const { selectedAccount } = usePolkadot();
+  const [selectedOperation, setSelectedOperation] = useState("add")
+  const { selectedAccount } = usePolkadot()
   const {
     data: validatorData,
     isLoading: validatorLoading,
@@ -40,10 +38,10 @@ const StakingModal = ({
   } = useGetValidatorsByIdQuery({
     key: validatorId,
     wallet: String(selectedAccount?.address),
-    subnet_id,
-  });
+  })
 
-  const { userBalance: balanceData, fetchUserStats: refetchBalance } = useBalance();
+  const { userBalance: balanceData, fetchUserStats: refetchBalance } =
+    useBalance()
 
   // const { refetch: refetchBalance } = useGetBalanceQuery(
   //   { wallet: String(selectedAccount?.address) },
@@ -54,17 +52,19 @@ const StakingModal = ({
 
   useEffect(() => {
     if (open) {
-      setSelectedOperation("add");
+      setSelectedOperation("add")
     }
-  }, [open]);
+  }, [open])
 
   const wallet_staked = useMemo(() => {
-    return balanceData?.stakes?.find(
-      (d) =>
-        d.validator?.key === validatorData?.key &&
-        d.validator?.subnet_id === validatorData?.subnet_id
-    )?.amount || 0;
-  }, [balanceData, validatorData]);
+    return (
+      balanceData?.stakes?.find(
+        (d) =>
+          d.validator?.key === validatorData?.key &&
+          d.validator?.subnet_id === validatorData?.subnet_id
+      )?.amount || 0
+    )
+  }, [balanceData, validatorData])
 
   return (
     <Modal
@@ -110,12 +110,7 @@ const StakingModal = ({
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
                     {numberWithCommas(
-                      (
-                        Number(
-                          validatorData?.stake ||0 
-                        ) /
-                        10 ** 9
-                      ).toFixed(2)
+                      (Number(validatorData?.stake || 0) / 10 ** 9).toFixed(2)
                     )}{" "}
                     COMAI
                   </h1>
@@ -202,12 +197,12 @@ const StakingModal = ({
             <AddStakingForm
               validator={validatorData}
               callback={() => {
-                setOpen(false);
+                setOpen(false)
                 setTimeout(() => {
-                  refetchBalance?.();
-                  validatorRefetch();
-                  callback?.();
-                }, 8000);
+                  refetchBalance?.()
+                  validatorRefetch()
+                  callback?.()
+                }, 8000)
               }}
             />
           )}
@@ -215,12 +210,12 @@ const StakingModal = ({
             <TransferStakingForm
               validator={validatorData}
               callback={() => {
-                setOpen(false);
+                setOpen(false)
                 setTimeout(() => {
-                  refetchBalance?.();
-                  validatorRefetch();
-                  callback?.();
-                }, 8000);
+                  refetchBalance?.()
+                  validatorRefetch()
+                  callback?.()
+                }, 8000)
               }}
             />
           )}
@@ -228,19 +223,19 @@ const StakingModal = ({
             <UnstakingForm
               validator={validatorData}
               callback={() => {
-                setOpen(false);
+                setOpen(false)
                 setTimeout(() => {
-                  refetchBalance?.();
-                  validatorRefetch();
-                  callback?.();
-                }, 8000);
+                  refetchBalance?.()
+                  validatorRefetch()
+                  callback?.()
+                }, 8000)
               }}
             />
           )}
         </div>
       </div>
     </Modal>
-  );
-};
+  )
+}
 
-export default StakingModal;
+export default StakingModal

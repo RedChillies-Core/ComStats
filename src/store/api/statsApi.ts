@@ -8,6 +8,7 @@ import {
   InterfacePaginationSubnet,
   RichListType,
   SubnetInterface,
+  ValidatorExtendedType,
   ValidatorType,
 } from "@/types"
 export const statsApi = createApi({
@@ -51,7 +52,7 @@ export const statsApi = createApi({
       },
     }),
     getValidatorsById: builder.query<
-      ValidatorType,
+      ValidatorExtendedType,
       { key: string; wallet: string; subnet_id?: number }
     >({
       query: ({ key, wallet, subnet_id = 0 }) => {
@@ -62,16 +63,19 @@ export const statsApi = createApi({
         return url
       },
       providesTags: (_, __, { key }) => [{ type: "SingleValidator", id: key }],
-      transformResponse: (response: ValidatorType) => {
-        const validatedResponse: ValidatorType = {
+      transformResponse: (response: ValidatorExtendedType) => {
+        const validatedResponse: ValidatorExtendedType = {
           ...response,
+          subnet_data: response.subnet_data.sort(
+            (a, b) => a.subnet_id - b.subnet_id
+          ),
           isVerified:
             response.expire_at === -1 ||
             (response.expire_at || 0) > Date.now() / 1000,
         }
         console.log(validatedResponse)
         validatedResponse.stake_from = validatedResponse?.stake_from?.sort(
-          (a, b) => b[1] - a[1],
+          (a, b) => b[1] - a[1]
         )
         return validatedResponse
       },
@@ -80,7 +84,7 @@ export const statsApi = createApi({
       query: () => "/subnets/",
       providesTags: ["SubnetsList"],
       transformResponse: (
-        response: InterfacePaginationSubnet<SubnetInterface[]>,
+        response: InterfacePaginationSubnet<SubnetInterface[]>
       ) => {
         return response.subnets
       },
@@ -88,7 +92,9 @@ export const statsApi = createApi({
     getRichList: builder.query<RichListType[], void>({
       query: () => "/holders/?limit=100",
       providesTags: ["RichList"],
-      transformResponse: (response: InterfacePaginatedUsers<RichListType[]>) => {
+      transformResponse: (
+        response: InterfacePaginatedUsers<RichListType[]>
+      ) => {
         return response.holders.map((holder, index) => ({
           ...holder,
           rank: index + 1,
@@ -105,10 +111,10 @@ export const statsApi = createApi({
               validator.expire_at === -1 ||
               (validator.expire_at || 0) > Date.now() / 1000
             return validator
-          },
+          }
         )
         return validatedResponse.toSorted((a, b) =>
-          a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1,
+          a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1
         )
       },
     }),

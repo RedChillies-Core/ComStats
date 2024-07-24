@@ -26,10 +26,11 @@ const detailInfo = [
   {
     key: process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR,
     name: "ComStats",
-    description: "All Statistics of CommuneAI at one place. Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI",
+    description:
+      "All Statistics of CommuneAI at one place. Staking infrastructure, prices, validators, miners, swap, bridge, exchange for $COMAI",
     twitter: "https://twitter.com/comstatsorg",
     website: "https://comstats.org",
-    discord: ""
+    discord: "",
   },
   {
     key: "5DtTeoNjcN19qTpoFgyW9iQaiRsYtBPF5FarjoxPEy4k4ieJ",
@@ -37,56 +38,59 @@ const detailInfo = [
     description: "Education, validation, mining & more for CommuneAI",
     twitter: "https://twitter.com/project_eden_ai",
     website: "https://projecteden.ai",
-    discord: ""
-  }
+    discord: "",
+  },
 ]
 
-const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: string } }) => {
-  
+const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
   const { data: validatorData, isLoading: validatorLoading } =
     useGetValidatorsByIdQuery(
       {
         key: String(params.id),
         wallet: "",
-        subnet_id: Number(params.subnetId),
       },
       {
         skip: !params.id,
-      },
+      }
     )
+  const [subnetId, setSubnetId] = useState(-1)
+  const [subnetIndex, setSubnetIndex] = useState(-1)
   const { isConnected, selectedAccount } = usePolkadot()
   const router = useRouter()
   const [stakingOpen, setStakingOpen] = useState(false)
   const [verifyOpen, setVerifyOpen] = useState(false)
   const [updateOpen, setUpdateOpen] = useState(false)
-  const [isValidImage, setIsValidImage] = React.useState(false);
+  const [isValidImage, setIsValidImage] = React.useState(false)
 
   useEffect(() => {
-    const imgLink = `${process.env.NEXT_PUBLIC_ENDPOINT}/${validatorData?.image}`;
-    const img = new Image();
-    img.src = imgLink;
+    if (!validatorData) return
+    const imgLink = `${process.env.NEXT_PUBLIC_ENDPOINT}/${validatorData?.image}`
+    const img = new Image()
+    img.src = imgLink
     img.onload = () => {
-      setIsValidImage(true);
-    };
+      setIsValidImage(true)
+    }
     img.onerror = () => {
-      setIsValidImage(false);
-    };
-    
-  }, [validatorData]);
+      setIsValidImage(false)
+    }
+  }, [validatorData])
 
-  const isValidLinkD = (link: string, type: 'discord' | 'twitter' | 'website') => {
-    if (link === "") return false;
-    if (type === 'discord' && !link.includes('discord.gg')) return false;
-    if (type === 'twitter' && !link.includes('twitter.com')) return false;
-    if (type === 'website' && !link.includes('http')) return false;
-    return true;
+  const isValidLinkD = (
+    link: string,
+    type: "discord" | "twitter" | "website"
+  ) => {
+    if (link === "") return false
+    if (type === "discord" && !link.includes("discord.gg")) return false
+    if (type === "twitter" && !link.includes("twitter.com")) return false
+    if (type === "website" && !link.includes("http")) return false
+    return true
   }
   const isValidLink = useCallback(isValidLinkD, [
     validatorData?.discord,
     validatorData?.twitter,
-    detailInfo.find(each=>each.key === validatorData?.key)?.discord,
-    detailInfo.find(each=>each.key === validatorData?.key)?.twitter
-  ]);
+    detailInfo.find((each) => each.key === validatorData?.key)?.discord,
+    detailInfo.find((each) => each.key === validatorData?.key)?.twitter,
+  ])
   return (
     <div className="container px-3 md:px-0">
       <div className="flex py-5 items-center gap-x-3">
@@ -100,12 +104,8 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
           {validatorData?.name}{" "}
           {validatorData?.isVerified && (
             <Verified
-              isGold={
-                validatorData?.verified_type === "golden"
-              }
-              isOfComStats={
-                validatorData?.expire_at === -1
-              }
+              isGold={validatorData?.verified_type === "golden"}
+              isOfComStats={validatorData?.expire_at === -1}
             />
           )}
         </h1>
@@ -115,7 +115,10 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
         <>
           <div className="flex gap-x-5 flex-col items-center lg:items-start lg:flex-row">
             <div className="p-4 w-[300px]">
-              <div className={`h-44 ${isValidImage ? '': "bg-slate-200"} w-44 flex justify-center items-center rounded-3xl mx-auto`}
+              <div
+                className={`h-44 ${
+                  isValidImage ? "" : "bg-slate-200"
+                } w-44 flex justify-center items-center rounded-3xl mx-auto`}
                 style={{
                   backgroundImage: `url(${process.env.NEXT_PUBLIC_ENDPOINT}/${validatorData?.image})`,
                   backgroundSize: "cover",
@@ -125,30 +128,78 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                 {!isValidImage && validatorData?.name}
               </div>
               <p className="text-xl my-3 text-center font-bold">
-                 {validatorData?.name ?? detailInfo.find(each=>each.key === validatorData?.key)?.name}
-                </p>
-                <p className="text-sm my-3 text-center">
-                  {validatorData?.description ?? detailInfo.find(each=>each.key === validatorData?.key)?.description}
-                </p>
-             
+                {validatorData?.name ??
+                  detailInfo.find((each) => each.key === validatorData?.key)
+                    ?.name}
+              </p>
+              <p className="text-sm my-3 text-center">
+                {validatorData?.description ??
+                  detailInfo.find((each) => each.key === validatorData?.key)
+                    ?.description}
+              </p>
+
               <div className="flex justify-center gap-x-4 my-4">
-                <a href={
-                  isValidLink(validatorData?.discord || detailInfo.find(each=>each.key === validatorData?.key)?.discord || "", "discord") ? 
-                  (validatorData?.discord || detailInfo.find(each=>each.key === validatorData?.key)?.discord || "") : "#"
-                } target="_blank">
+                <a
+                  href={
+                    isValidLink(
+                      validatorData?.discord ||
+                        detailInfo.find(
+                          (each) => each.key === validatorData?.key
+                        )?.discord ||
+                        "",
+                      "discord"
+                    )
+                      ? validatorData?.discord ||
+                        detailInfo.find(
+                          (each) => each.key === validatorData?.key
+                        )?.discord ||
+                        ""
+                      : "#"
+                  }
+                  target="_blank"
+                >
                   <FaDiscord size={22} />
                 </a>
-                <a href={
-                  isValidLink(validatorData?.twitter || detailInfo.find(each=>each.key === validatorData?.key)?.twitter || "", "twitter") ?
-                  (validatorData?.twitter || detailInfo.find(each=>each.key === validatorData?.key)?.twitter || "") : "#"
-                }  target="_blank">
+                <a
+                  href={
+                    isValidLink(
+                      validatorData?.twitter ||
+                        detailInfo.find(
+                          (each) => each.key === validatorData?.key
+                        )?.twitter ||
+                        "",
+                      "twitter"
+                    )
+                      ? validatorData?.twitter ||
+                        detailInfo.find(
+                          (each) => each.key === validatorData?.key
+                        )?.twitter ||
+                        ""
+                      : "#"
+                  }
+                  target="_blank"
+                >
                   <FaXTwitter size={22} />
                 </a>
-                <a href={
-                  isValidLink(validatorData?.website || detailInfo.find(each=>each.key === validatorData?.key)?.website || "", "website") ?
-                  (validatorData?.website || detailInfo.find(each=>each.key === validatorData?.key)?.website || "") : "#"
-
-                } target="_blank">
+                <a
+                  href={
+                    isValidLink(
+                      validatorData?.website ||
+                        detailInfo.find(
+                          (each) => each.key === validatorData?.key
+                        )?.website ||
+                        "",
+                      "website"
+                    )
+                      ? validatorData?.website ||
+                        detailInfo.find(
+                          (each) => each.key === validatorData?.key
+                        )?.website ||
+                        ""
+                      : "#"
+                  }
+                  target="_blank"
+                >
                   <TbWorld size={22} />
                 </a>
               </div>
@@ -167,15 +218,17 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                 >
                   Stake Now
                 </Button>
-                {validatorData?.verified_type === "unverified" && <Button
-                  size="large"
-                  variant="outlined"
-                  className="w-full justify-center mt-4"
-                  isDisabled={!isConnected}
-                  onClick={() => setVerifyOpen(true)}
-                >
-                  Verify Module
-                </Button>}
+                {validatorData?.verified_type === "unverified" && (
+                  <Button
+                    size="large"
+                    variant="outlined"
+                    className="w-full justify-center mt-4"
+                    isDisabled={!isConnected}
+                    onClick={() => setVerifyOpen(true)}
+                  >
+                    Verify Module
+                  </Button>
+                )}
                 {validatorData?.key === selectedAccount?.address && (
                   <Button
                     size="large"
@@ -186,7 +239,6 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                   >
                     Update Details
                   </Button>
-                
                 )}
               </div>
             </div>
@@ -201,10 +253,39 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
               </div>
               <div>
                 <p className="card-validator-heading">
-                  <PiCirclesFourLight size={20} /> Network URL
+                  <PiCirclesFourLight size={20} /> Subnet:
                 </p>
                 <h5 className="card-validator-data">
-                  {validatorData?.address}
+                  <div className="flex gap-4">
+                    <div
+                      className={`border-purple border-2 rounded-lg px-2 py-1 cursor-pointer ${
+                        subnetId === -1 ? "bg-purple text-white" : ""
+                      }`}
+                      onClick={() => {
+                        setSubnetId(-1)
+                        setSubnetIndex(-1)
+                      }}
+                      key={`subnet${-1}`}
+                    >
+                      All
+                    </div>
+                    {validatorData?.subnet_data.map((each, index) => (
+                      <div
+                        className={`border-purple border-2 rounded-lg px-2 py-1 cursor-pointer ${
+                          subnetId === each.subnet_id
+                            ? "bg-purple text-white"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSubnetId(each.subnet_id)
+                          setSubnetIndex(index)
+                        }}
+                        key={each.subnet_id}
+                      >
+                        {each.subnet_id}::{each.subnet_name}
+                      </div>
+                    ))}
+                  </div>
                 </h5>
               </div>
               <div>
@@ -213,8 +294,12 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                   APY
                 </p>
                 <h5 className="card-validator-data">
-                {validatorData?.type == "miner" ? '-': `${validatorData?.apy?.toFixed(2)} %`}
-
+                  {validatorData?.type == "miner"
+                    ? "-"
+                    : `${(
+                        validatorData?.subnet_data[subnetIndex]?.apy ??
+                        validatorData?.apy
+                      )?.toFixed(2)} %`}
                 </h5>
               </div>
               <div className="container">
@@ -228,7 +313,7 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                       {numberWithCommas(
                         formatTokenPrice({
                           amount: Number(validatorData?.stake),
-                        }),
+                        })
                       )}{" "}
                       COMAI
                     </h5>
@@ -236,10 +321,14 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                   <div className="card-validator">
                     <p className="card-validator-heading">
                       <SiBlockchaindotcom size={20} />
-                      Registration Block
+                      Delegation Fee
                     </p>
                     <h5 className="card-validator-data">
-                      {validatorData?.regblock}
+                      {(
+                        validatorData?.subnet_data[subnetIndex]
+                          ?.delegation_fee ?? validatorData?.delegation_fee
+                      )?.toFixed(2)}{" "}
+                      %
                     </h5>
                   </div>
                   <div className="card-validator">
@@ -260,19 +349,26 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                       Incentive
                     </p>
                     <h5 className="card-validator-data">
-                      {validatorData?.incentive}
+                      {validatorData?.subnet_data[subnetIndex]?.incentive ??
+                        validatorData?.incentive}
                     </h5>
                   </div>
                   <div className="card-validator">
                     <p className="card-validator-heading">
                       <RiAiGenerate size={20} />
-                      Emission per 100 blocks
+                      Emission per{" "}
+                      {validatorData?.subnet_data?.[subnetIndex]?.tempo ??
+                        "100"}{" "}
+                      blocks
                     </p>
                     <h5 className="card-validator-data">
                       {numberWithCommas(
                         formatTokenPrice({
-                          amount: Number(validatorData?.emission),
-                        }),
+                          amount: Number(
+                            validatorData?.subnet_data?.[subnetIndex]
+                              ?.emission ?? validatorData?.emission
+                          ),
+                        })
                       )}{" "}
                     </h5>
                   </div>
@@ -282,7 +378,9 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                       Dividends
                     </p>
                     <h5 className="card-validator-data">
-                      {validatorData?.dividends}
+                      {validatorData?.subnet_data?.[subnetIndex]?.dividends ??
+                        validatorData?.dividends ??
+                        "-"}
                     </h5>
                   </div>
                 </div>
@@ -291,19 +389,16 @@ const ValidatorDetailPage = ({ params }: { params: { id: string, subnetId: strin
                   open={stakingOpen}
                   setOpen={setStakingOpen}
                   validatorId={String(params.id)}
-                  subnet_id={Number(params.subnetId)}
                 />
-                 <VerifyModal
+                <VerifyModal
                   open={verifyOpen}
                   setOpen={setVerifyOpen}
                   validatorId={String(params.id)}
-                  subnet_id={Number(params.subnetId)}
                 />
-                 <UpdateDetailsModal
+                <UpdateDetailsModal
                   open={updateOpen}
                   setOpen={setUpdateOpen}
                   validatorId={String(params.id)}
-                  subnet_id={Number(params.subnetId)}
                 />
               </div>
             </div>

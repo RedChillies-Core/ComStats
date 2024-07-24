@@ -20,7 +20,7 @@ const ValidatorTable = () => {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState("")
   const [validatorFilter, setValidatorFilter] = useState<ValidatorFilterType>(
-    ValidatorFilterType.ALL,
+    ValidatorFilterType.ALL
   )
   const {
     data: paginatedValidator,
@@ -168,7 +168,7 @@ const ValidatorTable = () => {
                   <td>{numberWithCommas(validator.total_stakers)}</td>
                   <td>
                     {numberWithCommas(
-                      formatTokenPrice({ amount: validator.stake }),
+                      formatTokenPrice({ amount: validator.stake })
                     )}{" "}
                     COMAI
                   </td>
@@ -177,7 +177,7 @@ const ValidatorTable = () => {
                     {numberWithCommas(
                       formatTokenPrice({
                         amount: Number(validator.emission),
-                      }),
+                      })
                     )}
                   </td>
                   <td>
@@ -190,7 +190,7 @@ const ValidatorTable = () => {
                   </td>
                   <td>
                     <Link
-                      href={`/validator/${validator.subnet_id}/${validator.key}`}
+                      href={`/validator/${validator.key}`}
                       className="flex items-center gap-x-1 "
                     >
                       <Button size="small" variant="outlined">
@@ -246,11 +246,11 @@ const ValidatorTable = () => {
                 </div>
                 <div className="py-2">
                   <strong>Fee:</strong>{" "}
-                  {Number(validator.delegation_fee.toFixed(2))}%
+                  {Number(validator.delegation_fee?.toFixed(2))}%
                 </div>
                 <div className="py-2">
                   <Link
-                    href={`/validator/${validator.subnet_id}/${validator.key}`}
+                    href={`/validator/${validator.key}`}
                     className="flex items-center gap-x-1 underline"
                   >
                     View More{" "}

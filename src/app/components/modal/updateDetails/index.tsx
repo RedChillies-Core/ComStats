@@ -16,13 +16,11 @@ type IUpdateDetailsModal = {
   open: boolean
   setOpen: (arg: boolean) => void
   validatorId: string
-  subnet_id: number
 }
 const UpdateDetailsModal = ({
   open,
   setOpen,
   validatorId,
-  subnet_id,
 }: IUpdateDetailsModal) => {
   const { selectedAccount } = usePolkadot()
   const {
@@ -32,14 +30,13 @@ const UpdateDetailsModal = ({
   } = useGetValidatorsByIdQuery({
     key: validatorId,
     wallet: String(selectedAccount?.address),
-    subnet_id,
   })
 
   const { refetch: refetchBalance } = useGetBalanceQuery(
     { wallet: String(selectedAccount?.address) },
     {
       skip: !selectedAccount,
-    },
+    }
   )
 
   return (
@@ -86,7 +83,7 @@ const UpdateDetailsModal = ({
                   </h6>
                   <h1 className="font-normal w-1/2 tracking-tighter">
                     {numberWithCommas(
-                      (Number(validatorData?.stake) / 10 ** 9).toFixed(2),
+                      (Number(validatorData?.stake) / 10 ** 9).toFixed(2)
                     )}{" "}
                     COMAI
                   </h1>

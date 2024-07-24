@@ -27,6 +27,50 @@ export type ValidatorType = {
   image?: string
 }
 
+export type ValidatorExtendedType = {
+  name: string
+  subnet_data: [
+    {
+      name: string
+      subnet_id: number
+      apy: number
+      delegation_fee: number
+      incentive: number
+      dividends: number
+      emission: number
+      regblock: number
+      uid: number
+      subnet_name: string
+      tempo: number
+    }
+  ]
+  address: string
+  emission: number
+  incentive: number
+  dividends: number
+  regblock: number
+  last_update: number
+  balance: number
+  stake: number
+  stake_from: []
+  total_validators: number
+  total_stakers: number
+  delegation_fee: number
+  type: string
+  key: string
+  apy: number
+  isVerified?: boolean
+  wallet_staked?: number
+  expire_at?: number
+  verified_type: string
+  subnet_id: number
+  discord?: string
+  twitter?: string
+  website?: string
+  description?: string
+  image?: string
+}
+
 export interface InterfacePagination<Data> {
   total: number
   page: number
@@ -95,9 +139,9 @@ export interface SubnetInterface {
 }
 
 export interface IVerifyModule {
-  key: string,
-  verificationType: 'golden' | 'verified'
-  duration: 'monthly' | 'yearly'
+  key: string
+  verificationType: "golden" | "verified"
+  duration: "monthly" | "yearly"
   subnetId: number
   callback?: () => void
 }
