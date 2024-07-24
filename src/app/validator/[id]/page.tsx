@@ -256,7 +256,7 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                   <PiCirclesFourLight size={20} /> Subnet:
                 </p>
                 <h5 className="card-validator-data">
-                  <div className="flex gap-4">
+                  <div className="flex flex-wrap gap-4">
                     <div
                       className={`border-purple border-2 rounded-lg px-2 py-1 cursor-pointer ${
                         subnetId === -1 ? "bg-purple text-white" : ""
