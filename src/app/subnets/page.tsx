@@ -36,7 +36,7 @@ const Subnets = () => {
               onClick={() => handleSubnetChange(String(item.subnet_id))}
             >
               {item.subnet_id === Number(subnetId) && <FaRegCircleCheck />}{" "}
-              {item.name || item.subnet_id}
+              {item.subnet_id}::{item.name || item.subnet_id}
             </button>
           ))}
         </div>
@@ -54,7 +54,7 @@ const Subnets = () => {
       )}
       {/* <div className="flex flex-nowrap gap-x-3 mb-3 overflow-scroll w-[100%] md:flex-wrap hide-scrollbar">
         {verifiedValidators?.map((item, key) => (
-          <Link href={`/validator/${item.subnet_id}/${item.key}`} key={key}>
+          <Link href={`/validator/${item.key}`} key={key}>
             <div className="p-3 border-[1px] flex rounded-2xl gap-x-1 items-center my-1 text-sm">
               <Verified isGold={item.verified_type === "golden"} />
               {item.name}

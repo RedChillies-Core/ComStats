@@ -60,12 +60,7 @@ const ManageStakingForm = () => {
           Select a Validator
         </Button>
       </div>
-      <StakingModal
-        open={open}
-        setOpen={setOpen}
-        validatorId={validatorId}
-        subnet_id={subnetId}
-      />
+      <StakingModal open={open} setOpen={setOpen} validatorId={validatorId} />
     </form>
   )
 }

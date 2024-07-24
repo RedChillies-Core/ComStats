@@ -123,7 +123,7 @@ const SubnetTable = ({
                   <p className="text-sm">
                     {" "}
                     {numberWithCommas(
-                      formatTokenPrice({ amount: validator.stake }),
+                      formatTokenPrice({ amount: validator.stake })
                     )}{" "}
                     COMAI
                   </p>
@@ -132,7 +132,7 @@ const SubnetTable = ({
                   {numberWithCommas(
                     formatTokenPrice({
                       amount: Number(validator?.emission),
-                    }),
+                    })
                   )}
                 </div>
                 <div className="">
@@ -143,7 +143,7 @@ const SubnetTable = ({
                 <div className="">{validator.delegation_fee}%</div>
                 <div className="text-right">
                   <Link
-                    href={`/validator/${validator.subnet_id}/${validator.key}`}
+                    href={`/validator/${validator.key}`}
                     className="flex items-center gap-x-1 "
                   >
                     <Button size="small" variant="outlined">

@@ -72,7 +72,7 @@ export default function Home() {
       id: 3,
       statsName: "Delegation fee",
       icon: <CiCoinInsert size={40} />,
-      value: `${comStatsData?.delegation_fee ?? 0}%`,
+      value: `${comStatsData?.delegation_fee?.toFixed(2) ?? 0}%`,
       description: <p>Minimal fee of {comStatsData?.delegation_fee}%</p>,
     },
     {

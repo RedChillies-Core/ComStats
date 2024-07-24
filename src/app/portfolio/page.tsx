@@ -201,9 +201,7 @@ const Portfolio = () => {
                       >
                         Manage Stake
                       </Button>
-                      <Link
-                        href={`/validator/${stake.validator.subnet_id}/${stake.validator.key}`}
-                      >
+                      <Link href={`/validator/${stake.validator.key}`}>
                         <Button variant="outlined" size="large">
                           View Details
                         </Button>
@@ -218,7 +216,6 @@ const Portfolio = () => {
             open={stakingOpen}
             setOpen={setStakingOpen}
             validatorId={validatorId}
-            subnet_id={subnetId}
           />
         </div>
       </div>
