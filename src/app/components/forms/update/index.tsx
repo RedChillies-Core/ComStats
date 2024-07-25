@@ -1,17 +1,7 @@
 import Button from "@/app/components/button"
-import { Input } from "@/app/components/input"
-import SelectComp from "@/app/components/select"
-import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { usePolkadot } from "@/context"
-import { ValidatorType } from "@/types"
-import {
-  useGetAllValidatorsQuery,
-  useGetBalanceQuery,
-  useGetValidatorsQuery,
-} from "@/store/api/statsApi"
-import { formatTokenPrice } from "@/utils"
-import { getVerificationAmount } from "@/utils/getVerificationAmount"
+import { ValidatorExtendedType } from "@/types"
 import { errorToast } from "../../toast"
 import { api } from "@/store/api/api"
 import { toast } from "react-toastify"
@@ -33,7 +23,7 @@ const UpdateDetailsForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorExtendedType | undefined
   callback?: () => void
 }) => {
   // const {selectedAccount, setExtensionSelected} = usePolkadot();
@@ -83,7 +73,7 @@ const UpdateDetailsForm = ({
         return
       }
       const message = `Please sign this message with nonce ${Math.floor(
-        new Date().getTime() / 1000,
+        new Date().getTime() / 1000
       )} to update the details of the module ${validator?.name} on ComStats`
       if (!extensionSelected?.signer || !extensionSelected.signer?.signRaw)
         return
@@ -109,7 +99,7 @@ const UpdateDetailsForm = ({
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        },
+        }
       )
       callback && callback()
     } catch (error) {

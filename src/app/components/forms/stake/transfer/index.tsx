@@ -1,26 +1,19 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
 import SelectComp from "@/app/components/select"
-import React from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
-import { ValidatorType } from "@/types"
-import {
-  useGetAllValidatorsQuery,
-  useGetBalanceQuery,
-  useGetValidatorsQuery,
-} from "@/store/api/statsApi"
+import { ValidatorExtendedType } from "@/types"
+import { useGetAllValidatorsQuery } from "@/store/api/statsApi"
 import { formatTokenPrice } from "@/utils"
-import { errorToast } from "@/app/components/toast"
-import { useUserStats } from "@/app/hooks/useUserStats"
 import { useBalance } from "@/context/balanceContext"
 
 const TransferStakingForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorExtendedType | undefined
   callback?: () => void
 }) => {
   const {
@@ -87,8 +80,10 @@ const TransferStakingForm = ({
             e.preventDefault()
             const amount = Number(
               balanceData?.stakes?.find(
-                (item) => item.validator.key === validator?.key && item.validator.subnet_id === validator?.subnet_id,
-              )?.amount ?? 0,
+                (item) =>
+                  item.validator.key === validator?.key &&
+                  item.validator.subnet_id === validator?.subnet_id
+              )?.amount ?? 0
             )
             setValue(
               "stakeAmount",
@@ -96,7 +91,7 @@ const TransferStakingForm = ({
                 amount: amount < 0 ? 0 : amount,
 
                 precision: 9,
-              }),
+              })
             )
           }}
         />

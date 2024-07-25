@@ -15,7 +15,7 @@ export type ValidatorType = {
   type: string
   key: string
   apy: number
-  isVerified?: boolean
+  weights: any[]
   wallet_staked?: number
   expire_at?: number
   verified_type: string
@@ -59,7 +59,6 @@ export type ValidatorExtendedType = {
   type: string
   key: string
   apy: number
-  isVerified?: boolean
   wallet_staked?: number
   expire_at?: number
   verified_type: string
@@ -136,6 +135,7 @@ export interface SubnetInterface {
   immunity_period: number
   incentive_ratio: number
   subnet_id: number
+  emission_percent: number
 }
 
 export interface IVerifyModule {

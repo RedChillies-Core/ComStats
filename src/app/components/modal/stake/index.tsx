@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react";
 import { AiFillInfoCircle, AiOutlineClear } from "react-icons/ai"
 import { LiaCubesSolid } from "react-icons/lia"
 import Modal from "react-responsive-modal"
@@ -7,14 +7,10 @@ import { FaMoneyBillTransfer, FaSpinner } from "react-icons/fa6"
 import AddStakingForm from "../../forms/stake/add"
 import TransferStakingForm from "../../forms/stake/transfer"
 import UnstakingForm from "../../forms/stake/unstake"
-import {
-  useGetBalanceQuery,
-  useGetValidatorsByIdQuery,
-} from "@/store/api/statsApi"
+import { useGetValidatorsByIdQuery } from "@/store/api/statsApi";
 import { usePolkadot } from "@/context"
 import { numberWithCommas } from "@/utils/numberWithCommas"
 import Verified from "../../verified"
-import { useUserStats } from "@/app/hooks/useUserStats"
 import { useBalance } from "@/context/balanceContext"
 
 type IStakingModal = {
@@ -96,7 +92,7 @@ const StakingModal = ({
                   <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
                   <div className="flex items-center">
                     <h1 className="font-normal">{validatorData?.name}</h1>
-                    {validatorData?.isVerified && (
+                    {validatorData?.verified_type !== "unverified" && (
                       <Verified
                         isGold={validatorData?.verified_type === "golden"}
                         isOfComStats={validatorData?.expire_at === -1}

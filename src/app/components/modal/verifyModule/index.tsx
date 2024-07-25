@@ -69,7 +69,7 @@ const VerifyModal = ({ open, setOpen, validatorId }: IVerifyModal) => {
                   <h6 className="font-normal w-1/2 tracking-tighter">Name</h6>
                   <div className="flex items-center">
                     <h1 className="font-normal">{validatorData?.name}</h1>
-                    {validatorData?.isVerified && (
+                    {validatorData?.verified_type !== "unverified" && (
                       <Verified
                         isGold={validatorData?.verified_type === "golden"}
                         isOfComStats={validatorData?.expire_at === -1}
