@@ -69,9 +69,6 @@ export const statsApi = createApi({
           subnet_data: response.subnet_data.sort(
             (a, b) => a.subnet_id - b.subnet_id
           ),
-          isVerified:
-            response.expire_at === -1 ||
-            (response.expire_at || 0) > Date.now() / 1000,
         }
         console.log(validatedResponse)
         validatedResponse.stake_from = validatedResponse?.stake_from?.sort(
@@ -101,21 +98,22 @@ export const statsApi = createApi({
         }))
       },
     }),
-    getSubnetById: builder.query<ValidatorType[], string>({
-      query: (id) => `/validators/?subnet_id=${id}`,
-      providesTags: (_, __, id) => [{ type: "SingleSubnet", id: id }],
+    getSubnetById: builder.query<
+      InterfacePagination<ValidatorType[]>,
+      {
+        subnetId: number | string
+        page?: number
+      }
+    >({
+      query: ({ subnetId, page = 1 }) =>
+        `/validators/?subnet_id=${subnetId}&page=${page}&limit=${
+          subnetId.toString() === "0" ? 15 : 50
+        }`,
+      providesTags: (_, __, { subnetId }) => [
+        { type: "SingleValidator", id: subnetId },
+      ],
       transformResponse: (response: InterfacePagination<ValidatorType[]>) => {
-        const validatedResponse: ValidatorType[] = response.validators.map(
-          (validator) => {
-            validator.isVerified =
-              validator.expire_at === -1 ||
-              (validator.expire_at || 0) > Date.now() / 1000
-            return validator
-          }
-        )
-        return validatedResponse.toSorted((a, b) =>
-          a.key === process.env.NEXT_PUBLIC_COMSTAT_VALIDATOR ? -1 : 1
-        )
+        return response
       },
     }),
     getTotalStats: builder.query<IStats, void>({

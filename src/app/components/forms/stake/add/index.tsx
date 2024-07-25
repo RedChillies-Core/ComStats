@@ -1,20 +1,18 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
-import React, { useState } from "react"
 import { useForm } from "react-hook-form"
 import StakingDisclaimer from "../disclaimer"
 import { usePolkadot } from "@/context"
-import { useGetBalanceQuery } from "@/store/api/statsApi"
-import { ValidatorType } from "@/types"
+import { ValidatorExtendedType } from "@/types"
 import { formatTokenPrice } from "@/utils"
-import { errorToast, infoToast } from "@/app/components/toast"
+import { infoToast } from "@/app/components/toast"
 import { useBalance } from "@/context/balanceContext"
 
 const AddStakingForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorExtendedType | undefined
   callback?: () => void
 }) => {
   const {
@@ -27,7 +25,7 @@ const AddStakingForm = ({
   })
 
   const { addStake } = usePolkadot()
-  const { userBalance: balanceData} = useBalance()
+  const { userBalance: balanceData } = useBalance()
 
   const onSubmit = (data: any) => {
     if (Number(balanceData?.balance) / 10 ** 9 < Number(data.stakeAmount)) {
@@ -61,7 +59,7 @@ const AddStakingForm = ({
           maxButton
           handleMaxClick={(e: any) => {
             e.preventDefault()
-            const amount = (Number(balanceData?.balance) - 1000 - 2 * 10 ** 9)
+            const amount = Number(balanceData?.balance) - 1000 - 2 * 10 ** 9
             // if(amount < 0) {
             //   // errorToast("Insufficient Balance")
             //   return
@@ -71,7 +69,7 @@ const AddStakingForm = ({
               formatTokenPrice({
                 amount: amount < 0 ? 0 : amount,
                 precision: 9,
-              }),
+              })
             )
           }}
           register={register}

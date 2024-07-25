@@ -102,7 +102,7 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
         </button>
         <h1 className="text-lg font-semibold flex items-center gap-x-2">
           {validatorData?.name}{" "}
-          {validatorData?.isVerified && (
+          {!validatorLoading && validatorData?.verified_type !== "unverified" && (
             <Verified
               isGold={validatorData?.verified_type === "golden"}
               isOfComStats={validatorData?.expire_at === -1}

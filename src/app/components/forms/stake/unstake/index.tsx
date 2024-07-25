@@ -1,20 +1,16 @@
 import Button from "@/app/components/button"
 import { Input } from "@/app/components/input"
-import React, { useEffect } from "react"
 import { useForm } from "react-hook-form"
-import StakingDisclaimer from "../disclaimer"
-import { ValidatorType } from "@/types"
+import { ValidatorExtendedType } from "@/types"
 import { usePolkadot } from "@/context"
 import { formatTokenPrice } from "@/utils"
-import { useGetBalanceQuery } from "@/store/api/statsApi"
-import { useUserStats } from "@/app/hooks/useUserStats"
 import { useBalance } from "@/context/balanceContext"
 
 const UnstakingForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorExtendedType | undefined
   callback?: () => void
 }) => {
   const {
@@ -69,11 +65,13 @@ const UnstakingForm = ({
               formatTokenPrice({
                 amount: Number(
                   balanceData?.stakes?.find(
-                    (item) => item.validator.key === validator?.key && item.validator.subnet_id === validator?.subnet_id,
-                  )?.amount,
+                    (item) =>
+                      item.validator.key === validator?.key &&
+                      item.validator.subnet_id === validator?.subnet_id
+                  )?.amount
                 ),
                 precision: 9,
-              }),
+              })
             )
           }}
         />

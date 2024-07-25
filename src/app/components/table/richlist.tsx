@@ -12,115 +12,66 @@ const RichListTable = ({
   isLoading: boolean
 }) => {
   return (
-    <div className="max-w-full overflow-x-hidden mt-3 mb-8">
-      <div className="shadow-md rounded-lg">
-        <div className="bg-gray-100 p-3 hidden md:block !uppercase">
-          <div className="grid grid-cols-[5%_30%_15%_15%_15%] gap-3">
-            <div>
-              <p className="text-xs text-gray-500 font-semibold">Rank</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 font-semibold">Wallet Address</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 font-semibold">
-                Balance
-              </p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 font-semibold">Stake</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 font-semibold">
-                Total Balance
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="">
+    <div className="block w-full overflow-x-auto">
+      <table className="items-center bg-transparent w-full border-collapse ">
+        <thead>
+          <tr>
+            <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+              Rank
+            </th>
+            <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+              Wallet Address
+            </th>
+            <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+              Balance
+            </th>
+            <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+              Stake
+            </th>
+            <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+              Total Balance
+            </th>
+          </tr>
+        </thead>
+        <tbody>
           {isLoading &&
-            new Array(10).fill(0).map((_, index) => (
-              <div
-                key={index}
-                className={`grid grid-cols-1 md:grid-cols-[5%_30%_15%_15%_15%] gap-3 items-center p-3 border-b ${
-                  index === users.length - 1 ? "border-0" : ""
-                }`}
-              >
-                <div className="text-sm text-gray-800">
-                  <Skeleton />
-                </div>
-                <div className=" ">
-                  <Skeleton />
-                </div>
-            
-                <div className="">
-                  <p className="text-sm">
+            new Array(5).fill(0).map((_, index) => (
+              <tr key={index}>
+                {new Array(5).fill(0).map((_, index) => (
+                  <td
+                    key={`index${index}`}
+                    className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 "
+                  >
                     <Skeleton />
-                  </p>
-                </div>
-                <div className="">
-                  {" "}
-                  <Skeleton />
-                </div>
-                <div className="">
-                  <Skeleton />
-                </div>
-              </div>
+                  </td>
+                ))}
+              </tr>
             ))}
           {!isLoading &&
             users.map((user, index) => (
-              <div
-                key={index}
-                className={`grid grid-cols-1  md:grid-cols-[5%_30%_15%_15%_15%] gap-3 items-center py-1 px-3 border-b ${
-                  index === users.length - 1 ? "border-0" : ""
-                } hover:bg-gray-100 hover:cursor-pointer`}
+              <tr
+                key={user.address}
+                className={`${index === users.length - 1 ? "" : "border-b"}`}
               >
-                <div className="text-sm text-gray-800">{user.rank}</div>
-                <div className="flex items-center space-x-3">
-                  <div>
-                    <div className="flex flex-col">
-                      <div className="flex items-center">
-                        {/* <div className="text-md font-bold truncate  max-w-[200px]">
-                          {user.address}
-                        </div> */}
-                        {/* {validator.isVerified && (
-                          <Verified
-                            isGold={validator.verified_type === "golden"}
-                            isOfComStats={validator?.expire_at === -1}
-                          />
-                        )} */}
-                      </div>
-                      <p className="text-[10px] text-textSecondary">
-                        {user.address}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="">
-                  <p className="text-sm text-gray-800">
-                    {numberWithCommas(formatTokenPrice({ amount: user.balance }))}
-                  </p>
-                </div>
-                <div className="">
-                  <p className="text-sm">
-                    {" "}
-                    {numberWithCommas(
-                      formatTokenPrice({ amount: user.stake}),
-                    )}{" "}
-                  </p>
-                </div>
-                <div className="">
-                  {numberWithCommas(
-                    formatTokenPrice({
-                      amount: user.total,
-                    }),
-                  )}
-                </div>
-               
-              </div>
+                <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                  {index + 1}
+                </td>
+                <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
+                  {user.address}
+                </td>
+                <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
+                  {numberWithCommas(formatTokenPrice({ amount: user.balance }))}
+                </td>
+                <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
+                  {numberWithCommas(formatTokenPrice({ amount: user.stake }))}
+                </td>
+                <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
+                  {numberWithCommas(formatTokenPrice({ amount: user.total }))}
+                </td>
+              </tr>
             ))}
-        </div>
-      </div>
+        </tbody>
+      </table>
     </div>
   )
 }

@@ -24,7 +24,7 @@ const ValidatorTable = () => {
   )
   const {
     data: paginatedValidator,
-    isLoading: fetchLoading,
+    isLoading,
     refetch,
   } = useGetValidatorsQuery({
     page: page,
@@ -37,16 +37,6 @@ const ValidatorTable = () => {
   }
   const validatorData = paginatedValidator?.validators
 
-  function toggleAccordion(item: string): void {
-    const content = document.getElementById(`content-${item}`)
-    if (content) {
-      if (content.classList.contains("hidden")) {
-        content.classList.remove("hidden")
-      } else {
-        content.classList.add("hidden")
-      }
-    }
-  }
   const options = [
     { value: ValidatorFilterType.ALL, label: "All" },
     { value: ValidatorFilterType.MINERS, label: "Miners" },
@@ -60,8 +50,8 @@ const ValidatorTable = () => {
   }
 
   return (
-    <>
-      <div className="mb-5 flex gap-x-5 py-3 flex-col md:flex-row">
+    <div className="sm:px-0 px-8">
+      <div className="mb-5 flex gap-x-5 py-3 overflow-auto">
         {options.map((opt) => (
           <button
             key={`btn-${opt.value}`}
@@ -94,191 +84,136 @@ const ValidatorTable = () => {
           </div>
         </div>
       </div>
-      <div className="shadow-2xl px-6  rounded-3xl pt-3">
-        <table className="hidden md:table border-separate w-full border-spacing-0">
-          <thead>
-            <tr className="uppercase text-[10px]  text-left font-semibold bottom-shadow">
-              <th className="py-2 w-[5%]">SN</th>
-              <th className="w-[30%]">Modules</th>
-              <th className="w-[5%]">Stakers</th>
-              <th className="w-[20%]">Total Stake</th>
-              <th className="w-[10%]">Emission</th>
-              <th className="w-[10%]">Net APY</th>
-              <th className="w-[10%]">Fee</th>
-              <th className="w-[10%]"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {fetchLoading &&
-              new Array(10).fill(0).map((_, index) => (
-                <tr key={`table-tr-${index}`}>
-                  <td className="py-6 pl-3 mx-3">
-                    <Skeleton className="w-[10]" />
-                  </td>
-                  <td>
-                    <Skeleton className="w-[40px]" />
-                  </td>
-                  <td>
-                    <Skeleton className="w-[30px]" />
-                  </td>
-                  <td>
-                    <Skeleton className="w-[20px]" />
-                  </td>
-
-                  <td>
-                    <Skeleton className="w-[10px]" />
-                  </td>
-                  <td>
-                    <Skeleton className="w-[10px]" />
-                  </td>
-                  <td>
-                    <Skeleton className="w-[20px]" />
-                  </td>
-                </tr>
-              ))}
-            {!fetchLoading &&
-              validatorData &&
-              validatorData.map((validator, index, array) => (
-                <tr
-                  className={`text-sm font-medium   ${
-                    index === array.length - 1 ? "" : "border-b-2 bottom-shadow"
-                  } hover:bg-gray-100 hover:cursor-pointer`}
-                  key={`${validator.key}-${validator.subnet_id}`}
-                >
-                  <td className="py-3 pl-3">{index + 1 + (page - 1) * 50}</td>
-                  <td>
-                    <div className="flex flex-col">
-                      <div className="flex items-center">
-                        <div className="text-md font-bold truncate  max-w-[200px]">
-                          {validator.name}
-                        </div>
-                        {(validator.verified_type === "golden" ||
-                          validator.verified_type === "verified") && (
-                          <Verified
-                            isGold={validator.verified_type === "golden"}
-                            isOfComStats={validator?.expire_at === -1}
-                          />
-                        )}
-                      </div>
-                      <p className="text-[10px] text-textSecondary">
-                        {validator.key}
-                      </p>
-                    </div>
-                  </td>
-                  <td>{numberWithCommas(validator.total_stakers)}</td>
-                  <td>
-                    {numberWithCommas(
-                      formatTokenPrice({ amount: validator.stake })
-                    )}{" "}
-                    COMAI
-                  </td>
-
-                  <td>
-                    {numberWithCommas(
-                      formatTokenPrice({
-                        amount: Number(validator.emission),
-                      })
-                    )}
-                  </td>
-                  <td>
-                    {validator?.type === "miner"
-                      ? "-"
-                      : `${Number(validator.apy.toFixed(2))}%`}
-                  </td>
-                  <td>
-                    {Number((validator?.delegation_fee ?? 0).toFixed(2))}%
-                  </td>
-                  <td>
-                    <Link
-                      href={`/validator/${validator.key}`}
-                      className="flex items-center gap-x-1 "
-                    >
-                      <Button size="small" variant="outlined">
-                        Delegate
-                      </Button>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-
-        <div className="md:hidden">
-          {validatorData?.map((validator, index, array) => (
-            <div
-              key={`sm-${validator.key}-${validator.subnet_id}`}
-              className={`py-4  overflow-scroll hide-scrollbar ${
-                index === array.length - 1 ? "" : "border-b-2"
-              }`}
-              onClick={() => toggleAccordion(validator.name)}
-            >
-              <div className="flex justify-between items-center cursor-pointer">
-                <div className="flex gap-1 items-center">
-                  <div className="truncate max-w-[200px]">{validator.name}</div>
-                  {(validator.verified_type === "golden" ||
-                    validator.verified_type === "verified") && (
-                    <Verified
-                      isGold={validator.verified_type === "golden"}
-                      isOfComStats={validator?.expire_at === -1}
-                    />
-                  )}
-                </div>
-                <div>+</div>
-              </div>
-              <div id={`content-${validator.name}`} className="hidden">
-                <div className="py-2 flex flex-col ">
-                  <div className="w-[200px] truncate">
-                    <strong>Name:</strong> {validator.name}
-                  </div>
-                  <span className="text-[10px] text-textSecondary">
-                    {validator.key}
-                  </span>
-                </div>
-                <div className="py-2">
-                  <strong>Stake:</strong>{" "}
-                  {formatTokenPrice({ amount: validator.stake })} COM
-                </div>
-                <div className="py-2">
-                  <strong>APY: </strong>
-                  {validator.type === "miner"
-                    ? "-"
-                    : `${Number(validator.apy.toFixed(2))}%`}
-                </div>
-                <div className="py-2">
-                  <strong>Fee:</strong>{" "}
-                  {Number(validator.delegation_fee?.toFixed(2))}%
-                </div>
-                <div className="py-2">
-                  <Link
-                    href={`/validator/${validator.key}`}
-                    className="flex items-center gap-x-1 underline"
+      <div className="mt-3">
+        <div className="block w-full overflow-x-auto">
+          <table className="items-center bg-transparent w-full border-collapse ">
+            <thead>
+              <tr>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  S.N.
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Validator
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Total Stakers
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Total Stake
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Emission <br />
+                  (100 Blocks)
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Net APY
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Fee
+                </th>
+                <th className="px-2 bg-gray-100 text-gray-500 align-middle border border-solid border-blueGray-100 py-3 text-[14px] uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading &&
+                new Array(10).fill(0).map((_, index) => (
+                  <tr key={index}>
+                    {new Array(10).fill(0).map((_, index) => (
+                      <td
+                        key={`index${index}`}
+                        className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 "
+                      >
+                        <Skeleton />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              {!isLoading &&
+                validatorData?.map((validator, index) => (
+                  <tr
+                    key={validator.key}
+                    className={`${
+                      index === validatorData.length - 1 ? "" : "border-b"
+                    }`}
                   >
-                    View More{" "}
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      {index + 1}
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
+                      <div className="flex flex-col">
+                        <div className="flex items-center">
+                          <div className="text-[14px] font-bold truncate max-w-[200px]">
+                            {validator.name}
+                          </div>
+                          {validator.verified_type !== "unverified" && (
+                            <Verified
+                              isGold={validator.verified_type === "golden"}
+                              isOfComStats={validator?.expire_at === -1}
+                            />
+                          )}
+                        </div>
+                        <p className="text-[10px] text-textSecondary">
+                          {validator.key}
+                        </p>
+                      </div>
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      {validator.total_stakers}
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      {numberWithCommas(
+                        formatTokenPrice({ amount: validator.stake })
+                      )}
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      {numberWithCommas(
+                        formatTokenPrice({ amount: validator.emission })
+                      )}
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      {Number(validator.apy.toFixed(2))}%
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      {Number(validator.delegation_fee.toFixed(2))}%
+                    </td>
+                    <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
+                      <Link
+                        href={`/validator/${validator.key}`}
+                        className="flex items-center gap-x-1 "
+                      >
+                        <Button size="small" variant="outlined">
+                          Delegate
+                        </Button>
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-        <div className="flex py-5 justify-center text-textPrimary">
-          <ReactPaginate
-            breakLabel="...."
-            nextLabel={<FaAngleRight />}
-            className="gap-x-5 p-2 flex justify-center items-center flex-wrap"
-            pageClassName="py-2 md:py-0"
-            onPageChange={handlePageClick}
-            activeClassName="bg-purple text-white p-2 px-3 rounded-xl"
-            pageRangeDisplayed={5}
-            pageCount={
-              Number(paginatedValidator?.total) /
-              Number(paginatedValidator?.limit)
-            }
-            previousLabel={<FaAngleLeft />}
-            renderOnZeroPageCount={null}
-          />
-        </div>
+        {!isLoading && paginatedValidator?.total !== validatorData?.length && (
+          <div className="flex py-5 justify-center text-textPrimary">
+            <ReactPaginate
+              breakLabel="...."
+              nextLabel={<FaAngleRight />}
+              className="gap-x-5 p-2 flex justify-center items-center flex-wrap"
+              pageClassName="py-2 md:py-0"
+              onPageChange={handlePageClick}
+              activeClassName="bg-purple text-white p-2 px-3 rounded-xl"
+              pageRangeDisplayed={5}
+              pageCount={
+                Number(paginatedValidator?.total) /
+                Number(paginatedValidator?.limit)
+              }
+              previousLabel={<FaAngleLeft />}
+              renderOnZeroPageCount={null}
+            />
+          </div>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 

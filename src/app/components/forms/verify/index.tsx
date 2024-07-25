@@ -1,26 +1,17 @@
 import Button from "@/app/components/button"
-import { Input } from "@/app/components/input"
 import SelectComp from "@/app/components/select"
-import React from "react"
 import { useForm } from "react-hook-form"
 import { usePolkadot } from "@/context"
-import { ValidatorType } from "@/types"
-import {
-  useGetAllValidatorsQuery,
-  useGetBalanceQuery,
-  useGetValidatorsQuery,
-} from "@/store/api/statsApi"
-import { formatTokenPrice } from "@/utils"
+import { ValidatorExtendedType } from "@/types"
 import { getVerificationAmount } from "@/utils/getVerificationAmount"
 import { errorToast } from "../../toast"
-import { useUserStats } from "@/app/hooks/useUserStats"
 import { useBalance } from "@/context/balanceContext"
 
 const VerifyModuleForm = ({
   validator,
   callback,
 }: {
-  validator: ValidatorType | undefined
+  validator: ValidatorExtendedType | undefined
   callback?: () => void
 }) => {
   const {
@@ -34,9 +25,8 @@ const VerifyModuleForm = ({
   } = useForm({
     mode: "all",
   })
-  const { verifyModule, selectedAccount } = usePolkadot()
+  const { verifyModule } = usePolkadot()
 
-  const { data: validatorData } = useGetAllValidatorsQuery()
   const { userBalance: balanceData } = useBalance()
 
   const onSubmit = (data: any) => {
@@ -45,7 +35,7 @@ const VerifyModuleForm = ({
       (balanceData?.balance ?? 0) / 1e9 <
       getVerificationAmount(
         getValues().type?.value,
-        getValues().duration?.value,
+        getValues().duration?.value
       )
     ) {
       errorToast("Insufficient balance")
@@ -120,7 +110,7 @@ const VerifyModuleForm = ({
         Cost for Verification:{" "}
         {getVerificationAmount(
           getValues().type?.value,
-          getValues().duration?.value,
+          getValues().duration?.value
         )}{" "}
         $COMAI
       </div>
@@ -131,12 +121,12 @@ const VerifyModuleForm = ({
         {(balanceData?.balance ?? 0) / 1e9 <
           getVerificationAmount(
             getValues().type?.value,
-            getValues().duration?.value,
+            getValues().duration?.value
           ) &&
           `Insufficient balance, additional ${(
             getVerificationAmount(
               getValues().type?.value,
-              getValues().duration?.value,
+              getValues().duration?.value
             ) -
             (balanceData?.balance ?? 0) / 1e9 +
             1
@@ -151,7 +141,7 @@ const VerifyModuleForm = ({
           (balanceData?.balance ?? 0) / 1e9 <
           getVerificationAmount(
             getValues().type?.value,
-            getValues().duration?.value,
+            getValues().duration?.value
           )
         }
       >
