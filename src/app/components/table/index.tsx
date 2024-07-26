@@ -50,7 +50,7 @@ const ValidatorTable = () => {
   }
 
   return (
-    <div className="sm:px-0 px-8">
+    <div className="sm:px-0 px-2">
       <div className="mb-5 flex gap-x-5 py-3 overflow-auto">
         {options.map((opt) => (
           <button
@@ -139,7 +139,9 @@ const ValidatorTable = () => {
                     }`}
                   >
                     <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
-                      {index + 1}
+                      {(page - 1) * (paginatedValidator?.limit ?? 0) +
+                        index +
+                        1}
                     </td>
                     <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
                       <div className="flex flex-col">

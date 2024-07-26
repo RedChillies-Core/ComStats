@@ -28,7 +28,7 @@ const Subnets = () => {
     refetch()
   }
   return (
-    <div className="container sm:px-0 px-8">
+    <div className="container sm:px-0 px-2">
       {!isLoading && (
         <div className="py-3 text-[14px] flex flex-wrap gap-2 items-center mt-3">
           {data?.map((item) => (

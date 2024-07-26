@@ -102,12 +102,13 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
         </button>
         <h1 className="text-lg font-semibold flex items-center gap-x-2">
           {validatorData?.name}{" "}
-          {!validatorLoading && validatorData?.verified_type !== "unverified" && (
-            <Verified
-              isGold={validatorData?.verified_type === "golden"}
-              isOfComStats={validatorData?.expire_at === -1}
-            />
-          )}
+          {!validatorLoading &&
+            validatorData?.verified_type !== "unverified" && (
+              <Verified
+                isGold={validatorData?.verified_type === "golden"}
+                isOfComStats={validatorData?.expire_at === -1}
+              />
+            )}
         </h1>
       </div>
       {validatorLoading && <FaSpinner className="spinner my-6 mx-auto" />}
@@ -349,8 +350,12 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                       Incentive
                     </p>
                     <h5 className="card-validator-data">
-                      {validatorData?.subnet_data[subnetIndex]?.incentive ??
-                        validatorData?.incentive}
+                      {Number(
+                        Number(
+                          validatorData?.subnet_data[subnetIndex]?.incentive ??
+                            validatorData?.incentive
+                        ).toFixed(2)
+                      )}
                     </h5>
                   </div>
                   <div className="card-validator">
@@ -378,9 +383,12 @@ const ValidatorDetailPage = ({ params }: { params: { id: string } }) => {
                       Dividends
                     </p>
                     <h5 className="card-validator-data">
-                      {validatorData?.subnet_data?.[subnetIndex]?.dividends ??
-                        validatorData?.dividends ??
-                        "-"}
+                      {Number(
+                        Number(
+                          validatorData?.subnet_data?.[subnetIndex]
+                            ?.dividends ?? validatorData?.dividends
+                        ).toFixed(2)
+                      )}
                     </h5>
                   </div>
                 </div>
