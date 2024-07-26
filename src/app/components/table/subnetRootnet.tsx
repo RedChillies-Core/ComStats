@@ -20,7 +20,7 @@ const SubnetRootnetTable = ({
   validators?: InterfacePagination<ValidatorType[]>
 }) => {
   return (
-    <div className="mt-3 sm:px-0 px-8">
+    <div className="mt-3">
       <div className="block w-full overflow-x-auto">
         <table className="items-center bg-transparent w-full border-collapse ">
           <thead>
@@ -85,7 +85,7 @@ const SubnetRootnetTable = ({
                   }`}
                 >
                   <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1 text-left text-blueGray-700 ">
-                    {index + 1}
+                    {(validators.page-1) * validators.limit + index + 1}
                   </td>
                   <td className="border-t-0 px-2 align-middle border-l-0 border-r-0 text-[14px] whitespace-nowrap py-1">
                     <Link
